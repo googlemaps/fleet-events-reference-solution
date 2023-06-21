@@ -1,0 +1,58 @@
+{
+  "insertId": "XXXX",
+  "jsonPayload": {
+    "@type": "type.googleapis.com/maps.fleetengine.delivery.log.v1.BatchCreateTasksLog",
+    "response": {
+      "tasks": [
+        {
+          "trackingId": "testDeliveryTrackingId1",
+          "type": "TASK_TYPE_LOG_DELIVERY",
+          "state": "TASK_STATE_LOG_OPEN",
+          "taskDuration": "7s",
+          "name": "providers/test-123/tasks/testDeliveryTaskId1"
+        },
+        {
+          "taskDuration": "13s",
+          "type": "TASK_TYPE_LOG_PICKUP",
+          "name": "providers/test-123/tasks/testDeliveryTaskId2",
+          "state": "TASK_STATE_LOG_OPEN",
+          "trackingId": "testDeliveryTrackingId2"
+        }
+      ]
+    },
+    "request": {
+      "requests": [
+        {
+          "task": {
+            "state": "TASK_STATE_LOG_OPEN",
+            "type": "TASK_TYPE_LOG_DELIVERY",
+            "name": "providers/test-123/tasks/testDeliveryTaskId1",
+            "trackingId": "testDeliveryTrackingId1",
+            "taskDuration": "7s"
+          },
+          "taskId": "testDeliveryTaskId1"
+        },
+        {
+          "taskId": "testDeliveryTaskId2",
+          "task": {
+            "type": "TASK_TYPE_LOG_PICKUP",
+            "taskDuration": "13s",
+            "state": "TASK_STATE_LOG_OPEN",
+            "name": "providers/test-123/tasks/testDeliveryTaskId2",
+            "trackingId": "testDeliveryTrackingId2"
+          }
+        }
+      ]
+    }
+  },
+  "resource": {
+    "type": "fleetengine.googleapis.com/DeliveryFleet",
+    "labels": {
+      "resource_container": "projects/test-123",
+      "location": "global"
+    }
+  },
+  "timestamp": "2023-03-27T22:11:58.895005Z",
+  "logName": "projects/test-123/logs/fleetengine.googleapis.com%2Fbatch_create_tasks",
+  "receiveTimestamp": "2023-03-27T22:11:59.701560597Z"
+}

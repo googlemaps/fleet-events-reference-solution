@@ -1,0 +1,73 @@
+[
+  {
+    "insertId": "fleet_event_task_outcome_test",
+    "jsonPayload": {
+      "response": {
+        "trackingId": "sample_fleet_events_demo_tracking_id_1_513cd98",
+        "type": "TASK_TYPE_LOG_DELIVERY",
+        "state": "TASK_STATE_LOG_OPEN",
+        "name": "providers/fake-gcp-project/tasks/sample_fleet_events_demo_warehouse1_taskid1_513cd98",
+        "taskDuration": "300s"
+      },
+      "@type": "type.googleapis.com/maps.fleetengine.delivery.log.v1.CreateTaskLog",
+      "request": {
+        "task": {
+          "state": "TASK_STATE_LOG_OPEN",
+          "type": "TASK_TYPE_LOG_DELIVERY",
+          "trackingId": "sample_fleet_events_demo_tracking_id_1_513cd98",
+          "taskDuration": "300s",
+          "name": "providers/fake-gcp-project/tasks/sample_fleet_events_demo_warehouse1_taskid1_513cd98"
+        },
+        "taskId": "sample_fleet_events_demo_warehouse1_taskid1_513cd98"
+      }
+    },
+    "resource": {
+      "type": "fleetengine.googleapis.com/DeliveryFleet",
+      "labels": {
+        "location": "global",
+        "resource_container": "projects/fake-gcp-project"
+      }
+    },
+    "timestamp": "2023-04-17T21:40:16.009660Z",
+    "labels": {
+      "environment": "autopush",
+      "task_id": "sample_fleet_events_demo_warehouse1_taskid1_513cd98"
+    },
+    "logName": "projects/fake-gcp-project/logs/fleetengine.googleapis.com%2Fcreate_task",
+    "receiveTimestamp": "2023-04-17T21:40:16.137112617Z"
+  },
+  {
+    "insertId": "fleet_event_task_outcome_test",
+    "jsonPayload": {
+      "request": {
+        "updateMask": "state,taskOutcome,taskOutcomeTime",
+        "taskId": "sample_fleet_events_demo_warehouse1_taskid1_513cd98",
+        "task": {
+          "name": "providers/fake-gcp-project/tasks/sample_fleet_events_demo_warehouse1_taskid1_513cd98",
+          "taskOutcomeTime": "2023-04-17T21:42:15.468Z",
+          "taskOutcome": "TASK_OUTCOME_LOG_SUCCEEDED"
+        }
+      },
+      "@type": "type.googleapis.com/maps.fleetengine.delivery.log.v1.UpdateTaskLog",
+      "response": {
+        "taskOutcomeTime": "2023-04-17T21:42:15.468Z",
+        "trackingId": "sample_fleet_events_demo_tracking_id_1_513cd98",
+        "type": "TASK_TYPE_LOG_DELIVERY",
+        "deliveryVehicleId": "sample_fleet_events_demo_vehicle_1884d0",
+        "name": "providers/fake-gcp-project/tasks/sample_fleet_events_demo_warehouse1_taskid1_513cd98",
+        "state": "TASK_STATE_LOG_OPEN",
+        "taskDuration": "300s",
+        "taskOutcomeLocation": {
+          "point": {
+            "latitude": 37.4237196052799,
+            "longitude": -122.09302380681038
+          }
+        },
+        "taskOutcomeLocationSource": "TASK_OUTCOME_LOCATION_SOURCE_LOG_LAST_VEHICLE_LOCATION",
+        "taskOutcome": "TASK_OUTCOME_LOG_SUCCEEDED"
+      }
+    },
+    "logName": "projects/fake-gcp-project/logs/fleetengine.googleapis.com%2Fupdate_task",
+    "receiveTimestamp": "2023-04-17T21:41:16.137112617Z"
+  }
+]

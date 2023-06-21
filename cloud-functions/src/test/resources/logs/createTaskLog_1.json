@@ -1,0 +1,35 @@
+{
+  "insertId": "2c17374c020dc70a80ddaee517a9c942",
+  "jsonPayload": {
+    "response": {
+      "state": "TASK_STATE_LOG_OPEN",
+      "name": "providers/test-123/tasks/testDeliveryTaskId1",
+      "type": "TASK_TYPE_LOG_SCHEDULED_STOP",
+      "taskDuration": "5s"
+    },
+    "@type": "type.googleapis.com/maps.fleetengine.delivery.log.v1.CreateTaskLog",
+    "request": {
+      "task": {
+        "state": "TASK_STATE_LOG_OPEN",
+        "name": "testDeliveryTaskId1",
+        "type": "TASK_TYPE_LOG_SCHEDULED_STOP",
+        "taskDuration": "5s"
+      },
+      "taskId": "testDeliveryTaskId1"
+    }
+  },
+  "resource": {
+    "type": "fleetengine.googleapis.com/DeliveryFleet",
+    "labels": {
+      "location": "global",
+      "resource_container": "projects/test-123"
+    }
+  },
+  "timestamp": "2023-03-17T16:23:53.949094Z",
+  "labels": {
+    "task_id": "testDeliveryTaskId1",
+    "environment": "staging"
+  },
+  "logName": "projects/test-123/logs/fleetengine.googleapis.com%2Fcreate_task",
+  "receiveTimestamp": "2023-03-17T16:23:53.979227923Z"
+}

@@ -1,0 +1,60 @@
+[
+  {
+    "insertId": "XXXX",
+    "jsonPayload": {
+      "@type": "type.googleapis.com/maps.fleetengine.delivery.log.v1.CreateDeliveryVehicleLog",
+      "response": {
+        "lastLocation": {
+          "location": {
+            "longitude": -97.53325035157957,
+            "latitude": 35.48002958614187
+          },
+          "serverTime": "2023-02-09T01:03:09.762509Z",
+          "heading": 0
+        },
+        "currentRouteSegmentHandle": "XXXX",
+        "name": "providers/fake-gcp-project/deliveryVehicles/testDeliveryVehicleId1",
+        "attributes": [
+          {
+            "value": "attribute1",
+            "key": "attributes"
+          }
+        ],
+        "currentRouteSegmentEndPointHandle": "XXXX"
+      },
+      "request": {
+        "deliveryVehicle": {
+          "currentRouteSegmentHandle": "XXXX",
+          "lastLocation": {
+            "heading": 0,
+            "location": {
+              "latitude": 35.48002958614187,
+              "longitude": -97.53325035157957
+            }
+          },
+          "attributes": [
+            {
+              "value": "attribute1",
+              "key": "attributes"
+            }
+          ],
+          "currentRouteSegmentEndPointHandle": "XXXX"
+        },
+        "deliveryVehicleId": "testDeliveryVehicleId1"
+      }
+    },
+    "resource": {
+      "type": "fleetengine.googleapis.com/DeliveryFleet",
+      "labels": {
+        "resource_container": "projects/fake-gcp-project",
+        "location": "global"
+      }
+    },
+    "timestamp": "2023-02-09T01:03:10.111428Z",
+    "labels": {
+      "delivery_vehicle_id": "testDeliveryVehicleId1"
+    },
+    "logName": "projects/fake-gcp-project/logs/fleetengine.googleapis.com%2Fcreate_delivery_vehicle",
+    "receiveTimestamp": "2023-02-09T01:03:10.782383860Z"
+  }
+]

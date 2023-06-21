@@ -1,0 +1,55 @@
+package com.google.fleetevents.handlers;
+
+import com.google.cloud.firestore.Transaction;
+import com.google.common.collect.ImmutableList;
+import com.google.fleetevents.FleetEventHandler;
+import com.google.fleetevents.database.FirestoreDatabaseClient;
+import com.google.fleetevents.models.DeliveryTaskFleetEvent;
+import com.google.fleetevents.models.FleetEvent;
+import com.google.fleetevents.models.outputs.OutputEvent;
+import com.google.fleetevents.models.outputs.TaskStateChangedOutputEvent;
+import java.util.List;
+import java.util.logging.Logger;
+
+public class TaskStateHandler implements FleetEventHandler {
+
+  private static final Logger logger = Logger.getLogger(TaskStateHandler.class.getName());
+
+  public List<OutputEvent> handleEvent(FleetEvent fleetEvent, Transaction transaction) {
+    DeliveryTaskFleetEvent deliveryTaskFleetEvent = (DeliveryTaskFleetEvent) fleetEvent;
+    logger.info(
+        String.format(
+            "Task State changed:\n%s,\ntask id: %s",
+            deliveryTaskFleetEvent.taskDifferences().get("state"),
+            deliveryTaskFleetEvent.deliveryTaskId()));
+    TaskStateChangedOutputEvent taskStateOutputEvent = new TaskStateChangedOutputEvent();
+    taskStateOutputEvent.setFleetEvent(fleetEvent);
+    taskStateOutputEvent.setTaskId(deliveryTaskFleetEvent.deliveryTaskId());
+    taskStateOutputEvent.setOldTaskState(
+        deliveryTaskFleetEvent.oldDeliveryTask().getState());
+    taskStateOutputEvent.setNewTaskState(
+        deliveryTaskFleetEvent.newDeliveryTask().getState());
+    return ImmutableList.of(taskStateOutputEvent);
+  }
+
+  @Override
+  public boolean respondsTo(
+      FleetEvent fleetEvent,
+      Transaction transaction,
+      FirestoreDatabaseClient firestoreDatabaseClient) {
+    if (fleetEvent.getEventType() != FleetEvent.Type.DELIVERY_TASK_FLEET_EVENT) {
+      return false;
+    }
+
+    DeliveryTaskFleetEvent deliveryTaskFleetEvent = (DeliveryTaskFleetEvent) fleetEvent;
+    return deliveryTaskFleetEvent.taskDifferences().containsKey("state");
+  }
+
+  @Override
+  public boolean verifyOutput(OutputEvent outputEvent) {
+    if (!(outputEvent instanceof TaskStateChangedOutputEvent)) {
+      return false;
+    }
+    return outputEvent.getType() == OutputEvent.Type.TASK_STATE_CHANGED;
+  }
+}

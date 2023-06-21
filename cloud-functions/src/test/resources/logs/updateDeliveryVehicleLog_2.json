@@ -1,0 +1,95 @@
+{
+  "insertId": "XXXX",
+  "jsonPayload": {
+    "request": {
+      "updateMask": "remainingVehicleJourneySegments",
+      "deliveryVehicleId": "testDeliveryVehicleId2",
+      "deliveryVehicle": {
+        "remainingDuration": "581s",
+        "currentRouteSegmentHandle": "XXXX",
+        "remainingDistanceMeters": 2804,
+        "lastLocation": {
+          "locationSensor": "LOCATION_SENSOR_ROAD_SNAPPED_LOCATION_PROVIDER",
+          "rawLocationTime": "2023-03-08T06:14:37.040Z",
+          "altitude": 565.1705551147461,
+          "altitudeAccuracy": 10,
+          "rawLocation": {
+            "longitude": 79,
+            "latitude": 17
+          },
+          "rawLocationAccuracy": 65,
+          "location": {
+            "longitude": 79,
+            "latitude": 17
+          }
+        },
+        "remainingVehicleJourneySegments": [
+          {
+            "stop": {
+              "tasks": [
+                {
+                  "taskDuration": "5s",
+                  "taskId": "testDeliveryTaskId2"
+                }
+              ],
+              "state": "VEHICLE_STOP_STATE_LOG_NEW"
+            }
+          }
+        ],
+        "currentRouteSegmentEndPointHandle": "XXXX",
+        "name": "providers/test-123/deliveryVehicles/testDeliveryVehicleId2"
+      }
+    },
+    "@type": "type.googleapis.com/maps.fleetengine.delivery.log.v1.UpdateDeliveryVehicleLog",
+    "response": {
+      "name": "providers/test-123/deliveryVehicles/testDeliveryVehicleId2",
+      "remainingDuration": "580.820766s",
+      "lastLocation": {
+        "rawLocation": {
+          "longitude": 79,
+          "latitude": 17
+        },
+        "locationSensor": "LOCATION_SENSOR_ROAD_SNAPPED_LOCATION_PROVIDER",
+        "rawLocationTime": "2023-03-08T06:14:37.040Z",
+        "rawLocationAccuracy": 65,
+        "location": {
+          "latitude": 17,
+          "longitude": 79
+        },
+        "altitude": 565.1705551147461,
+        "serverTime": "2023-03-08T06:15:27.735707Z",
+        "altitudeAccuracy": 10
+      },
+      "remainingDistanceMeters": 2804,
+      "remainingVehicleJourneySegments": [
+        {
+          "stop": {
+            "tasks": [
+              {
+                "taskDuration": "5s",
+                "taskId": "testDeliveryTaskId2"
+              }
+            ],
+            "state": "VEHICLE_STOP_STATE_LOG_NEW"
+          }
+        }
+      ],
+      "navigationStatus": "NAVIGATION_STATUS_NO_GUIDANCE",
+      "currentRouteSegmentEndPointHandle": "XXXX",
+      "currentRouteSegmentHandle": "XXXX"
+    }
+  },
+  "resource": {
+    "type": "fleetengine.googleapis.com/DeliveryFleet",
+    "labels": {
+      "resource_container": "projects/test-123",
+      "location": "global"
+    }
+  },
+  "timestamp": "2023-03-08T06:15:28.384653Z",
+  "labels": {
+    "delivery_vehicle_id": "testDeliveryVehicleId2"
+  },
+  "logName": "projects/test-123/logs/fleetengine.googleapis.com%2Fupdate_delivery_vehicle",
+  "receiveTimestamp": "2023-03-08T06:15:28.422436893Z"
+}

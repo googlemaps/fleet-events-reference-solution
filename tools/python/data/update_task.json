@@ -1,0 +1,52 @@
+[
+  {
+    "insertId": "e07816040fc65048f126dea3c134b767",
+    "jsonPayload": {
+      "response": {
+        "state": "TASK_STATE_LOG_OPEN",
+        "type": "TASK_TYPE_LOG_DELIVERY",
+        "taskOutcomeLocationSource": "TASK_OUTCOME_LOCATION_SOURCE_LOG_LAST_VEHICLE_LOCATION",
+        "taskOutcomeTime": "2023-02-23T21:53:27Z",
+        "taskOutcome": "TASK_OUTCOME_LOG_SUCCEEDED",
+        "taskDuration": "60s",
+        "trackingId": "testTrackingId1",
+        "name": "providers/fake-gcp-project/tasks/sample_fleet_events_demo_testDeliveryTaskId1",
+        "taskOutcomeLocation": {
+          "point": {
+            "latitude": 37.4231623,
+            "longitude": -122.0925322
+          }
+        },
+        "deliveryVehicleId": "sample_fleet_events_demo_vehicle_1_1677189203752"
+      },
+      "request": {
+        "updateMask": "taskOutcome,taskOutcomeTime",
+        "taskId": "sample_fleet_events_demo_testDeliveryTaskId1",
+        "task": {
+          "type": "TASK_TYPE_LOG_DELIVERY",
+          "trackingId": "testTrackingId1",
+          "state": "TASK_STATE_LOG_OPEN",
+          "name": "providers/fake-gcp-project/tasks/sample_fleet_events_demo_testDeliveryTaskId1",
+          "taskDuration": "60s",
+          "taskOutcome": "TASK_OUTCOME_LOG_SUCCEEDED",
+          "taskOutcomeTime": "2023-02-23T21:53:27Z"
+        }
+      },
+      "@type": "type.googleapis.com/maps.fleetengine.delivery.log.v1.UpdateTaskLog"
+    },
+    "resource": {
+      "type": "fleetengine.googleapis.com/DeliveryFleet",
+      "labels": {
+        "location": "global",
+        "resource_container": "projects/fake-gcp-project"
+      }
+    },
+    "timestamp": "2023-02-23T21:53:27.548875Z",
+    "labels": {
+      "task_id": "sample_fleet_events_demo_testDeliveryTaskId1",
+      "delivery_vehicle_id": "sample_fleet_events_demo_vehicle_1_1677189203752"
+    },
+    "logName": "projects/fake-gcp-project/logs/fleetengine.googleapis.com%2Fupdate_task",
+    "receiveTimestamp": "2023-02-23T21:53:28.328697260Z"
+  }
+]
