@@ -57,7 +57,7 @@ public class DeliveryTaskData implements Serializable {
 
   public static Builder builder() {
     return new DeliveryTaskData.Builder().setEventMetadata(new HashMap<>())
-        .setState("STATE_UNSPECIFIED");
+        .setState("STATE_UNSPECIFIED").setTaskOutcome("TASK_OUTCOME_UNSPECIFIED");
   }
 
   public Timestamp getExpireAt() {

@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 /**
  * FleetEventHandler that alerts when a task has crossed a threshold for remaining distance until
@@ -37,6 +38,7 @@ public class DistanceRemainingHandler implements FleetEventHandler {
 
   private static final long DEFAULT_THRESHOLD_METERS = 1000L;
   private static final String DISTANCE_REMAINING_KEY_NAME = "distanceRemaining";
+  private static final Logger logger = Logger.getLogger(DistanceRemainingHandler.class.getName());
 
   @Override
   public List<OutputEvent> handleEvent(FleetEvent fleetEvent, Transaction transaction) {
@@ -86,6 +88,8 @@ public class DistanceRemainingHandler implements FleetEventHandler {
             distanceRemainingUpdates.get(deliveryTaskId));
         distanceRemainingOutputEvent.setEventTimestamp(
             deliveryVehicleFleetEvent.newDeliveryVehicle().getEventTimestamp());
+        logger.info(
+            String.format("Distance Remaining Event triggered for task: %s", deliveryTaskId));
         outputEvents.add(distanceRemainingOutputEvent);
       }
     }
@@ -109,13 +113,10 @@ public class DistanceRemainingHandler implements FleetEventHandler {
 
   @Override
   public boolean verifyOutput(OutputEvent outputEvent) {
-    if (! (outputEvent instanceof DistanceRemainingOutputEvent)) {
+    if (!(outputEvent instanceof DistanceRemainingOutputEvent)) {
       return false;
     }
-    if (outputEvent.getType() != OutputEvent.Type.DISTANCE_REMAINING) {
-      return false;
-    }
-    return true;
+    return outputEvent.getType() == OutputEvent.Type.DISTANCE_REMAINING;
   }
 
   public boolean hasOriginalDistanceRemaining(

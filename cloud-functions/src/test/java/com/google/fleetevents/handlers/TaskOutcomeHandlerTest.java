@@ -16,11 +16,12 @@
 
 package com.google.fleetevents.handlers;
 
+import static google.maps.fleetengine.delivery.v1.Task.TaskOutcome.FAILED;
+import static google.maps.fleetengine.delivery.v1.Task.TaskOutcome.SUCCEEDED;
+import static google.maps.fleetengine.delivery.v1.Task.TaskOutcome.TASK_OUTCOME_UNSPECIFIED;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
-
-import static google.maps.fleetengine.delivery.v1.Task.TaskOutcome.*;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -30,35 +31,20 @@ import com.google.fleetevents.models.DeliveryTaskFleetEvent;
 import com.google.fleetevents.models.Pair;
 import com.google.fleetevents.models.outputs.OutputEvent;
 import com.google.fleetevents.models.outputs.TaskOutcomeOutputEvent;
-
+import google.maps.fleetengine.delivery.v1.Task.TaskOutcome;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
 import org.junit.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.ValueSource;
-
-import google.maps.fleetengine.delivery.v1.Task.TaskOutcome;
 
 
 /**
  * Tests for the task outcome fleet event handler.
  */
 public class TaskOutcomeHandlerTest {
-  enum ValidTestCase {
-    TASK_FAILED(TASK_OUTCOME_UNSPECIFIED.name(), FAILED.name()),
-    TASK_SUCCEEDED(TASK_OUTCOME_UNSPECIFIED.name(), SUCCEEDED.name()),
-    TASK_FAILED_NULL(null, FAILED.name()),
-    TASK_SUCCEEDED_NULL(null, SUCCEEDED.name());
-    final String oldOutcome;
-    final String newOutcome;
-    ValidTestCase(String oldOutcome, String newOutcome) {
-      this.oldOutcome = oldOutcome;
-      this.newOutcome = newOutcome;
-    }
-  }
 
   @Test
   public void updateTaskNoTaskOutcome_doesNotRespond() {
@@ -92,7 +78,7 @@ public class TaskOutcomeHandlerTest {
     assertTrue(taskOutcomeHandler.respondsTo(deliveryTaskFleetEvent, null, null));
     TaskOutcomeOutputEvent expectedOutputEvent = new TaskOutcomeOutputEvent();
     expectedOutputEvent.setFleetEvent(deliveryTaskFleetEvent);
-    expectedOutputEvent.setOldTaskOutcome(null);
+    expectedOutputEvent.setOldTaskOutcome("TASK_OUTCOME_UNSPECIFIED");
     expectedOutputEvent.setNewTaskOutcome(taskOutcome);
     expectedOutputEvent.setTaskId("deliveryTaskId1");
 
@@ -121,12 +107,28 @@ public class TaskOutcomeHandlerTest {
     for (TaskOutcome oldOutcome : TaskOutcome.values()) {
       for (TaskOutcome newOutcome : TaskOutcome.values()) {
         Pair<TaskOutcome, TaskOutcome> outcomePair = new Pair(oldOutcome.name(), newOutcome.name());
-        if (validPairs.contains(outcomePair)) continue;
+        if (validPairs.contains(outcomePair)) {
+          continue;
+        }
         TaskOutcomeOutputEvent invalidOutput = new TaskOutcomeOutputEvent();
         invalidOutput.setOldTaskOutcome(oldOutcome.name());
         invalidOutput.setNewTaskOutcome(newOutcome.name());
         assertFalse(taskOutcomeHandler.verifyOutput(invalidOutput));
       }
+    }
+  }
+
+  enum ValidTestCase {
+    TASK_FAILED(TASK_OUTCOME_UNSPECIFIED.name(), FAILED.name()),
+    TASK_SUCCEEDED(TASK_OUTCOME_UNSPECIFIED.name(), SUCCEEDED.name()),
+    TASK_FAILED_NULL(null, FAILED.name()),
+    TASK_SUCCEEDED_NULL(null, SUCCEEDED.name());
+    final String oldOutcome;
+    final String newOutcome;
+
+    ValidTestCase(String oldOutcome, String newOutcome) {
+      this.oldOutcome = oldOutcome;
+      this.newOutcome = newOutcome;
     }
   }
 }

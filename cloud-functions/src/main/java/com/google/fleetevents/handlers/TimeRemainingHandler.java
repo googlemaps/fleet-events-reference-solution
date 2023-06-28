@@ -22,13 +22,13 @@ import com.google.fleetevents.database.FirestoreDatabaseClient;
 import com.google.fleetevents.models.DeliveryVehicleData;
 import com.google.fleetevents.models.DeliveryVehicleFleetEvent;
 import com.google.fleetevents.models.FleetEvent;
-import com.google.fleetevents.models.outputs.DistanceRemainingOutputEvent;
 import com.google.fleetevents.models.outputs.OutputEvent;
 import com.google.fleetevents.models.outputs.TimeRemainingOutputEvent;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 /**
  * FleetEventHandler that alerts when a task has crossed a threshold for remaining duration until
@@ -38,6 +38,7 @@ public class TimeRemainingHandler implements FleetEventHandler {
 
   private static final long DEFAULT_THRESHOLD_MILLISECONDS = 5 * 60 * 1000L;
   private static final String TIME_REMAINING_KEY_NAME = "timeRemaining";
+  private static final Logger logger = Logger.getLogger(TimeRemainingHandler.class.getName());
 
   @Override
   public List<OutputEvent> handleEvent(FleetEvent fleetEvent, Transaction transaction) {
@@ -86,6 +87,7 @@ public class TimeRemainingHandler implements FleetEventHandler {
             timeRemainingUpdates.get(deliveryTaskId));
         timeRemainingOutputEvent.setEventTimestamp(
             deliveryVehicleFleetEvent.newDeliveryVehicle().getEventTimestamp());
+        logger.info(String.format("Time Remaining Event for task: %s", deliveryTaskId));
         outputEvents.add(timeRemainingOutputEvent);
       }
     }
@@ -107,13 +109,10 @@ public class TimeRemainingHandler implements FleetEventHandler {
 
   @Override
   public boolean verifyOutput(OutputEvent outputEvent) {
-    if (! (outputEvent instanceof TimeRemainingOutputEvent)) {
+    if (!(outputEvent instanceof TimeRemainingOutputEvent)) {
       return false;
     }
-    if (outputEvent.getType() != OutputEvent.Type.TIME_REMAINING) {
-      return false;
-    }
-    return true;
+    return outputEvent.getType() == OutputEvent.Type.TIME_REMAINING;
   }
 
   public boolean hasOriginalTimeRemaining(

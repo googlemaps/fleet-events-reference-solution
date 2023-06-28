@@ -18,7 +18,6 @@ package com.google.fleetevents.handlers;
 
 import com.google.cloud.firestore.Transaction;
 import com.google.common.collect.ImmutableList;
-import com.google.fleetevents.DefaultFleetEventsFunction;
 import com.google.fleetevents.FleetEventHandler;
 import com.google.fleetevents.database.FirestoreDatabaseClient;
 import com.google.fleetevents.models.DeliveryTaskFleetEvent;
@@ -38,7 +37,7 @@ import java.util.logging.Logger;
  */
 public class TaskOutcomeHandler implements FleetEventHandler {
 
-  private static final Logger logger = Logger.getLogger(DefaultFleetEventsFunction.class.getName());
+  private static final Logger logger = Logger.getLogger(TaskOutcomeHandler.class.getName());
   private final Set<Pair<String, String>> VALID_OUTPUTS = new HashSet<>() {{
     add(new Pair(Task.TaskOutcome.TASK_OUTCOME_UNSPECIFIED.name(),
         Task.TaskOutcome.SUCCEEDED.name()));

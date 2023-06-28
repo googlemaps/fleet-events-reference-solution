@@ -48,13 +48,13 @@ public class FirestoreDatabaseClient {
         .build();
     firestore = firestoreOptions.getService();
 
-    VEHICLE_COLLECTION_NAME = FleetEventConfig.getVehicleCollectionName();
+    VEHICLE_COLLECTION_NAME = FleetEventConfig.getDeliveryVehicleCollectionName();
     TASK_COLLECTION_NAME = FleetEventConfig.getTaskCollectionName();
   }
 
   public FirestoreDatabaseClient(Firestore firestore) {
     this.firestore = firestore;
-    VEHICLE_COLLECTION_NAME = FleetEventConfig.getVehicleCollectionName();
+    VEHICLE_COLLECTION_NAME = FleetEventConfig.getDeliveryVehicleCollectionName();
     TASK_COLLECTION_NAME = FleetEventConfig.getTaskCollectionName();
   }
 

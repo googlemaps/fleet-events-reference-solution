@@ -72,7 +72,7 @@ public final class FleetEventConfig {
     return topicOutputId;
   }
 
-  public static String getVehicleCollectionName() {
+  public static String getDeliveryVehicleCollectionName() {
     var vehicleCollectionName = getEnvironmentVariable("DELIVERY_VEHICLE_COLLECTION_NAME");
     if (vehicleCollectionName == null) {
       logger.info(

@@ -24,7 +24,6 @@ import com.google.fleetevents.models.DeliveryVehicleFleetEvent;
 import com.google.fleetevents.models.FleetEvent;
 import com.google.fleetevents.models.TaskInfo;
 import com.google.fleetevents.models.VehicleJourneySegment;
-import com.google.fleetevents.models.outputs.DistanceRemainingOutputEvent;
 import com.google.fleetevents.models.outputs.EtaOutputEvent;
 import com.google.fleetevents.models.outputs.OutputEvent;
 import com.google.fleetevents.util.TimeUtil;
@@ -33,6 +32,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 /**
  * FleetEventHandler that alerts when the eta changes by either an absolute or relative amount to
@@ -50,6 +50,7 @@ public class EtaChangeHandler implements FleetEventHandler {
 
   private static final String ETA_CHANGE_METADATA_ID = "etaChange";
   private static final String RELATIVE_ETA_CHANGE_METADATA_ID = "relativeEtaChange";
+  private static final Logger logger = Logger.getLogger(EtaChangeHandler.class.getName());
 
   @Override
   public List<OutputEvent> handleEvent(FleetEvent fleetEvent, Transaction transaction) {
@@ -106,21 +107,24 @@ public class EtaChangeHandler implements FleetEventHandler {
                   .setNewEta(newEta)
                   .setDelta(newEta - originalEta)
                   .setRelativeDelta(
-                      (float) (cumulativeDuration - originalDuration) / originalDuration)
+                      (float) (newEta - originalEta) / originalDuration)
                   .setTaskId(taskId)
                   .setFleetEvent(fleetEvent)
                   .build();
           if (etaThresholdReached(originalEta, newEta)) {
-            outputEvents.add(
-                new EtaOutputEvent.Builder(etaOutputEvent)
-                    .setType(EtaOutputEvent.Type.ETA)
-                    .build());
+            var etaChangeEvent = new EtaOutputEvent.Builder(etaOutputEvent)
+                .setType(EtaOutputEvent.Type.ETA)
+                .build();
+            outputEvents.add(etaChangeEvent
+            );
+            logger.info(String.format("Absolute ETA Change for task: %s", taskId));
           }
-          if (relativeEtaThresholdReached(originalDuration, cumulativeDuration)) {
-            outputEvents.add(
-                new EtaOutputEvent.Builder(etaOutputEvent)
-                    .setType(EtaOutputEvent.Type.RELATIVE_ETA)
-                    .build());
+          if (relativeEtaThresholdReached(originalDuration, originalEta, newEta)) {
+            var relativeEtaChangeEvent = new EtaOutputEvent.Builder(etaOutputEvent)
+                .setType(EtaOutputEvent.Type.RELATIVE_ETA)
+                .build();
+            outputEvents.add(relativeEtaChangeEvent);
+            logger.info(String.format("Relative ETA Change for task: %s", taskId));
           }
         }
       }
@@ -140,20 +144,17 @@ public class EtaChangeHandler implements FleetEventHandler {
     // this filter exists because it's possible for durations to be assigned when there is no
     // vehicle id.
     return deliveryVehicleFleetEvent.vehicleDifferences().containsKey("remainingDuration")
-            && deliveryVehicleFleetEvent.newDeliveryVehicle().getDeliveryVehicleId() != null
-            && deliveryVehicleFleetEvent.newDeliveryVehicle().getRemainingDuration() != null;
+        && deliveryVehicleFleetEvent.newDeliveryVehicle().getDeliveryVehicleId() != null
+        && deliveryVehicleFleetEvent.newDeliveryVehicle().getRemainingDuration() != null;
   }
 
   @Override
   public boolean verifyOutput(OutputEvent outputEvent) {
-    if (! (outputEvent instanceof EtaOutputEvent)) {
+    if (!(outputEvent instanceof EtaOutputEvent)) {
       return false;
     }
-    if (outputEvent.getType() != OutputEvent.Type.ETA
-            && outputEvent.getType() != OutputEvent.Type.RELATIVE_ETA) {
-      return false;
-    }
-    return true;
+    return outputEvent.getType() == OutputEvent.Type.ETA
+        || outputEvent.getType() == OutputEvent.Type.RELATIVE_ETA;
   }
 
   private Long getOriginalEta(DeliveryVehicleData deliveryVehicleData, String taskId) {
@@ -224,14 +225,15 @@ public class EtaChangeHandler implements FleetEventHandler {
     return Math.abs(newEta - oldEta) > ETA_THRESHOLD_MILLIS;
   }
 
-  private boolean relativeEtaThresholdReached(Long oldDuration, Long newDuration) {
+  private boolean relativeEtaThresholdReached(Long oldDuration, Long oldEta, Long newEta) {
     // handle zero case
-    if (oldDuration == 0 && newDuration == 0) {
+    Long etaDelta = newEta - oldEta;
+    if (oldDuration == 0 && etaDelta == 0) {
       return 0 > RELATIVE_ETA_THRESHOLD;
     }
-    if (oldDuration == 0 && newDuration != 0) {
+    if (oldDuration == 0 && etaDelta != 0) {
       return true;
     }
-    return (Math.abs((float) (newDuration - oldDuration) / oldDuration)) > RELATIVE_ETA_THRESHOLD;
+    return (Math.abs((float) etaDelta / oldDuration)) > RELATIVE_ETA_THRESHOLD;
   }
 }
