@@ -20,10 +20,10 @@ jobs:
   java-lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3 # v2 minimum required
-      - uses: axel-op/googlejavaformat-action@v3
+      - uses: actions/checkout@v2 # v2 minimum required
+      - uses: axel-op/googlejavaformat-action@3.5.0
         with:
-          args: "--replace"
+          args: "--skip-javadoc-formatting --replace"
           skip-commit: true
       - name: Print diffs
         run: git --no-pager diff --exit-code
