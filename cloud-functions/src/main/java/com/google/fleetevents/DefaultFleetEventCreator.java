@@ -19,9 +19,7 @@ package com.google.fleetevents;
 import com.google.fleetevents.database.FirestoreDatabaseClient;
 import java.io.IOException;
 
-/**
- * Default implementation of the fleet event creator class. Modify for custom logic.
- */
+/** Default implementation of the fleet event creator class. Modify for custom logic. */
 public class DefaultFleetEventCreator extends FleetEventCreator {
 
   private static FirestoreDatabaseClient db;
@@ -36,4 +34,3 @@ public class DefaultFleetEventCreator extends FleetEventCreator {
     return db;
   }
 }
-

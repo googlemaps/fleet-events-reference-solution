@@ -18,9 +18,7 @@ package com.google.fleetevents.models.outputs;
 
 import java.util.Objects;
 
-/**
- * OutputEvent for remaining duration.
- */
+/** OutputEvent for remaining duration. */
 public class TimeRemainingOutputEvent extends OutputEvent {
 
   private long oldTimeRemainingSeconds;
@@ -64,23 +62,28 @@ public class TimeRemainingOutputEvent extends OutputEvent {
     this.newTimeRemainingSeconds = newTimeRemainingSeconds;
   }
 
-
   @Override
   public String toString() {
-    return "TimeRemainingOutputEvent{" +
-            "oldTimeRemainingSeconds=" + oldTimeRemainingSeconds +
-            ", taskId='" + taskId + '\'' +
-            ", newTimeRemainingSeconds=" + newTimeRemainingSeconds +
-            ", eventTimestamp=" + eventTimestamp +
-            ", fleetEvent=" + fleetEvent +
-            ", type=" + type +
-            '}';
+    return "TimeRemainingOutputEvent{"
+        + "oldTimeRemainingSeconds="
+        + oldTimeRemainingSeconds
+        + ", taskId='"
+        + taskId
+        + '\''
+        + ", newTimeRemainingSeconds="
+        + newTimeRemainingSeconds
+        + ", eventTimestamp="
+        + eventTimestamp
+        + ", fleetEvent="
+        + fleetEvent
+        + ", type="
+        + type
+        + '}';
   }
 
   @Override
   public boolean equals(Object object) {
-    if (object instanceof TimeRemainingOutputEvent) {
-      TimeRemainingOutputEvent that = (TimeRemainingOutputEvent) object;
+    if (object instanceof TimeRemainingOutputEvent that) {
       return Objects.equals(that.taskId, this.taskId)
           && Objects.equals(that.oldTimeRemainingSeconds, this.oldTimeRemainingSeconds)
           && Objects.equals(that.newTimeRemainingSeconds, this.newTimeRemainingSeconds)

@@ -30,9 +30,7 @@ import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Parses log entries from Cloud Logging to protobufs of the original requests.
- */
+/** Parses log entries from Cloud Logging to protobufs of the original requests. */
 public class ProtoParser {
 
   static HashMap<String, Integer> enumStringsMap = new HashMap<>();
@@ -62,8 +60,9 @@ public class ProtoParser {
       throws InvalidProtocolBufferException {
     Message.Builder builder = message.toBuilder();
     Map<String, Value> jsonStruct = logEntry.getJsonPayload().getFieldsMap();
-    if (! jsonStruct.containsKey("response")) {
-      throw new IllegalArgumentException("Received log entry with empty response: " + logEntry.getLogName());
+    if (!jsonStruct.containsKey("response")) {
+      throw new IllegalArgumentException(
+          "Received log entry with empty response: " + logEntry.getLogName());
     }
     Struct response = jsonStruct.get("response").getStructValue();
     String json = getJson(response);
@@ -75,8 +74,9 @@ public class ProtoParser {
       throws InvalidProtocolBufferException {
     Message.Builder builder = message.toBuilder();
     Map<String, Value> jsonStruct = logEntry.getJsonPayload().getFieldsMap();
-    if (! jsonStruct.containsKey("request")) {
-      throw new IllegalArgumentException("Received log entry with empty request: " + logEntry.getLogName());
+    if (!jsonStruct.containsKey("request")) {
+      throw new IllegalArgumentException(
+          "Received log entry with empty request: " + logEntry.getLogName());
     }
     Struct request = jsonStruct.get("request").getStructValue();
     String json = getJson(request);

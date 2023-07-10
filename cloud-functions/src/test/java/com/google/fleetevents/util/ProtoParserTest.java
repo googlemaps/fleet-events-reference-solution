@@ -28,9 +28,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import org.junit.Test;
 
-/**
- * Tests for proto parser.
- */
+/** Tests for proto parser. */
 public class ProtoParserTest {
 
   private static final String UPDATE_DELIVERY_VEHICLE_LOG_NAME =

@@ -19,9 +19,7 @@ package com.google.fleetevents.models;
 import java.util.List;
 import java.util.Objects;
 
-/**
- * Firestore serializable representation of the vehicle stop.
- */
+/** Firestore serializable representation of the vehicle stop. */
 public class VehicleStop {
 
   private List<TaskInfo> taskInfos;
@@ -41,8 +39,7 @@ public class VehicleStop {
 
   @Override
   public boolean equals(Object object) {
-    if (object instanceof VehicleStop) {
-      VehicleStop that = (VehicleStop) object;
+    if (object instanceof VehicleStop that) {
       return Objects.equals(that.taskInfos, this.taskInfos);
     }
     return false;

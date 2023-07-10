@@ -32,9 +32,7 @@ import java.util.Map;
 import org.junit.Assert;
 import org.junit.Test;
 
-/**
- * Tests for the ETA change fleet event handler.
- */
+/** Tests for the ETA change fleet event handler. */
 public class EtaChangeHandlerTest {
 
   private static final long ORIGINAL_ETA_THRESHOLD_MILLIS = 300000;
@@ -42,8 +40,7 @@ public class EtaChangeHandlerTest {
   private static final String ETA_CHANGE_METADATA_ID = "etaChange";
   private final EtaChangeHandler handler = new EtaChangeHandler();
 
-  public EtaChangeHandlerTest() {
-  }
+  public EtaChangeHandlerTest() {}
 
   private VehicleJourneySegment getOneStopOneTask(
       Long vjsDuration, Long taskDuration, String taskName) {

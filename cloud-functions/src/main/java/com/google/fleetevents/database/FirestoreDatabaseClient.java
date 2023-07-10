@@ -41,11 +41,11 @@ public class FirestoreDatabaseClient {
     GoogleCredentials credentials = GoogleCredentials.getApplicationDefault();
     var projectId = FleetEventConfig.getProjectId();
 
-    FirestoreOptions firestoreOptions = FirestoreOptions.getDefaultInstance()
-        .toBuilder()
-        .setCredentials(credentials)
-        .setProjectId(projectId)
-        .build();
+    FirestoreOptions firestoreOptions =
+        FirestoreOptions.getDefaultInstance().toBuilder()
+            .setCredentials(credentials)
+            .setProjectId(projectId)
+            .build();
     firestore = firestoreOptions.getService();
 
     VEHICLE_COLLECTION_NAME = FleetEventConfig.getDeliveryVehicleCollectionName();

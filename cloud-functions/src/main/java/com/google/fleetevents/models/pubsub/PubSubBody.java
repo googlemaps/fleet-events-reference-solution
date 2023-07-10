@@ -16,9 +16,7 @@
 
 package com.google.fleetevents.models.pubsub;
 
-/**
- * Body for the incoming pubsub messages.
- */
+/** Body for the incoming pubsub messages. */
 public class PubSubBody {
 
   private final PubSubMessage message;

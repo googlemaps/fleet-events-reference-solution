@@ -40,8 +40,7 @@ public class DeliveryTaskData implements Serializable {
 
   private Timestamp expireAt;
 
-  private DeliveryTaskData() {
-  }
+  private DeliveryTaskData() {}
 
   private DeliveryTaskData(DeliveryTaskData deliveryTaskData) {
     this.eventTimestamp = deliveryTaskData.eventTimestamp;
@@ -56,8 +55,10 @@ public class DeliveryTaskData implements Serializable {
   }
 
   public static Builder builder() {
-    return new DeliveryTaskData.Builder().setEventMetadata(new HashMap<>())
-        .setState("STATE_UNSPECIFIED").setTaskOutcome("TASK_OUTCOME_UNSPECIFIED");
+    return new DeliveryTaskData.Builder()
+        .setEventMetadata(new HashMap<>())
+        .setState("STATE_UNSPECIFIED")
+        .setTaskOutcome("TASK_OUTCOME_UNSPECIFIED");
   }
 
   public Timestamp getExpireAt() {

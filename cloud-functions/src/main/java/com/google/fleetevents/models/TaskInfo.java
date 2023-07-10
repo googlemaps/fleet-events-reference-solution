@@ -18,9 +18,7 @@ package com.google.fleetevents.models;
 
 import java.util.Objects;
 
-/**
- * POJO class to represent TaskInfo in the delivery vehicle stop.
- */
+/** POJO class to represent TaskInfo in the delivery vehicle stop. */
 public class TaskInfo {
 
   // duration in milliseconds.
@@ -46,8 +44,8 @@ public class TaskInfo {
   @Override
   public boolean equals(Object object) {
     if (object instanceof TaskInfo that) {
-      return Objects.equals(that.taskId, this.taskId) && Objects.equals(that.taskDuration,
-          this.taskDuration);
+      return Objects.equals(that.taskId, this.taskId)
+          && Objects.equals(that.taskDuration, this.taskDuration);
     }
     return false;
   }
@@ -56,7 +54,6 @@ public class TaskInfo {
   public String toString() {
     return "TaskInfo{" + "taskId=" + taskId + ", taskDuration=" + taskDuration + "ms}";
   }
-
 
   public static final class Builder {
 

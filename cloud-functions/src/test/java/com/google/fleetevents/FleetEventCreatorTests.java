@@ -39,9 +39,7 @@ import java.util.concurrent.ExecutionException;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-/**
- * Tests for fleet event creator.
- */
+/** Tests for fleet event creator. */
 public class FleetEventCreatorTests {
 
   @Test
@@ -207,8 +205,8 @@ public class FleetEventCreatorTests {
     FirestoreDatabaseClient mockFirestore = spyFleetEventCreator.getDatabase();
 
     doReturn(
-        ApiFutures.immediateFuture(
-            ImmutableList.of(expectedOutputEvent1, expectedOutputEvent2)))
+            ApiFutures.immediateFuture(
+                ImmutableList.of(expectedOutputEvent1, expectedOutputEvent2)))
         .when(mockFirestore)
         .runTransaction(any(Function.class));
 

@@ -70,11 +70,11 @@ public class DistanceRemainingHandler implements FleetEventHandler {
        * crossing that threshold now or we haven't seen it before and it's crossing the threshold.
        * */
       if ((hasOriginalDistance
-          && getOriginalDistanceRemaining(deliveryTaskId, oldDeliveryVehicleData)
-          > DEFAULT_THRESHOLD_METERS
-          && distanceRemainingUpdates.get(deliveryTaskId) < DEFAULT_THRESHOLD_METERS)
+              && getOriginalDistanceRemaining(deliveryTaskId, oldDeliveryVehicleData)
+                  > DEFAULT_THRESHOLD_METERS
+              && distanceRemainingUpdates.get(deliveryTaskId) < DEFAULT_THRESHOLD_METERS)
           || (!hasOriginalDistance
-          && distanceRemainingUpdates.get(deliveryTaskId) < DEFAULT_THRESHOLD_METERS)) {
+              && distanceRemainingUpdates.get(deliveryTaskId) < DEFAULT_THRESHOLD_METERS)) {
 
         DistanceRemainingOutputEvent distanceRemainingOutputEvent =
             new DistanceRemainingOutputEvent();
@@ -125,8 +125,8 @@ public class DistanceRemainingHandler implements FleetEventHandler {
         && oldDeliveryVehicleData.getEventMetadata() != null
         && oldDeliveryVehicleData.getEventMetadata().containsKey(DISTANCE_REMAINING_KEY_NAME)
         && ((Map<String, Long>)
-        oldDeliveryVehicleData.getEventMetadata().get(DISTANCE_REMAINING_KEY_NAME))
-        .containsKey(deliveryTaskId);
+                oldDeliveryVehicleData.getEventMetadata().get(DISTANCE_REMAINING_KEY_NAME))
+            .containsKey(deliveryTaskId);
   }
 
   public long getOriginalDistanceRemaining(

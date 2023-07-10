@@ -29,9 +29,7 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-/**
- * Helper for loading sample logs for the fleet events tests.
- */
+/** Helper for loading sample logs for the fleet events tests. */
 public final class FleetEventsTestHelper {
 
   public static LogEntry getLogEntry(String logEntryJson) throws IOException {

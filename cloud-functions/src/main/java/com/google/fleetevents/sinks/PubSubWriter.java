@@ -32,9 +32,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
-/**
- * Writes output events to a PubSub output topic.
- */
+/** Writes output events to a PubSub output topic. */
 public class PubSubWriter {
 
   private static final Logger logger = Logger.getLogger(PubSubWriter.class.getName());
@@ -66,8 +64,10 @@ public class PubSubWriter {
 
     var data = gson.toJson(outputEvent);
     PubsubMessage pubsubMessage =
-        PubsubMessage.newBuilder().setData(ByteString.copyFromUtf8(data))
-            .putAttributes(OUTPUT_ATTRIBUTE_TAG, outputEvent.getClass().getSimpleName()).build();
+        PubsubMessage.newBuilder()
+            .setData(ByteString.copyFromUtf8(data))
+            .putAttributes(OUTPUT_ATTRIBUTE_TAG, outputEvent.getClass().getSimpleName())
+            .build();
 
     // Once published, returns a server-assigned message id (unique within the topic)
     ApiFuture<String> future = publisher.publish(pubsubMessage);
@@ -76,8 +76,7 @@ public class PubSubWriter {
         new ApiFutureCallback<>() {
           @Override
           public void onFailure(Throwable throwable) {
-            if (throwable instanceof ApiException) {
-              ApiException apiException = ((ApiException) throwable);
+            if (throwable instanceof ApiException apiException) {
               // details on the API exception
               logger.info(String.valueOf(apiException.getStatusCode().getCode()));
               logger.info(String.valueOf(apiException.isRetryable()));

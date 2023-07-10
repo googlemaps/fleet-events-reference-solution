@@ -19,16 +19,16 @@ public class TaskStateHandler implements FleetEventHandler {
 
   private static final Logger logger = Logger.getLogger(TaskStateHandler.class.getName());
 
-  private final Set<Pair<String, String>> VALID_OUTPUTS = new HashSet<>() {{
-    add(new Pair<>(State.STATE_UNSPECIFIED.name(),
-        State.OPEN.name()));
-    add(new Pair<>(State.STATE_UNSPECIFIED.name(),
-        State.CLOSED.name()));
-    add(new Pair<>(null, State.OPEN.name()));
-    add(new Pair<>(null, State.CLOSED.name()));
-    add(new Pair<>(State.OPEN.name(), State.CLOSED.name()));
-  }};
-
+  private final Set<Pair<String, String>> VALID_OUTPUTS =
+      new HashSet<>() {
+        {
+          add(new Pair<>(State.STATE_UNSPECIFIED.name(), State.OPEN.name()));
+          add(new Pair<>(State.STATE_UNSPECIFIED.name(), State.CLOSED.name()));
+          add(new Pair<>(null, State.OPEN.name()));
+          add(new Pair<>(null, State.CLOSED.name()));
+          add(new Pair<>(State.OPEN.name(), State.CLOSED.name()));
+        }
+      };
 
   public List<OutputEvent> handleEvent(FleetEvent fleetEvent, Transaction transaction) {
     DeliveryTaskFleetEvent deliveryTaskFleetEvent = (DeliveryTaskFleetEvent) fleetEvent;
@@ -40,10 +40,8 @@ public class TaskStateHandler implements FleetEventHandler {
     TaskStateChangedOutputEvent taskStateOutputEvent = new TaskStateChangedOutputEvent();
     taskStateOutputEvent.setFleetEvent(fleetEvent);
     taskStateOutputEvent.setTaskId(deliveryTaskFleetEvent.deliveryTaskId());
-    taskStateOutputEvent.setOldTaskState(
-        deliveryTaskFleetEvent.oldDeliveryTask().getState());
-    taskStateOutputEvent.setNewTaskState(
-        deliveryTaskFleetEvent.newDeliveryTask().getState());
+    taskStateOutputEvent.setOldTaskState(deliveryTaskFleetEvent.oldDeliveryTask().getState());
+    taskStateOutputEvent.setNewTaskState(deliveryTaskFleetEvent.newDeliveryTask().getState());
     return ImmutableList.of(taskStateOutputEvent);
   }
 
@@ -65,8 +63,10 @@ public class TaskStateHandler implements FleetEventHandler {
     if (!(outputEvent instanceof TaskStateChangedOutputEvent taskStateChangedOutputEvent)) {
       return false;
     }
-    return outputEvent.getType() == OutputEvent.Type.TASK_STATE_CHANGED && VALID_OUTPUTS.contains(
-        new Pair(taskStateChangedOutputEvent.getOldTaskState(),
-            taskStateChangedOutputEvent.getNewTaskState()));
+    return outputEvent.getType() == OutputEvent.Type.TASK_STATE_CHANGED
+        && VALID_OUTPUTS.contains(
+            new Pair(
+                taskStateChangedOutputEvent.getOldTaskState(),
+                taskStateChangedOutputEvent.getNewTaskState()));
   }
 }

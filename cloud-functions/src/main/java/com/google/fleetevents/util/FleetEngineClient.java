@@ -34,13 +34,11 @@ public class FleetEngineClient {
 
   public Task getTask(String taskId) {
     var channel = getChannel();
-    DeliveryServiceGrpc.DeliveryServiceBlockingStub stub = DeliveryServiceGrpc.newBlockingStub(
-        channel);
+    DeliveryServiceGrpc.DeliveryServiceBlockingStub stub =
+        DeliveryServiceGrpc.newBlockingStub(channel);
     String taskName = getTaskName(taskId);
 
-    GetTaskRequest getTaskRequest = GetTaskRequest.newBuilder()
-        .setName(taskName)
-        .build();
+    GetTaskRequest getTaskRequest = GetTaskRequest.newBuilder().setName(taskName).build();
 
     Task task = stub.getTask(getTaskRequest);
     channel.shutdown();
@@ -51,12 +49,10 @@ public class FleetEngineClient {
 
     String deliveryVehicleName = getDeliveryVehicleName(deliveryVehicleId);
 
-    GetDeliveryVehicleRequest getDeliveryVehicleRequest = GetDeliveryVehicleRequest.newBuilder()
-        .setName(deliveryVehicleName)
-        .build();
+    GetDeliveryVehicleRequest getDeliveryVehicleRequest =
+        GetDeliveryVehicleRequest.newBuilder().setName(deliveryVehicleName).build();
     var channel = getChannel();
-    var stub = DeliveryServiceGrpc.newBlockingStub(
-        channel);
+    var stub = DeliveryServiceGrpc.newBlockingStub(channel);
     DeliveryVehicle deliveryVehicle = stub.getDeliveryVehicle(getDeliveryVehicleRequest);
     channel.shutdown();
     return deliveryVehicle;
@@ -80,12 +76,10 @@ public class FleetEngineClient {
   private ManagedChannel getChannel() {
     Metadata headers = new Metadata();
     headers.put(
-        Metadata.Key.of(
-            "google-cloud-resource-prefix", Metadata.ASCII_STRING_MARSHALLER),
+        Metadata.Key.of("google-cloud-resource-prefix", Metadata.ASCII_STRING_MARSHALLER),
         String.format("providers/%s", projectId));
 
-    return ManagedChannelBuilder.forTarget(
-            FleetEventConfig.getFleetEngineEndpoint())
+    return ManagedChannelBuilder.forTarget(FleetEventConfig.getFleetEngineEndpoint())
         .intercept(
             FleetEngineAuthClientInterceptor.create(fleetEngineTokenProvider),
             MetadataUtils.newAttachHeadersInterceptor(headers))

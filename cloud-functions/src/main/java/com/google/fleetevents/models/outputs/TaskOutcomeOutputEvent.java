@@ -18,9 +18,7 @@ package com.google.fleetevents.models.outputs;
 
 import java.util.Objects;
 
-/**
- * OutputEvent for task outcome.
- */
+/** OutputEvent for task outcome. */
 public class TaskOutcomeOutputEvent extends OutputEvent {
 
   private String taskId;
@@ -57,13 +55,21 @@ public class TaskOutcomeOutputEvent extends OutputEvent {
 
   @Override
   public String toString() {
-    return "TaskOutcomeOutputEvent{" +
-        "taskId='" + taskId + '\'' +
-        ", oldTaskOutcome='" + oldTaskOutcome + '\'' +
-        ", newTaskOutcome='" + newTaskOutcome + '\'' +
-        ", fleetEvent=" + fleetEvent +
-        ", type=" + type +
-        '}';
+    return "TaskOutcomeOutputEvent{"
+        + "taskId='"
+        + taskId
+        + '\''
+        + ", oldTaskOutcome='"
+        + oldTaskOutcome
+        + '\''
+        + ", newTaskOutcome='"
+        + newTaskOutcome
+        + '\''
+        + ", fleetEvent="
+        + fleetEvent
+        + ", type="
+        + type
+        + '}';
   }
 
   @Override

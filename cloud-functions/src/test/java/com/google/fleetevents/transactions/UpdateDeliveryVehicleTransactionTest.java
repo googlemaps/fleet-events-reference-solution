@@ -40,11 +40,8 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import org.junit.Test;
 
-/**
- * Tests for update delivery vehicle transaction.
- */
+/** Tests for update delivery vehicle transaction. */
 public class UpdateDeliveryVehicleTransactionTest {
-
 
   @Test
   public void updateDeliveryVehicleLog_remainingDistanceDurationLongitudeUpdated()
@@ -105,23 +102,25 @@ public class UpdateDeliveryVehicleTransactionTest {
     var newVehicleStop = new VehicleStop();
     newVehicleStop.setTaskInfos(newTaskInfos);
     newVehicleJourneySegments.add(
-        VehicleJourneySegment.builder().setTaskIds(newTaskIds).setVehicleStop(newVehicleStop)
+        VehicleJourneySegment.builder()
+            .setTaskIds(newTaskIds)
+            .setVehicleStop(newVehicleStop)
             .build());
-    var oldDeliveryVehicle = DeliveryVehicleData.builder()
-        .setDeliveryVehicleId("testDeliveryVehicleId2")
-        .setName("providers/test-123/deliveryVehicles/testDeliveryVehicleId2")
-        .setCurrentDeliveryTaskIds(oldTaskIds)
-        .setPlannedDeliveryTaskIds(newTaskIds)
-        .build();
-    var oldDeliveryTask = DeliveryTaskData.builder()
-        .setDeliveryVehicleId("testDeliveryVehicleId2")
-        .setDeliveryTaskId("testDeliveryTaskId1")
-        .setName("providers/test-123/tasks/testDeliveryTaskId1")
-        .build();
-    fakeBackend.put(
-        "deliveryVehicles/testDeliveryVehicleId2", oldDeliveryVehicle);
-    fakeBackend.put(
-        "deliveryTasks/testDeliveryTaskId1", oldDeliveryTask);
+    var oldDeliveryVehicle =
+        DeliveryVehicleData.builder()
+            .setDeliveryVehicleId("testDeliveryVehicleId2")
+            .setName("providers/test-123/deliveryVehicles/testDeliveryVehicleId2")
+            .setCurrentDeliveryTaskIds(oldTaskIds)
+            .setPlannedDeliveryTaskIds(newTaskIds)
+            .build();
+    var oldDeliveryTask =
+        DeliveryTaskData.builder()
+            .setDeliveryVehicleId("testDeliveryVehicleId2")
+            .setDeliveryTaskId("testDeliveryTaskId1")
+            .setName("providers/test-123/tasks/testDeliveryTaskId1")
+            .build();
+    fakeBackend.put("deliveryVehicles/testDeliveryVehicleId2", oldDeliveryVehicle);
+    fakeBackend.put("deliveryTasks/testDeliveryTaskId1", oldDeliveryTask);
 
     LogEntry logEntry = FleetEventsTestHelper.updateDeliveryVehicleLog2();
     DeliveryVehicleData expectedDeliveryVehicleData =
@@ -141,32 +140,35 @@ public class UpdateDeliveryVehicleTransactionTest {
     var transaction = FakeFirestoreHelper.getFakeTransaction(fakeBackend);
 
     UpdateDeliveryVehicleTransaction updateDeliveryVehicleTransaction =
-        new UpdateDeliveryVehicleTransaction(logEntry, ImmutableList.of(new MockFleetHandler()),
-            firestoreDatabaseClient);
+        new UpdateDeliveryVehicleTransaction(
+            logEntry, ImmutableList.of(new MockFleetHandler()), firestoreDatabaseClient);
     var outputEvents = updateDeliveryVehicleTransaction.updateCallback(transaction);
     assertEquals(outputEvents.size(), 3);
 
     var taskDifferences = new HashMap<String, Change>();
     taskDifferences.put("state", new Change<>("STATE_UNSPECIFIED", "CLOSED"));
 
-    var taskStateChangeEvent = DeliveryTaskFleetEvent.builder()
-        .setDeliveryTaskId("testDeliveryVehicleId2")
-        .setDeliveryTaskId("testDeliveryTaskId1")
-        .setOldDeliveryTask(oldDeliveryTask)
-        .setNewDeliveryTask(oldDeliveryTask.toBuilder().setState("CLOSED").build())
-        .setTaskDifferences(taskDifferences)
-        .setVehicleDifferences(new HashMap<>())
-        .build();
+    var taskStateChangeEvent =
+        DeliveryTaskFleetEvent.builder()
+            .setDeliveryTaskId("testDeliveryVehicleId2")
+            .setDeliveryTaskId("testDeliveryTaskId1")
+            .setOldDeliveryTask(oldDeliveryTask)
+            .setNewDeliveryTask(oldDeliveryTask.toBuilder().setState("CLOSED").build())
+            .setTaskDifferences(taskDifferences)
+            .setVehicleDifferences(new HashMap<>())
+            .build();
     var taskOutputEvent = new OutputEvent();
     taskOutputEvent.setFleetEvent(taskStateChangeEvent);
     for (OutputEvent outputEvent : outputEvents) {
       if (outputEvent.getFleetEvent() instanceof DeliveryTaskFleetEvent taskEvent) {
-        outputEvent.setFleetEvent(taskEvent.toBuilder()
-            .setNewDeliveryTask(taskEvent.newDeliveryTask().toBuilder().setExpireAt(null).build())
-            .setVehicleDifferences(new HashMap<>())
-            .setOldDeliveryVehicle(null)
-            .setNewDeliveryVehicle(null)
-            .build());
+        outputEvent.setFleetEvent(
+            taskEvent.toBuilder()
+                .setNewDeliveryTask(
+                    taskEvent.newDeliveryTask().toBuilder().setExpireAt(null).build())
+                .setVehicleDifferences(new HashMap<>())
+                .setOldDeliveryVehicle(null)
+                .setNewDeliveryVehicle(null)
+                .build());
       }
     }
     assertTrue(outputEvents.contains(taskOutputEvent));
@@ -176,8 +178,8 @@ public class UpdateDeliveryVehicleTransactionTest {
         ((DeliveryVehicleData) fakeBackend.get("deliveryVehicles/testDeliveryVehicleId2"))
             .toBuilder().setExpireAt(null).build());
     assertTrue(fakeBackend.containsKey("deliveryTasks/testDeliveryTaskId1"));
-    assertEquals("CLOSED",
+    assertEquals(
+        "CLOSED",
         ((DeliveryTaskData) fakeBackend.get("deliveryTasks/testDeliveryTaskId1")).getState());
   }
-
 }
