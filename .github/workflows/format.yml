@@ -25,7 +25,6 @@ jobs:
       - uses: axel-op/googlejavaformat-action@v3
         with:
           args: "--skip-javadoc-formatting  --replace"
-          skip-commit: true
           version: v1.17.0
       - name: Print diffs
         run: git --no-pager diff --exit-code
