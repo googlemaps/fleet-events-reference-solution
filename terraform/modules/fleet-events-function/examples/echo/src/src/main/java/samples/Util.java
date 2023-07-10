@@ -32,7 +32,6 @@ import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.Timestamp;
 import com.google.protobuf.util.JsonFormat;
 
-//import com.google.pubsub.v1.*;
 import io.cloudevents.CloudEvent;
 
 /**
