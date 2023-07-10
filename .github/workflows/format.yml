@@ -17,13 +17,12 @@ name: Lint
 on: [ push, pull_request ]
 
 jobs:
-  java-lint:
+
+  formatting:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2 # v2 minimum required
-      - uses: axel-op/googlejavaformat-action@3.5.0
+      - uses: actions/checkout@v3 # v2 minimum required
+      - uses: axel-op/googlejavaformat-action@v3
         with:
-          args: "--skip-javadoc-formatting --replace"
-          skip-commit: true
-      - name: Print diffs
-        run: git --no-pager diff --exit-code
+          args: "--skip-javadoc-formatting  --set-exit-if-changed"
+          version: 1.17.0
