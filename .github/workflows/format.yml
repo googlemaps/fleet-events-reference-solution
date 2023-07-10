@@ -14,13 +14,9 @@
 
 name: Auto-format
 
-
-on:
-  push:
-    branches: [ main ]
+on: [ push, pull_request ]
 
 jobs:
-
   formatting:
     runs-on: ubuntu-latest
     steps:
@@ -34,5 +30,6 @@ jobs:
         with:
           args: "--skip-javadoc-formatting  --replace"
           version: v1.17.0
+          skip-commit: true
       - name: Print diffs
         run: git --no-pager diff --exit-code
