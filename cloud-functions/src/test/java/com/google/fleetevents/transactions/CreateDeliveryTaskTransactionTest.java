@@ -29,9 +29,7 @@ import java.util.HashMap;
 import java.util.concurrent.ExecutionException;
 import org.junit.Test;
 
-/**
- * Tests for create delivery tasks transaction.
- */
+/** Tests for create delivery tasks transaction. */
 public class CreateDeliveryTaskTransactionTest {
 
   @Test

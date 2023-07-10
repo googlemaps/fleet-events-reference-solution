@@ -47,20 +47,22 @@ public class OutputEvent {
   @Override
   public boolean equals(Object object) {
     if (object instanceof OutputEvent that) {
-      return Objects.equals(that.fleetEvent, this.fleetEvent)
-          && that.type == this.type;
+      return Objects.equals(that.fleetEvent, this.fleetEvent) && that.type == this.type;
     }
     return false;
   }
 
   @Override
   public String toString() {
-    return String.format(
-        "OutputEvent{\n\tfleetEvent: %s}", fleetEvent);
+    return String.format("OutputEvent{\n\tfleetEvent: %s}", fleetEvent);
   }
 
   public enum Type {
-    TASK_OUTCOME_CHANGED, ETA, RELATIVE_ETA, DISTANCE_REMAINING, TIME_REMAINING, TASK_STATE_CHANGED
+    TASK_OUTCOME_CHANGED,
+    ETA,
+    RELATIVE_ETA,
+    DISTANCE_REMAINING,
+    TIME_REMAINING,
+    TASK_STATE_CHANGED
   }
-
 }

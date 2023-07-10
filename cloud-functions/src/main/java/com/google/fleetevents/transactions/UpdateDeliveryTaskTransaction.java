@@ -93,24 +93,22 @@ public class UpdateDeliveryTaskTransaction implements Transaction.Function<List<
 
     Map<String, Change> taskDifferences = new HashMap<>();
 
-    if (updatedFields.contains("state") || !Objects.equals(oldTaskData.getState(),
-        task.getState().name())) {
+    if (updatedFields.contains("state")
+        || !Objects.equals(oldTaskData.getState(), task.getState().name())) {
       String state = task.getState().name();
       deliveryTaskBuilder.setState(state);
       taskDifferences.put("state", new Change<>(oldTaskData.getState(), state));
       updatedFields.remove("state");
     }
-    if (updatedFields.contains("task_outcome") || !Objects.equals(oldTaskData.getTaskOutcome(),
-        task.getTaskOutcome().name())) {
+    if (updatedFields.contains("task_outcome")
+        || !Objects.equals(oldTaskData.getTaskOutcome(), task.getTaskOutcome().name())) {
       String taskOutcome = task.getTaskOutcome().name();
       deliveryTaskBuilder.setTaskOutcome(taskOutcome);
-      taskDifferences.put(
-          "taskOutcome", new Change<>(oldTaskData.getTaskOutcome(), taskOutcome));
+      taskDifferences.put("taskOutcome", new Change<>(oldTaskData.getTaskOutcome(), taskOutcome));
       updatedFields.remove("task_outcome");
     }
-    if (updatedFields.contains("delivery_vehicle_id") || !Objects.equals(
-        oldTaskData.getDeliveryVehicleId(),
-        task.getDeliveryVehicleId())) {
+    if (updatedFields.contains("delivery_vehicle_id")
+        || !Objects.equals(oldTaskData.getDeliveryVehicleId(), task.getDeliveryVehicleId())) {
       String deliveryVehicleId = task.getDeliveryVehicleId();
       deliveryTaskBuilder.setDeliveryVehicleId(deliveryVehicleId);
       taskDifferences.put(

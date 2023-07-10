@@ -30,9 +30,7 @@ import java.util.HashMap;
 import java.util.concurrent.ExecutionException;
 import org.junit.Test;
 
-/**
- * Tests for create delivery vehicle transaction.
- */
+/** Tests for create delivery vehicle transaction. */
 public class CreateDeliveryVehicleTransactionTest {
 
   @Test

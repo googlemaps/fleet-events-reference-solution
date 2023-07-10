@@ -106,23 +106,21 @@ public class EtaChangeHandler implements FleetEventHandler {
                   .setOriginalDuration(originalDuration)
                   .setNewEta(newEta)
                   .setDelta(newEta - originalEta)
-                  .setRelativeDelta(
-                      (float) (newEta - originalEta) / originalDuration)
+                  .setRelativeDelta((float) (newEta - originalEta) / originalDuration)
                   .setTaskId(taskId)
                   .setFleetEvent(fleetEvent)
                   .build();
           if (etaThresholdReached(originalEta, newEta)) {
-            var etaChangeEvent = new EtaOutputEvent.Builder(etaOutputEvent)
-                .setType(EtaOutputEvent.Type.ETA)
-                .build();
-            outputEvents.add(etaChangeEvent
-            );
+            var etaChangeEvent =
+                new EtaOutputEvent.Builder(etaOutputEvent).setType(EtaOutputEvent.Type.ETA).build();
+            outputEvents.add(etaChangeEvent);
             logger.info(String.format("Absolute ETA Change for task: %s", taskId));
           }
           if (relativeEtaThresholdReached(originalDuration, originalEta, newEta)) {
-            var relativeEtaChangeEvent = new EtaOutputEvent.Builder(etaOutputEvent)
-                .setType(EtaOutputEvent.Type.RELATIVE_ETA)
-                .build();
+            var relativeEtaChangeEvent =
+                new EtaOutputEvent.Builder(etaOutputEvent)
+                    .setType(EtaOutputEvent.Type.RELATIVE_ETA)
+                    .build();
             outputEvents.add(relativeEtaChangeEvent);
             logger.info(String.format("Relative ETA Change for task: %s", taskId));
           }
@@ -211,8 +209,7 @@ public class EtaChangeHandler implements FleetEventHandler {
     String id = deliveryVehicleInfo.getDeliveryVehicleId();
     deliveryVehicleInfo
         .getEventMetadata()
-        .putIfAbsent(
-            RELATIVE_ETA_CHANGE_METADATA_ID, new HashMap<String, Map<String, Long>>());
+        .putIfAbsent(RELATIVE_ETA_CHANGE_METADATA_ID, new HashMap<String, Map<String, Long>>());
     HashMap<String, Map<String, Long>> vehicleIdToEtaMetadata =
         (HashMap<String, Map<String, Long>>)
             deliveryVehicleInfo.getEventMetadata().get(RELATIVE_ETA_CHANGE_METADATA_ID);

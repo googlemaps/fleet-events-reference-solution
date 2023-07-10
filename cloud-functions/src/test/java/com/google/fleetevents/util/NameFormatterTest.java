@@ -20,9 +20,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-/**
- * Tests for name formatter.
- */
+/** Tests for name formatter. */
 public class NameFormatterTest {
 
   @Test

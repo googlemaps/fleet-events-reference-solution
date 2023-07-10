@@ -38,9 +38,7 @@ import java.util.Map;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-/**
- * Tests for the time remaining fleet event handler.
- */
+/** Tests for the time remaining fleet event handler. */
 public class TimeRemainingHandlerTest {
 
   @Test

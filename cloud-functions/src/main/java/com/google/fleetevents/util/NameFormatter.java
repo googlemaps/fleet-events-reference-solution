@@ -16,9 +16,7 @@
 
 package com.google.fleetevents.util;
 
-/**
- * Returns task ids from formal name.
- */
+/** Returns task ids from formal name. */
 public class NameFormatter {
 
   // Get Id from Name, which is formatted as "/providers/{provider}/task/{taskId}
@@ -30,5 +28,4 @@ public class NameFormatter {
       return splitString[3];
     }
   }
-
 }

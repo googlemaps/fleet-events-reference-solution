@@ -24,9 +24,7 @@ import java.util.HashMap;
 import java.util.Map;
 import org.mockito.Mockito;
 
-/**
- * Mock fleet events creator for use in testing fleet event creator.
- */
+/** Mock fleet events creator for use in testing fleet event creator. */
 public class MockFleetEventCreator extends FleetEventCreator {
 
   public static Map<String, DeliveryTaskData> mockTasks = new HashMap<>();

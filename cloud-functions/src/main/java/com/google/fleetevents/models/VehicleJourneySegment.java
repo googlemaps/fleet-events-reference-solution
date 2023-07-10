@@ -24,9 +24,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-/**
- * Firestore serializable representation of the vehicle journey segment object.
- */
+/** Firestore serializable representation of the vehicle journey segment object. */
 public class VehicleJourneySegment implements Serializable {
 
   private GeoPoint plannedLocation;
@@ -35,8 +33,7 @@ public class VehicleJourneySegment implements Serializable {
   private List<String> taskIds;
   private VehicleStop vehicleStop;
 
-  private VehicleJourneySegment() {
-  }
+  private VehicleJourneySegment() {}
 
   public static Builder builder() {
     return new VehicleJourneySegment.Builder()
@@ -56,19 +53,15 @@ public class VehicleJourneySegment implements Serializable {
                 .collect(Collectors.toList()))
         .setDistance(vjs.getDrivingDistanceMeters().getValue())
         .setDuration(TimeUtil.protobufToLong(vjs.getDrivingDuration()))
-        .setPlannedLocation(
-            new GeoPoint(latLng.getLatitude(), latLng.getLongitude()))
+        .setPlannedLocation(new GeoPoint(latLng.getLatitude(), latLng.getLongitude()))
         .setVehicleStop(
             new VehicleStop.Builder()
                 .setTaskInfos(
                     vjs.getStop().getTasksList().stream()
                         .map(
                             x ->
-                                new com.google.fleetevents.models.TaskInfo
-                                    .Builder()
-                                    .setTaskDuration(
-                                        TimeUtil.protobufToLong(
-                                            x.getTaskDuration()))
+                                new com.google.fleetevents.models.TaskInfo.Builder()
+                                    .setTaskDuration(TimeUtil.protobufToLong(x.getTaskDuration()))
                                     .setTaskId(x.getTaskId())
                                     .build())
                         .collect(Collectors.toList()))

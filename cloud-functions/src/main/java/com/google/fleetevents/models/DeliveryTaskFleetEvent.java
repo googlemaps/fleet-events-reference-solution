@@ -22,9 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.annotation.Nullable;
 
-/**
- * Builder class for the delivery task fleet event.
- */
+/** Builder class for the delivery task fleet event. */
 @AutoValue
 public abstract class DeliveryTaskFleetEvent implements FleetEvent, Serializable {
 

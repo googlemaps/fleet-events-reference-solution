@@ -16,9 +16,7 @@
 
 package com.google.fleetevents.models;
 
-/**
- * Carries information about the input Fleet Logs through the Fleet Event pipelines.
- */
+/** Carries information about the input Fleet Logs through the Fleet Event pipelines. */
 public interface FleetEvent {
 
   Type getEventType();

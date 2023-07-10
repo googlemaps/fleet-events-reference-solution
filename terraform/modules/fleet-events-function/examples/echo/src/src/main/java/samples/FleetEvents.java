@@ -16,53 +16,50 @@
 
 package samples;
 
-import java.util.Map;
-
 import com.google.protobuf.Timestamp;
+import java.util.Map;
 
 public class FleetEvents {
 
-    /**
-     * represents ODRD/LMFS specific metadata extracted from Cloud Logging's
-     * LogEntry
-     */
-    public record FleetEventMessage(
-            String event_name,
-            Usecase usecase,
-            Map<String, String> attributes,
-            Timestamp eventtime,
-            Timestamp logtime) {
-    }
+  /** represents ODRD/LMFS specific metadata extracted from Cloud Logging's LogEntry */
+  public record FleetEventMessage(
+      String event_name,
+      Usecase usecase,
+      Map<String, String> attributes,
+      Timestamp eventtime,
+      Timestamp logtime) {}
 
-    public enum Usecase {
-        ODRD, LMFS
-    }
+  public enum Usecase {
+    ODRD,
+    LMFS
+  }
 
-    public enum EVENTS_ODRD {
-        create_vehicle,
-        get_vehicle,
-        update_vehicle,
+  public enum EVENTS_ODRD {
+    create_vehicle,
+    get_vehicle,
+    update_vehicle,
+  }
 
-    }
+  public enum EVENTS_LMFS {
+    create_task,
+    get_task,
+    list_task,
+    update_task,
+    search_task,
+    batchCreate_task,
+    create_delivery_vehicle,
+    get_delivery_vehicle,
+    list_delivery_vehicles,
+    update_delivery_vehicle,
+    search_delivery_vehicle
+  }
 
-    public enum EVENTS_LMFS {
-        create_task,
-        get_task,
-        list_task,
-        update_task,
-        search_task,
-        batchCreate_task,
-        create_delivery_vehicle,
-        get_delivery_vehicle,
-        list_delivery_vehicles,
-        update_delivery_vehicle,
-        search_delivery_vehicle
-    }
-
-    public enum LABELS {
-        // ODRD
-        vehicle_id, task_id,
-        // LMFS
-        delivery_vehicle_id, trip_id,
-    }
+  public enum LABELS {
+    // ODRD
+    vehicle_id,
+    task_id,
+    // LMFS
+    delivery_vehicle_id,
+    trip_id,
+  }
 }

@@ -18,9 +18,7 @@ package com.google.fleetevents.models.pubsub;
 
 import java.util.Map;
 
-/**
- * Actual data for the pubsub message.
- */
+/** Actual data for the pubsub message. */
 public class PubSubMessage {
 
   private String data;

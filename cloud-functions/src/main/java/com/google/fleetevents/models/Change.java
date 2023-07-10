@@ -40,8 +40,7 @@ public class Change<T> {
   @Override
   public boolean equals(Object o) {
     if (o instanceof Change that) {
-      return Objects.equals(oldValue, that.oldValue) && Objects.equals(newValue,
-          that.newValue);
+      return Objects.equals(oldValue, that.oldValue) && Objects.equals(newValue, that.newValue);
     }
     return false;
   }

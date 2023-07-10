@@ -19,9 +19,7 @@ package com.google.fleetevents.util;
 import java.sql.Timestamp;
 import java.time.Duration;
 
-/**
- * Utility for time related conversion from protobufs as well as miscellaneous time operations.
- */
+/** Utility for time related conversion from protobufs as well as miscellaneous time operations. */
 public class TimeUtil {
 
   public static final long MILLIS_TO_NANOS = 1000000;

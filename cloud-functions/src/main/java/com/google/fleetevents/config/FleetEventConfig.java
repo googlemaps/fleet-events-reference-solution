@@ -18,7 +18,6 @@ package com.google.fleetevents.config;
 
 import java.util.logging.Logger;
 
-
 /**
  * Class containing configuration for the project. Contains convenience methods for getting project
  * id, pub/sub topic names, firestore collection names, etc. from environment variables.
@@ -64,10 +63,7 @@ public final class FleetEventConfig {
     var topicOutputId = getEnvironmentVariable("TOPIC_OUTPUT");
     if (topicOutputId == null) {
       topicOutputId = DEFAULT_TOPIC_OUTPUT_ID;
-      logger.info(
-          String.format(
-              "No topic output set, defaulting to: %s", topicOutputId));
-
+      logger.info(String.format("No topic output set, defaulting to: %s", topicOutputId));
     }
     return topicOutputId;
   }
@@ -96,7 +92,6 @@ public final class FleetEventConfig {
     return taskCollectionName;
   }
 
-
   public static String getFleetEngineServiceAccountName() {
     var fleetEngineServiceAccount = getEnvironmentVariable("SA_FLEETENGINE");
     if (fleetEngineServiceAccount == null) {
@@ -104,7 +99,6 @@ public final class FleetEventConfig {
     }
     return fleetEngineServiceAccount;
   }
-
 
   public static String getFleetEngineEndpoint() {
     var fleetEngineEndpoint = getEnvironmentVariable("FLEETENGINE_ENDPOINT");

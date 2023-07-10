@@ -38,13 +38,21 @@ import java.util.logging.Logger;
 public class TaskOutcomeHandler implements FleetEventHandler {
 
   private static final Logger logger = Logger.getLogger(TaskOutcomeHandler.class.getName());
-  private final Set<Pair<String, String>> VALID_OUTPUTS = new HashSet<>() {{
-    add(new Pair(Task.TaskOutcome.TASK_OUTCOME_UNSPECIFIED.name(),
-        Task.TaskOutcome.SUCCEEDED.name()));
-    add(new Pair(Task.TaskOutcome.TASK_OUTCOME_UNSPECIFIED.name(), Task.TaskOutcome.FAILED.name()));
-    add(new Pair(null, Task.TaskOutcome.SUCCEEDED.name()));
-    add(new Pair(null, Task.TaskOutcome.FAILED.name()));
-  }};
+  private final Set<Pair<String, String>> VALID_OUTPUTS =
+      new HashSet<>() {
+        {
+          add(
+              new Pair(
+                  Task.TaskOutcome.TASK_OUTCOME_UNSPECIFIED.name(),
+                  Task.TaskOutcome.SUCCEEDED.name()));
+          add(
+              new Pair(
+                  Task.TaskOutcome.TASK_OUTCOME_UNSPECIFIED.name(),
+                  Task.TaskOutcome.FAILED.name()));
+          add(new Pair(null, Task.TaskOutcome.SUCCEEDED.name()));
+          add(new Pair(null, Task.TaskOutcome.FAILED.name()));
+        }
+      };
 
   public List<OutputEvent> handleEvent(FleetEvent fleetEvent, Transaction transaction) {
     DeliveryTaskFleetEvent deliveryTaskFleetEvent = (DeliveryTaskFleetEvent) fleetEvent;
@@ -76,7 +84,6 @@ public class TaskOutcomeHandler implements FleetEventHandler {
     return deliveryTaskFleetEvent.taskDifferences().containsKey("taskOutcome");
   }
 
-
   @Override
   public boolean verifyOutput(OutputEvent outputEvent) {
     if (!(outputEvent instanceof TaskOutcomeOutputEvent taskOutcomeOutputEvent)) {
@@ -85,7 +92,9 @@ public class TaskOutcomeHandler implements FleetEventHandler {
     if (outputEvent.getType() != OutputEvent.Type.TASK_OUTCOME_CHANGED) {
       return false;
     }
-    return VALID_OUTPUTS.contains(new Pair(taskOutcomeOutputEvent.getOldTaskOutcome(),
-        taskOutcomeOutputEvent.getNewTaskOutcome()));
+    return VALID_OUTPUTS.contains(
+        new Pair(
+            taskOutcomeOutputEvent.getOldTaskOutcome(),
+            taskOutcomeOutputEvent.getNewTaskOutcome()));
   }
 }

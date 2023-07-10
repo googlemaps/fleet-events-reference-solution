@@ -19,9 +19,7 @@ package com.google.fleetevents.models.outputs;
 import com.google.fleetevents.models.FleetEvent;
 import java.util.Objects;
 
-/**
- * OutputEvent for eta change.
- */
+/** OutputEvent for eta change. */
 public class EtaOutputEvent extends OutputEvent {
   // Epoch time in milliseconds.
   private Long originalEta;
@@ -40,8 +38,7 @@ public class EtaOutputEvent extends OutputEvent {
   private Float relativeDelta;
   private String taskId;
 
-  public EtaOutputEvent() {
-  }
+  public EtaOutputEvent() {}
 
   public Long getOriginalEta() {
     return this.originalEta;
@@ -94,16 +91,25 @@ public class EtaOutputEvent extends OutputEvent {
 
   @Override
   public String toString() {
-    return "EtaOutputEvent{" +
-            "originalEta=" + originalEta +
-            ", originalDuration=" + originalDuration +
-            ", newEta=" + newEta +
-            ", delta=" + delta +
-            ", relativeDelta=" + relativeDelta +
-            ", taskId='" + taskId + '\'' +
-            ", fleetEvent=" + fleetEvent +
-            ", type=" + type +
-            '}';
+    return "EtaOutputEvent{"
+        + "originalEta="
+        + originalEta
+        + ", originalDuration="
+        + originalDuration
+        + ", newEta="
+        + newEta
+        + ", delta="
+        + delta
+        + ", relativeDelta="
+        + relativeDelta
+        + ", taskId='"
+        + taskId
+        + '\''
+        + ", fleetEvent="
+        + fleetEvent
+        + ", type="
+        + type
+        + '}';
   }
 
   @Override
@@ -111,10 +117,9 @@ public class EtaOutputEvent extends OutputEvent {
     if (this == o) {
       return true;
     }
-    if (!(o instanceof EtaOutputEvent)) {
+    if (!(o instanceof EtaOutputEvent that)) {
       return false;
     }
-    EtaOutputEvent that = (EtaOutputEvent) o;
     return type == that.type
         && Objects.equals(originalEta, that.originalEta)
         && Objects.equals(originalDuration, that.originalDuration)
@@ -140,7 +145,6 @@ public class EtaOutputEvent extends OutputEvent {
     private String taskId;
     private FleetEvent fleetEvent;
 
-
     public Builder(EtaOutputEvent etaOutputEvent) {
       this.type = etaOutputEvent.type;
       this.originalEta = etaOutputEvent.originalEta;
@@ -152,8 +156,7 @@ public class EtaOutputEvent extends OutputEvent {
       this.originalDuration = etaOutputEvent.originalDuration;
     }
 
-    public Builder() {
-    }
+    public Builder() {}
 
     public Builder setType(Type type) {
       this.type = type;

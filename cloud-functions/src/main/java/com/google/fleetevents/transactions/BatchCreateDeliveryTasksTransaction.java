@@ -36,9 +36,7 @@ import google.maps.fleetengine.delivery.v1.Task;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Transaction for the batch create task log. Generates fleet events or each created task.
- */
+/** Transaction for the batch create task log. Generates fleet events or each created task. */
 public class BatchCreateDeliveryTasksTransaction
     implements Transaction.Function<List<OutputEvent>> {
 

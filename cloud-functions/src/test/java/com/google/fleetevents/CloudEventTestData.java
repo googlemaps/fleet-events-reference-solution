@@ -27,9 +27,7 @@ import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
-/**
- * Data used in testing proto parser.
- */
+/** Data used in testing proto parser. */
 public class CloudEventTestData {
 
   public static CloudEvent getUpdateDeliveryVehicleCloudEvent() throws IOException {

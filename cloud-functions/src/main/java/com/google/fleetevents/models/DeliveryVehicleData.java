@@ -47,8 +47,7 @@ public class DeliveryVehicleData implements Serializable {
   private HashMap<String, Object> eventMetadata;
   private Timestamp expireAt;
 
-  private DeliveryVehicleData() {
-  }
+  private DeliveryVehicleData() {}
 
   private DeliveryVehicleData(DeliveryVehicleData deliveryVehicleData) {
     this.eventTimestamp = deliveryVehicleData.eventTimestamp;

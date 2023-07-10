@@ -35,9 +35,7 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Logger;
 
-/**
- * Creates events from Fleet Engine cloud logs.
- */
+/** Creates events from Fleet Engine cloud logs. */
 public abstract class FleetEventCreator {
 
   private static final Logger logger = Logger.getLogger(FleetEventCreator.class.getName());
@@ -48,8 +46,7 @@ public abstract class FleetEventCreator {
   private static final String CREATE_TASK_LOG_NAME = "create_task";
   private static final String BATCH_CREATE_TASKS_LOG_NAME = "batch_create_tasks";
 
-  public FleetEventCreator() {
-  }
+  public FleetEventCreator() {}
 
   public static List<OutputEvent> callFleetEventHandlers(
       List<FleetEvent> fleetEvents,
@@ -97,56 +94,60 @@ public abstract class FleetEventCreator {
       // this is not a fleet log.
       return outputEventsBuilder.build();
     }
-    String truncatedLogName =
-        logEntry.getLogName().substring(split + 3);
+    String truncatedLogName = logEntry.getLogName().substring(split + 3);
     var db = getDatabase();
     switch (truncatedLogName) {
-      case CREATE_DELIVERY_VEHICLE_LOG_NAME: {
-        logger.info("Create Delivery Vehicle Log processing");
-        ApiFuture<List<OutputEvent>> createDeliveryVehicleResult =
-            db.runTransaction(
-                new CreateDeliveryVehicleTransaction(
-                    logEntry, fleetEventHandlers, getDatabase()));
+      case CREATE_DELIVERY_VEHICLE_LOG_NAME:
+        {
+          logger.info("Create Delivery Vehicle Log processing");
+          ApiFuture<List<OutputEvent>> createDeliveryVehicleResult =
+              db.runTransaction(
+                  new CreateDeliveryVehicleTransaction(
+                      logEntry, fleetEventHandlers, getDatabase()));
 
-        outputEventsBuilder.addAll(createDeliveryVehicleResult.get());
-        break;
-      }
-      case UPDATE_DELIVERY_VEHICLE_LOG_NAME: {
-        logger.info("Update Delivery Vehicle Log processing");
-        ApiFuture<List<OutputEvent>> updateDeliveryVehicleResult =
-            db.runTransaction(
-                new UpdateDeliveryVehicleTransaction(
-                    logEntry, fleetEventHandlers, getDatabase()));
-        outputEventsBuilder.addAll(updateDeliveryVehicleResult.get());
-        break;
-      }
-      case CREATE_TASK_LOG_NAME: {
-        logger.info("Create Task Log processing");
-        ApiFuture<List<OutputEvent>> createDeliveryTaskResult =
-            db.runTransaction(
-                new CreateDeliveryTaskTransaction(logEntry, fleetEventHandlers, getDatabase()));
+          outputEventsBuilder.addAll(createDeliveryVehicleResult.get());
+          break;
+        }
+      case UPDATE_DELIVERY_VEHICLE_LOG_NAME:
+        {
+          logger.info("Update Delivery Vehicle Log processing");
+          ApiFuture<List<OutputEvent>> updateDeliveryVehicleResult =
+              db.runTransaction(
+                  new UpdateDeliveryVehicleTransaction(
+                      logEntry, fleetEventHandlers, getDatabase()));
+          outputEventsBuilder.addAll(updateDeliveryVehicleResult.get());
+          break;
+        }
+      case CREATE_TASK_LOG_NAME:
+        {
+          logger.info("Create Task Log processing");
+          ApiFuture<List<OutputEvent>> createDeliveryTaskResult =
+              db.runTransaction(
+                  new CreateDeliveryTaskTransaction(logEntry, fleetEventHandlers, getDatabase()));
 
-        outputEventsBuilder.addAll(createDeliveryTaskResult.get());
-        break;
-      }
-      case BATCH_CREATE_TASKS_LOG_NAME: {
-        logger.info("Batch Create Tasks Log processing");
-        ApiFuture<List<OutputEvent>> batchCreateDeliveryTaskResult =
-            db.runTransaction(
-                new BatchCreateDeliveryTasksTransaction(
-                    logEntry, fleetEventHandlers, getDatabase()));
+          outputEventsBuilder.addAll(createDeliveryTaskResult.get());
+          break;
+        }
+      case BATCH_CREATE_TASKS_LOG_NAME:
+        {
+          logger.info("Batch Create Tasks Log processing");
+          ApiFuture<List<OutputEvent>> batchCreateDeliveryTaskResult =
+              db.runTransaction(
+                  new BatchCreateDeliveryTasksTransaction(
+                      logEntry, fleetEventHandlers, getDatabase()));
 
-        outputEventsBuilder.addAll(batchCreateDeliveryTaskResult.get());
-        break;
-      }
-      case UPDATE_TASK_LOG_NAME: {
-        logger.info("Update Task Log processing");
-        ApiFuture<List<OutputEvent>> updateDeliveryTaskResult =
-            db.runTransaction(
-                new UpdateDeliveryTaskTransaction(logEntry, fleetEventHandlers, getDatabase()));
-        outputEventsBuilder.addAll(updateDeliveryTaskResult.get());
-        break;
-      }
+          outputEventsBuilder.addAll(batchCreateDeliveryTaskResult.get());
+          break;
+        }
+      case UPDATE_TASK_LOG_NAME:
+        {
+          logger.info("Update Task Log processing");
+          ApiFuture<List<OutputEvent>> updateDeliveryTaskResult =
+              db.runTransaction(
+                  new UpdateDeliveryTaskTransaction(logEntry, fleetEventHandlers, getDatabase()));
+          outputEventsBuilder.addAll(updateDeliveryTaskResult.get());
+          break;
+        }
       default:
         logger.warning(
             String.format("No such log entry is handled currently: %s\n", logEntry.getLogName()));

@@ -18,9 +18,7 @@ package com.google.fleetevents.models.outputs;
 
 import java.util.Objects;
 
-/**
- * OutputEvent for remaining distance.
- */
+/** OutputEvent for remaining distance. */
 public class DistanceRemainingOutputEvent extends OutputEvent {
 
   public DistanceRemainingOutputEvent() {
@@ -66,20 +64,26 @@ public class DistanceRemainingOutputEvent extends OutputEvent {
 
   @Override
   public String toString() {
-    return "DistanceRemainingOutputEvent{" +
-            "oldDistanceRemainingMeters=" + oldDistanceRemainingMeters +
-            ", taskId='" + taskId + '\'' +
-            ", newDistanceRemainingMeters=" + newDistanceRemainingMeters +
-            ", eventTimestamp=" + eventTimestamp +
-            ", fleetEvent=" + fleetEvent +
-            ", type=" + type +
-            '}';
+    return "DistanceRemainingOutputEvent{"
+        + "oldDistanceRemainingMeters="
+        + oldDistanceRemainingMeters
+        + ", taskId='"
+        + taskId
+        + '\''
+        + ", newDistanceRemainingMeters="
+        + newDistanceRemainingMeters
+        + ", eventTimestamp="
+        + eventTimestamp
+        + ", fleetEvent="
+        + fleetEvent
+        + ", type="
+        + type
+        + '}';
   }
 
   @Override
   public boolean equals(Object object) {
-    if (object instanceof DistanceRemainingOutputEvent) {
-      DistanceRemainingOutputEvent that = (DistanceRemainingOutputEvent) object;
+    if (object instanceof DistanceRemainingOutputEvent that) {
       return Objects.equals(that.taskId, this.taskId)
           && Objects.equals(that.oldDistanceRemainingMeters, this.oldDistanceRemainingMeters)
           && Objects.equals(that.newDistanceRemainingMeters, this.newDistanceRemainingMeters)

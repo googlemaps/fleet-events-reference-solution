@@ -2,11 +2,8 @@ package com.google.fleetevents.models.outputs;
 
 import java.util.Objects;
 
-/**
- * Output event for the task state changes.
- */
+/** Output event for the task state changes. */
 public class TaskStateChangedOutputEvent extends OutputEvent {
-
 
   private String taskId;
   private String oldTaskState;
@@ -42,7 +39,12 @@ public class TaskStateChangedOutputEvent extends OutputEvent {
 
   public String toString() {
     return String.format(
-        "TaskStateChangedOutputEvent{\n\ttaskId: %s\n\toldTaskState: %s\n\tnewTaskState: %s\n\tfleetEvent:%s\n}",
+        "TaskStateChangedOutputEvent{\n"
+            + "\ttaskId: %s\n"
+            + "\toldTaskState: %s\n"
+            + "\tnewTaskState: %s\n"
+            + "\tfleetEvent:%s\n"
+            + "}",
         taskId, oldTaskState, newTaskState, getFleetEvent());
   }
 

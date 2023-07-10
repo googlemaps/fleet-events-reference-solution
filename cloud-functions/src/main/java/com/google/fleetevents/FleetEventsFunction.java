@@ -61,12 +61,13 @@ public class FleetEventsFunction implements CloudEventsFunction {
               FleetEventConfig.getOutputProjectId(), outputTopicId, outputEvents);
         }
       } catch (InvalidProtocolBufferException e) {
-        logger.warning(String.format("Received protobug parse error %s " + e.toString()));
-        logger.warning(String.format("Failed to parse message: %s", cloudEvent.getData().toString()));
+        logger.warning(String.format("Received protobug parse error %s " + e));
+        logger.warning(
+            String.format("Failed to parse message: %s", cloudEvent.getData().toString()));
       } catch (Exception e) {
         // do not throw exception to reduce cold start
         // https://cloud.google.com/functions/docs/bestpractices/tips#error_reporting
-        logger.warning("Encountered error while processing: " + e.toString());
+        logger.warning("Encountered error while processing: " + e);
       }
     }
   }

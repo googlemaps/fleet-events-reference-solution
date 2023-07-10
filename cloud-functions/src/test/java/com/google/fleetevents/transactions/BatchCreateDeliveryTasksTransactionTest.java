@@ -28,9 +28,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import org.junit.Test;
 
-/**
- * Tests for batch create delivery tasks transaction.
- */
+/** Tests for batch create delivery tasks transaction. */
 public class BatchCreateDeliveryTasksTransactionTest {
 
   @Test

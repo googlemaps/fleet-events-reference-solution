@@ -18,7 +18,9 @@ public class MockFleetHandler implements FleetEventHandler {
   }
 
   @Override
-  public boolean respondsTo(FleetEvent fleetEvent, Transaction transaction,
+  public boolean respondsTo(
+      FleetEvent fleetEvent,
+      Transaction transaction,
       FirestoreDatabaseClient firestoreDatabaseClient) {
     return true;
   }

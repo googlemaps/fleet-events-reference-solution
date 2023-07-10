@@ -70,11 +70,11 @@ public class TimeRemainingHandler implements FleetEventHandler {
        * crossing that threshold now or we haven't seen it before and it's crossing the threshold.
        * */
       if ((hasOriginalTime
-          && getOriginalTimeRemaining(deliveryTaskId, oldDeliveryVehicleData)
-          > DEFAULT_THRESHOLD_MILLISECONDS
-          && timeRemainingUpdates.get(deliveryTaskId) < DEFAULT_THRESHOLD_MILLISECONDS)
+              && getOriginalTimeRemaining(deliveryTaskId, oldDeliveryVehicleData)
+                  > DEFAULT_THRESHOLD_MILLISECONDS
+              && timeRemainingUpdates.get(deliveryTaskId) < DEFAULT_THRESHOLD_MILLISECONDS)
           || (!hasOriginalTime
-          && timeRemainingUpdates.get(deliveryTaskId) < DEFAULT_THRESHOLD_MILLISECONDS)) {
+              && timeRemainingUpdates.get(deliveryTaskId) < DEFAULT_THRESHOLD_MILLISECONDS)) {
 
         TimeRemainingOutputEvent timeRemainingOutputEvent = new TimeRemainingOutputEvent();
         timeRemainingOutputEvent.setTaskId(deliveryTaskId);
@@ -121,8 +121,8 @@ public class TimeRemainingHandler implements FleetEventHandler {
         && oldDeliveryVehicleData.getEventMetadata() != null
         && oldDeliveryVehicleData.getEventMetadata().containsKey(TIME_REMAINING_KEY_NAME)
         && ((Map<String, Long>)
-        oldDeliveryVehicleData.getEventMetadata().get(TIME_REMAINING_KEY_NAME))
-        .containsKey(deliveryTaskId);
+                oldDeliveryVehicleData.getEventMetadata().get(TIME_REMAINING_KEY_NAME))
+            .containsKey(deliveryTaskId);
   }
 
   public long getOriginalTimeRemaining(

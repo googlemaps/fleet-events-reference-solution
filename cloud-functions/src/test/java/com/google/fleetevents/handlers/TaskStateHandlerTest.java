@@ -32,9 +32,7 @@ import org.junit.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-/**
- * Tests for the task outcome fleet event handler.
- */
+/** Tests for the task outcome fleet event handler. */
 public class TaskStateHandlerTest {
 
   @Test
@@ -50,8 +48,7 @@ public class TaskStateHandlerTest {
   }
 
   @ParameterizedTest
-  @ValueSource(
-      strings = {"STATE_UNSPECIFIED", "OPEN", "CLOSED"})
+  @ValueSource(strings = {"STATE_UNSPECIFIED", "OPEN", "CLOSED"})
   public void updateTaskTaskState_respondsReturnsOutputEvent(String taskState) {
     DeliveryTaskFleetEvent deliveryTaskFleetEvent =
         DeliveryTaskFleetEvent.builder()

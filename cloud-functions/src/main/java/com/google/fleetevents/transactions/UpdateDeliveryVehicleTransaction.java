@@ -108,33 +108,32 @@ public class UpdateDeliveryVehicleTransaction implements Transaction.Function<Li
             .setEventTimestamp(TimeUtil.protobufToLong(logEntry.getTimestamp()))
             .setExpireAt(TimeUtil.offsetFromNow(TimeUtil.ONE_HOUR_IN_SECONDS));
 
-    if (updatedFields.contains("last_location") || !Objects.equals(
-        oldDeliveryVehicleData.getLastLocation(),
-        latLngToGeoPoint(deliveryVehicle.getLastLocation().getLocation()))) {
-      if (deliveryVehicle.hasLastLocation()
-          && deliveryVehicle.getLastLocation().hasLocation()) {
+    if (updatedFields.contains("last_location")
+        || !Objects.equals(
+            oldDeliveryVehicleData.getLastLocation(),
+            latLngToGeoPoint(deliveryVehicle.getLastLocation().getLocation()))) {
+      if (deliveryVehicle.hasLastLocation() && deliveryVehicle.getLastLocation().hasLocation()) {
         LatLng lastLocation = deliveryVehicle.getLastLocation().getLocation();
         deliveryVehicleBuilder.setLastLocation(latLngToGeoPoint(lastLocation));
         vehicleDifferences.put(
-            "lastLocation",
-            new Change<>(oldDeliveryVehicleData.getLastLocation(), lastLocation));
+            "lastLocation", new Change<>(oldDeliveryVehicleData.getLastLocation(), lastLocation));
       }
       updatedFields.remove("last_location");
     }
-    if (updatedFields.contains("navigation_status") || !Objects.equals(
-        oldDeliveryVehicleData.getNavigationStatus()
-        , deliveryVehicle.getNavigationStatus().name())) {
+    if (updatedFields.contains("navigation_status")
+        || !Objects.equals(
+            oldDeliveryVehicleData.getNavigationStatus(),
+            deliveryVehicle.getNavigationStatus().name())) {
       String status = deliveryVehicle.getNavigationStatus().name();
       deliveryVehicleBuilder.setNavigationStatus(status);
       vehicleDifferences.put(
-          "navigationStatus",
-          new Change<>(oldDeliveryVehicleData.getNavigationStatus(), status));
+          "navigationStatus", new Change<>(oldDeliveryVehicleData.getNavigationStatus(), status));
       updatedFields.remove("navigation_status");
     }
-    if (updatedFields.contains("remaining_duration") || !Objects.equals(
-        oldDeliveryVehicleData.getRemainingDuration(),
-        deliveryVehicle.getRemainingDuration()
-            .getSeconds())) {
+    if (updatedFields.contains("remaining_duration")
+        || !Objects.equals(
+            oldDeliveryVehicleData.getRemainingDuration(),
+            deliveryVehicle.getRemainingDuration().getSeconds())) {
       if (deliveryVehicle.hasRemainingDuration()) {
         com.google.protobuf.Duration duration = deliveryVehicle.getRemainingDuration();
         var newDuration = TimeUtil.protobufToLong(duration);
@@ -145,30 +144,31 @@ public class UpdateDeliveryVehicleTransaction implements Transaction.Function<Li
       }
       updatedFields.remove("remaining_duration");
     }
-    if (updatedFields.contains("remaining_distance_meters") || !Objects.equals(
-        oldDeliveryVehicleData.getRemainingDistanceMeters(),
-        (long) deliveryVehicle.getRemainingDistanceMeters().getValue())) {
+    if (updatedFields.contains("remaining_distance_meters")
+        || !Objects.equals(
+            oldDeliveryVehicleData.getRemainingDistanceMeters(),
+            (long) deliveryVehicle.getRemainingDistanceMeters().getValue())) {
       if (deliveryVehicle.hasRemainingDistanceMeters()) {
         int remainingDistanceMeters = deliveryVehicle.getRemainingDistanceMeters().getValue();
         deliveryVehicleBuilder.setRemainingDistanceMeters(remainingDistanceMeters);
         vehicleDifferences.put(
             "remainingDistanceMeters",
             new Change<>(
-                oldDeliveryVehicleData.getRemainingDistanceMeters(),
-                remainingDistanceMeters));
+                oldDeliveryVehicleData.getRemainingDistanceMeters(), remainingDistanceMeters));
       }
       updatedFields.remove("remaining_distance_meters");
     }
-    List<VehicleJourneySegment> segments =
-        deliveryVehicle.getRemainingVehicleJourneySegmentsList();
-    var newRemainingVehicleJourneySegments = segments.stream()
-        .map(
-            com.google.fleetevents.models.VehicleJourneySegment::fromVehicleJourneySegmentProto)
-        .toList();
+    List<VehicleJourneySegment> segments = deliveryVehicle.getRemainingVehicleJourneySegmentsList();
+    var newRemainingVehicleJourneySegments =
+        segments.stream()
+            .map(
+                com.google.fleetevents.models.VehicleJourneySegment::fromVehicleJourneySegmentProto)
+            .toList();
 
-    if (updatedFields.contains("remaining_vehicle_journey_segments") || Objects.equals(
-        oldDeliveryVehicleData.getRemainingVehicleJourneySegments(),
-        newRemainingVehicleJourneySegments)) {
+    if (updatedFields.contains("remaining_vehicle_journey_segments")
+        || Objects.equals(
+            oldDeliveryVehicleData.getRemainingVehicleJourneySegments(),
+            newRemainingVehicleJourneySegments)) {
       List<String> currentDeliveryTaskIds = new ArrayList<>();
       List<String> plannedDeliveryTaskIds = new ArrayList<>();
 
@@ -188,15 +188,13 @@ public class UpdateDeliveryVehicleTransaction implements Transaction.Function<Li
       }
       deliveryVehicleBuilder.setCurrentDeliveryTaskIds(currentDeliveryTaskIds);
       deliveryVehicleBuilder.setPlannedDeliveryTaskIds(plannedDeliveryTaskIds);
-      if (!currentDeliveryTaskIds.equals(
-          oldDeliveryVehicleData.getCurrentDeliveryTaskIds())) {
+      if (!currentDeliveryTaskIds.equals(oldDeliveryVehicleData.getCurrentDeliveryTaskIds())) {
         vehicleDifferences.put(
             "currentDeliveryTaskIds",
             new Change<>(
                 oldDeliveryVehicleData.getCurrentDeliveryTaskIds(), currentDeliveryTaskIds));
       }
-      if (!plannedDeliveryTaskIds.equals(
-          oldDeliveryVehicleData.getCurrentDeliveryTaskIds())) {
+      if (!plannedDeliveryTaskIds.equals(oldDeliveryVehicleData.getCurrentDeliveryTaskIds())) {
         vehicleDifferences.put(
             "plannedDeliveryTaskIds",
             new Change<>(
@@ -275,8 +273,11 @@ public class UpdateDeliveryVehicleTransaction implements Transaction.Function<Li
           oldDeliveryTaskData = DeliveryTaskData.builder().setDeliveryTaskId(removedTaskId).build();
         }
         taskDifferences.put("state", new Change(oldDeliveryTaskData.getState(), "CLOSED"));
-        var newDeliveryTaskData = oldDeliveryTaskData.toBuilder().setState("CLOSED")
-            .setExpireAt(TimeUtil.offsetFromNow(TimeUtil.ONE_HOUR_IN_SECONDS)).build();
+        var newDeliveryTaskData =
+            oldDeliveryTaskData.toBuilder()
+                .setState("CLOSED")
+                .setExpireAt(TimeUtil.offsetFromNow(TimeUtil.ONE_HOUR_IN_SECONDS))
+                .build();
         /* For every removed task, add an event to signal the closure of that task. */
         updateDeliveryFleetEventsBuilder.add(
             DeliveryTaskFleetEvent.builder()
@@ -300,15 +301,17 @@ public class UpdateDeliveryVehicleTransaction implements Transaction.Function<Li
       DeliveryTaskData newDeliveryTask =
           transaction.get(deliveryTaskRef).get().toObject(DeliveryTaskData.class);
       if (newDeliveryTask == null) {
-        newDeliveryTask = DeliveryTaskData.builder()
-            .setDeliveryVehicleId(deliveryVehicleId)
-            .setDeliveryTaskId(newTaskId)
-            .setEventTimestamp(TimeUtil.protobufToLong(logEntry.getTimestamp()))
-            .setExpireAt(TimeUtil.offsetFromNow(TimeUtil.ONE_HOUR_IN_SECONDS))
-            .build();
-        logger.warning(String.format(
-            "Task id %s referenced by Vehicle, but has no stored state. Creating new task.",
-            newTaskId));
+        newDeliveryTask =
+            DeliveryTaskData.builder()
+                .setDeliveryVehicleId(deliveryVehicleId)
+                .setDeliveryTaskId(newTaskId)
+                .setEventTimestamp(TimeUtil.protobufToLong(logEntry.getTimestamp()))
+                .setExpireAt(TimeUtil.offsetFromNow(TimeUtil.ONE_HOUR_IN_SECONDS))
+                .build();
+        logger.warning(
+            String.format(
+                "Task id %s referenced by Vehicle, but has no stored state. Creating new task.",
+                newTaskId));
       }
       /* Since this task was assigned to this vehicle, set the delivery vehicle id if it isn't set.
        */
@@ -334,8 +337,9 @@ public class UpdateDeliveryVehicleTransaction implements Transaction.Function<Li
     List<Pair<DeliveryTaskData, DocumentReference>> taskDataToDocReferences = new ArrayList<>();
     // In firestore transactions, all reads must come before writes
     for (var taskUpdate : taskUpdates) {
-      taskDataToDocReferences.add(new Pair(taskUpdate,
-          firestoreDatabaseClient.getTaskDocument(taskUpdate.getDeliveryTaskId())));
+      taskDataToDocReferences.add(
+          new Pair(
+              taskUpdate, firestoreDatabaseClient.getTaskDocument(taskUpdate.getDeliveryTaskId())));
     }
     transaction.set(deliveryVehicleRef, newDeliveryVehicleData);
     for (var newTaskUpdate : taskDataToDocReferences) {
