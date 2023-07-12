@@ -14,19 +14,18 @@
  * limitations under the License.
  */
 
-package com.google.fleetevents.util;
+package com.google.fleetevents.common.models.pubsub;
 
-import static org.junit.Assert.assertEquals;
+/** Body for the incoming pubsub messages. */
+public class PubSubBody {
 
-import com.google.fleetevents.common.util.NameFormatter;
-import org.junit.Test;
+  private final PubSubMessage message;
 
-/** Tests for name formatter. */
-public class NameFormatterTest {
+  public PubSubBody() {
+    this.message = new PubSubMessage();
+  }
 
-  @Test
-  public void testSimpleNameParsing() {
-    String name = "providers/a/b/c";
-    assertEquals(NameFormatter.getIdFromName(name), "c");
+  public PubSubMessage getMessage() {
+    return message;
   }
 }

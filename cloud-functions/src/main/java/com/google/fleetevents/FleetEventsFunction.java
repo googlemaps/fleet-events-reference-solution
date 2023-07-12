@@ -17,10 +17,10 @@
 package com.google.fleetevents;
 
 import com.google.cloud.functions.CloudEventsFunction;
-import com.google.fleetevents.config.FleetEventConfig;
-import com.google.fleetevents.models.outputs.OutputEvent;
-import com.google.fleetevents.sinks.PubSubWriter;
-import com.google.fleetevents.util.ProtoParser;
+import com.google.fleetevents.common.sinks.PubSubWriter;
+import com.google.fleetevents.common.util.ProtoParser;
+import com.google.fleetevents.lmfs.config.FleetEventConfig;
+import com.google.fleetevents.lmfs.models.outputs.OutputEvent;
 import com.google.logging.v2.LogEntry;
 import com.google.protobuf.InvalidProtocolBufferException;
 import io.cloudevents.CloudEvent;
@@ -44,7 +44,7 @@ public class FleetEventsFunction implements CloudEventsFunction {
     fleetEventHandlers = new ArrayList<>();
   }
 
-  void registerFleetEventHandler(FleetEventHandler fleetEventHandler) {
+  public void registerFleetEventHandler(FleetEventHandler fleetEventHandler) {
     fleetEventHandlers.add(fleetEventHandler);
   }
 

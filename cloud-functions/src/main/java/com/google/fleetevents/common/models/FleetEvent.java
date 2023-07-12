@@ -14,19 +14,15 @@
  * limitations under the License.
  */
 
-package com.google.fleetevents.util;
+package com.google.fleetevents.common.models;
 
-import static org.junit.Assert.assertEquals;
+/** Carries information about the input Fleet Logs through the Fleet Event pipelines. */
+public interface FleetEvent {
 
-import com.google.fleetevents.common.util.NameFormatter;
-import org.junit.Test;
+  Type getEventType();
 
-/** Tests for name formatter. */
-public class NameFormatterTest {
-
-  @Test
-  public void testSimpleNameParsing() {
-    String name = "providers/a/b/c";
-    assertEquals(NameFormatter.getIdFromName(name), "c");
+  enum Type {
+    DELIVERY_VEHICLE_FLEET_EVENT,
+    DELIVERY_TASK_FLEET_EVENT
   }
 }

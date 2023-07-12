@@ -17,8 +17,8 @@
 package com.google.fleetevents.helpers;
 
 import com.google.cloud.firestore.GeoPoint;
-import com.google.fleetevents.models.DeliveryVehicleData;
-import com.google.fleetevents.util.ProtoParser;
+import com.google.fleetevents.common.util.ProtoParser;
+import com.google.fleetevents.lmfs.models.DeliveryVehicleData;
 import com.google.logging.v2.LogEntry;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.util.JsonFormat;

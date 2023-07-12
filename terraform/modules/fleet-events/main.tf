@@ -114,7 +114,7 @@ module "func-fleetevents" {
   FUNCTION_NAME             = var.FUNCTION_NAME
   FUNCTION_RUNTIME          = "java17"
   FUNCTION_DESCRIPTION      = "Function deployed as Fleet Events Reference Solution"
-  FUNCTION_ENTRYPOINT       = "com.google.fleetevents.DefaultFleetEventsFunction"
+  FUNCTION_ENTRYPOINT       = "com.google.fleetevents.lmfs.DefaultFleetEventsFunction"
   FUNCTION_AVAILABLE_MEMORY = "256M"
   PROJECT_FLEETENGINE       = data.google_project.project-fleetengine.project_id
   PROJECT_FLEETENGINE_LOG   = data.google_project.project-fleetevents.project_id

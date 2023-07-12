@@ -14,29 +14,24 @@
  * limitations under the License.
  */
 
-package com.google.fleetevents.mocks;
+package com.google.fleetevents.odrd;
 
 import com.google.fleetevents.FleetEventCreator;
 import com.google.fleetevents.common.database.FirestoreDatabaseClient;
-import com.google.fleetevents.lmfs.models.DeliveryTaskData;
-import com.google.fleetevents.lmfs.models.DeliveryVehicleData;
-import java.util.HashMap;
-import java.util.Map;
-import org.mockito.Mockito;
+import java.io.IOException;
 
-/** Mock fleet events creator for use in testing fleet event creator. */
-public class MockFleetEventCreator extends FleetEventCreator {
+/** Default implementation of the fleet event creator class. Modify for custom logic. */
+public class DefaultFleetEventCreator extends FleetEventCreator {
 
-  public static Map<String, DeliveryTaskData> mockTasks = new HashMap<>();
-  public static Map<String, DeliveryVehicleData> mockVehicles = new HashMap<>();
+  private static FirestoreDatabaseClient db;
 
-  static FirestoreDatabaseClient firestore;
+  public DefaultFleetEventCreator() throws IOException {
+    super();
+    db = new FirestoreDatabaseClient();
+  }
 
   @Override
   public FirestoreDatabaseClient getDatabase() {
-    if (firestore == null) {
-      firestore = Mockito.mock(FirestoreDatabaseClient.class);
-    }
-    return firestore;
+    return db;
   }
 }

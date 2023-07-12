@@ -14,19 +14,18 @@
  * limitations under the License.
  */
 
-package com.google.fleetevents.util;
+package com.google.fleetevents.common.util;
 
-import static org.junit.Assert.assertEquals;
+/** Returns task ids from formal name. */
+public class NameFormatter {
 
-import com.google.fleetevents.common.util.NameFormatter;
-import org.junit.Test;
-
-/** Tests for name formatter. */
-public class NameFormatterTest {
-
-  @Test
-  public void testSimpleNameParsing() {
-    String name = "providers/a/b/c";
-    assertEquals(NameFormatter.getIdFromName(name), "c");
+  // Get Id from Name, which is formatted as "/providers/{provider}/task/{taskId}
+  public static String getIdFromName(String name) {
+    String[] splitString = name.split("/");
+    if (splitString.length != 4) {
+      throw new IllegalArgumentException("unexpected name " + name);
+    } else {
+      return splitString[3];
+    }
   }
 }

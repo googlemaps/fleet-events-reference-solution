@@ -14,19 +14,23 @@
  * limitations under the License.
  */
 
-package com.google.fleetevents.util;
+package com.google.fleetevents.common.models;
 
-import static org.junit.Assert.assertEquals;
+import java.util.Map;
 
-import com.google.fleetevents.common.util.NameFormatter;
-import org.junit.Test;
+/**
+ * Pair class to hold an updated object (task or vehicle) and the map of changes that were
+ * processed.
+ *
+ * @param <T> The type of the object being updated.
+ */
+public class UpdateAndDifference<T> {
 
-/** Tests for name formatter. */
-public class NameFormatterTest {
+  public T updated;
+  public Map<String, Change> differences;
 
-  @Test
-  public void testSimpleNameParsing() {
-    String name = "providers/a/b/c";
-    assertEquals(NameFormatter.getIdFromName(name), "c");
+  public UpdateAndDifference(T updated, Map<String, Change> differences) {
+    this.updated = updated;
+    this.differences = differences;
   }
 }

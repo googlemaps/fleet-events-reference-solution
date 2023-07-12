@@ -26,7 +26,7 @@ import com.google.cloud.firestore.DocumentReference;
 import com.google.cloud.firestore.DocumentSnapshot;
 import com.google.cloud.firestore.Firestore;
 import com.google.cloud.firestore.Transaction;
-import com.google.fleetevents.database.FirestoreDatabaseClient;
+import com.google.fleetevents.common.database.FirestoreDatabaseClient;
 import java.util.HashMap;
 import org.mockito.Mockito;
 

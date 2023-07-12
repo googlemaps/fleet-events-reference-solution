@@ -14,19 +14,18 @@
  * limitations under the License.
  */
 
-package com.google.fleetevents.util;
+package com.google.fleetevents.odrd;
 
-import static org.junit.Assert.assertEquals;
+import com.google.fleetevents.FleetEventsFunction;
+import java.io.IOException;
 
-import com.google.fleetevents.common.util.NameFormatter;
-import org.junit.Test;
+/**
+ * Default fleet events function implementation. Modify for custom logic. Register Fleet Event
+ * handlers here. Entrypoint class for Cloud Functions.
+ */
+public class DefaultFleetEventsFunction extends FleetEventsFunction {
 
-/** Tests for name formatter. */
-public class NameFormatterTest {
-
-  @Test
-  public void testSimpleNameParsing() {
-    String name = "providers/a/b/c";
-    assertEquals(NameFormatter.getIdFromName(name), "c");
+  public DefaultFleetEventsFunction() throws IOException {
+    super(new DefaultFleetEventCreator());
   }
 }
