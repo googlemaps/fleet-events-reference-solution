@@ -104,14 +104,14 @@ This git repo is structured as follows.
     * modules/				: folder holding multiple terraform modules
         * &lt;Module A>			:
             * README.md		: README for the module
-            * [main.tf](main.tf)			: main code for the module
-            * [variables.tf](variables.tf)		: defines input parameters of the module
-            * [outputs.tf](outputs.tf)		: defines outputs of the module
+            * [main.tf](https://github.com/googlemaps/fleet-events-reference-solution/blob/main/terraform/modules/fleet-events/main.tf)			: main code for the module
+            * [variables.tf](https://github.com/googlemaps/fleet-events-reference-solution/blob/main/terraform/modules/fleet-events/variables.tf)		: defines input parameters of the module
+            * [outputs.tf](https://github.com/googlemaps/fleet-events-reference-solution/blob/main/terraform/modules/fleet-events/outputs.tf)		: defines outputs of the module
             * *.tf			:
             * Examples		: one or more example use of the module
                 * &lt;Example 1>
-                    * [README.md](README.md)			: readme for example
-                    * [main.tf](main.tf)				: code with module usage
+                    * [README.md](https://github.com/googlemaps/fleet-events-reference-solution/blob/main/terraform/modules/fleet-events/examples/with_existing_project/README.md)			: readme for example
+                    * [main.tf](https://github.com/googlemaps/fleet-events-reference-solution/blob/main/terraform/modules/fleet-events/examples/with_existing_project/main.tf)				: code with module usage
                     * *.tf
                     * terraform.tfvars.sample		: sample config file
                 * &lt;Example 2>
