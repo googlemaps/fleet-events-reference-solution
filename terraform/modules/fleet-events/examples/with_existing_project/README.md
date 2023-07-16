@@ -4,7 +4,7 @@ This example setups Fleet Events reference solution in an existing Google Cloud 
 
 First, create file `terraform.tfvars` with the following :
 
-```yaml
+```hcl
 PROJECT_FLEETENGINE = "[Your Mobility(ODRD/LMFS) project]"
 PROJECT_FLEETEVENTS = "[Your Fleet Events project(pre-created)]"
 GCP_REGION          = "[GCP Region to use]"
@@ -12,7 +12,7 @@ ME                  = "[Your Google account email address]"
 ```
 
 Then run :
-```Shell
+```shell
 terraform init
 terraform plan
 terraform apply
