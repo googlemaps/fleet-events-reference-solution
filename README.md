@@ -1,9 +1,9 @@
 
-# Getting started with “Fleet Events" reference solution
+# Getting started
 
-This document explains how to get started with Fleet Events. It provides step-by-step instructions and technical details to help you understand the components and deploy a working reference solution to your Google Cloud project. This solution can be beneficial for your near-real-time use cases.
+This document explains how to get started “Fleet Events" reference solution. It provides step-by-step instructions and technical details to help you understand the components and deploy a working reference solution to your Google Cloud project.
 
-Fleet Events uses near-real-time events produced by Fleet Engine as a basis for generating custom events and handlers for your specific requirements. The reference solution in this repository includes code for creating fleet events and automated deployment using Terraform.
+This solution can be beneficial for your near-real-time use cases. It uses near-real-time events produced by Fleet Engine as a basis for generating custom events for your specific requirements. The reference solution in this repository includes code for creating fleet events and automated deployment using Terraform.
 
 <!-- You can learn more about real time event processing concepts by referencing [this article](https://docs.google.com/document/d/15zeL34K2SfkHHVMpRD0tYdrDiYDy_WzvHEjlwgDI4X8/edit). -->
 
@@ -21,9 +21,9 @@ To adjust the configuration parameters, you need to have at least a high-level u
 The end state :
 
 * There will be two projects, one for Fleet Engine, and one for the Fleet Events reference solution. Projects are separated so that each can be tied to respective billing accounts. (Example: Fleet Events: your GCP billing account.  Fleet Engine: your Google Maps Platform Mobility billing account)
-* Logs from Fleet Engine project will be setup to flow into a Cloud Pub/Sub Topic “Fleet Engine Events” in “Fleet Events” project
-* A Cloud Function that subscribes to the “Fleet Engine Events” Topic will be deployed. This function will have the implementation unique to the use case.
-* A Pub/Sub topic “Custom Events” where generated events will be published.
+* Logs from Fleet Engine project will be setup to flow into a Cloud Pub/Sub Topic in “Fleet Events” project
+* A Cloud Function that processes messages from the Topic will be deployed. This function will have the implementation unique to the use case
+* A Pub/Sub topic where generated events will be published is deployed
 
 <!-- Read this deep dive doc to learn more about how building blocks interact with each other and the security applied. 
 Deep dive - Security settings -->
@@ -40,7 +40,7 @@ Note down the following information before getting started.
   * example) `my-fleetengine-project`
 * **Fleet Events project (project id)**: The project in which this reference solution will be deployed. This project can be pre-created or be generated as part of the automated provisioning. A clean developer sandbox project is highly recommended for safe experiments.
   * example) `my-fleetevents-project`
-* **Billing Account for Google Cloud**: This reference solution will make use of several Google Cloud services. Given you may have different billing arrangements between Google Maps Platform (GMP) and Google Cloud Platform (GCP), we highly recommend a separate billing account for GCP. The Fleet Events project above should be associated with this billing account.
+* **Billing Account for Google Cloud**: This reference solution will make use of several Google Cloud Platform services. Therefore, the Billing Account for GCP usage is required. You may have different billing arrangements between Google Maps Platform (GMP) and Google Cloud Platform (GCP), in which case the Fleet Events project above should be associated with the latter. If you are not sure, please reach out to your Google account manager or Google Maps Platform reseller.
   * example) `XXXXXX-XXXXXX-XXXXXX` (alphanumeric)
 * **Project Folder**: If your organization is adopting a folder structure to manage multiple Google Cloud projects, identify the folder and its id (number) under which the Fleet Events projects should reside.
   * example) `XXXXXXXXXXXX` (all digits)
@@ -59,9 +59,9 @@ Note down the following information before getting started.
 
 #### Check permission to configure projects
 
-Terraform will run under your Google account’s permissions. (you can also run terraform under service accounts. Links to resources for such setup will be linked later in this doc)
+Terraform will run under your Google account’s permissions. (you can also run terraform under service accounts. Resources to learn about such configuration will be linked later in this doc)
 
-For testing, give your developer user account IAM role `roles/editor` in both your **Fleet Engine project** and **Fleet Event project**. This gives you most of the permissions required to quickly go through this solution. Additionally, there are a few additional IAM roles to add.
+For testing, give your developer user account IAM role `roles/editor` in both your **Fleet Engine project** and **Fleet Event project**. This gives you most of the permissions required to quickly go through this solution. Additionally, there are a few additionally required IAM roles.
 
 **Fleet Engine** project
 
@@ -124,26 +124,31 @@ cd fleet-events-reference-solutions
 
 This git repo is structured as follows.
 
-* [README.md](./README.md): this readme doc
+* [README.md](./README.md): this "Getting Started" guide
 * [cloud-functions/](./cloud-functions/): reference functions source code
 * [terraform/](./terraform/): deployment automation with terraform
   * [modules/](./terraform/modules/): folder holding multiple terraform modules
-    * `<Module A>`:
+    * [fleet_events](./terraform/modules/fleet-events/):
       * `README.md`: README for the module
       * `main.tf`: main code for the module
       * `variables.tf`: defines input parameters of the module
       * `outputs.tf`: defines outputs of the module
       * `*.tf`:
       * `examples/`: one or more example use of the module
-        * `<Example 1>/`
+        * `with_existing_project/`:
           * `README.md`: readme for the example
-          * `main.tf`: code with module usage
+          * `main.tf`: main terraform code showing use of the module
           * `*.tf`
           * `terraform.tfvars.sample`: sample config file
-        * `<Example 2>/`
+        * `with_new_project/`
           * `…`
-    * `<Module B>`
+    * [fleet-events-function](./terraform/modules/fleet-events-function)
       * `…`
+    * [fleetengine-logging-config](./terraform/modules/fleetengine-logging-config)
+      * `…`
+    * `tools` : utilities
+      * `python`
+        * `*.py` : utilities to validate the deployment 
 * [diagrams/](./diagrams/): diagrams used in articles
 * `*.md`: additional documents
 
@@ -162,7 +167,7 @@ Change the Terraform working directory to one of the examples.
 cd terraform/modules/fleet-events/examples/with_existing_project
 ```
 
-#### STEP 2 : create a terraform.tfvars file from example
+#### STEP 2 : create a `terraform.tfvars` file from example
 
 This example is also a terraform module with input variables defined. These variables can be set in a configuration file `terraform.tfvars`. Make a copy of file `terraform.tfvars.sample` and edit it to match your environment. Your text editor of choice can be used. Example below is using `vi`` as the editor.
 
@@ -189,7 +194,7 @@ The full set of variables that can be set can be referenced in the module’s [R
 
 ##### Naming rules
 
-Google Cloud applies different naming restrictions depending on the service and resource. The “Fleet Events” deployment script will generate identifiers or labels so that they are easily recognizable by concatenating given resource names. However, concatenation can hit naming rule limits. The general guidance is to not make identifiers too long. Or, if such errors are observed, reconsider the name. Here are documented naming rules for a few of the major resources types :
+Google Cloud Platform applies different naming restrictions depending on the service and resource. The “Fleet Events” deployment script will generate identifiers or labels by concatenating given resource names so that they are easily recognizable. However, concatenation can hit naming rule limits. The general guidance is to not make identifiers too long. Or, if such errors are observed, reconsider the name and make it shorter. Here are documented naming rules for a few of the major resources types :
 
 * [Service Accounts](https://cloud.google.com/iam/docs/service-accounts-create#:~:text=The%20ID%20must%20be%20between,you%20cannot%20change%20its%20name)
 * [Labels](https://cloud.google.com/compute/docs/labeling-resources#requirements)
@@ -199,7 +204,7 @@ Google Cloud applies different naming restrictions depending on the service and 
 
 #### STEP 3 : Initialize terraform
 
-Initialize terraform before first run. Dependencies (modules, etc.) will be fetched.
+Initialize terraform before first run. Dependencies (modules, etc.) will be fetched to the working directory.
 
 ```shell
 terraform init
@@ -207,7 +212,7 @@ terraform init
 
 #### STEP 4 : terraform plan
 
-Let terraform compare current and idea state and come up with a plan.
+Let terraform compare current and ideal state and come up with a plan.
 
 ```shell
 terraform plan
@@ -221,7 +226,7 @@ If the plan is good to go, apply changes so that terraform can create and config
 terraform apply
 ```
 
-Learn more about each terraform commands [here](https://cloud.google.com/docs/terraform/basic-commands)
+Learn more about each terraform commands [here](https://cloud.google.com/docs/terraform/basic-commands).
 
 #### STEP 6 : Verify your deployment
 
@@ -254,7 +259,7 @@ python3 main.py --project_id "<gcp_project_id>" \
 
 #### Starting over
 
-When you need to change configuration, update the terraform.tfvar file and rerun terraform from the same folder. In case you want to start over or clean up the environment, de-provisioning can be done by simply running the following command.
+When you need to change configuration, update the `terraform.tfvar` file and rerun terraform from the same folder. In case you want to start over or clean up the environment, de-provisioning can be done by simply running the following command.
 
 ```shell
 terraform destroy
@@ -279,7 +284,7 @@ Run the following after a few minutes to confirm the state of the service.
 gcloud --project <PROJECT_FLEETEVENTS> services list --enabled
 ```
 
-Once confirmed, rerun terraform
+Once confirmed, rerun `terraform`
 
 ```shell
 # re-run terraform
@@ -313,7 +318,7 @@ This requires the current project state to be imported into terraform by running
 
 * [https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/firestore_database](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/firestore_database)
 
-As in the [bottom of this page](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/firestore_database#import), “terraform import” can be run in one of the supported forms.
+As in the [bottom of this page](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/firestore_database#import), `terraform import` can be run in one of the supported forms.
 
 * `terraform import google_firestore_database.default projects/{{project}}/databases/{{name}}`
 * `terraform import google_firestore_database.default {{project}}/{{name}}`
@@ -322,7 +327,7 @@ As in the [bottom of this page](https://registry.terraform.io/providers/hashicor
 In  the case of the error above:
 
 * Database resources identifier within Terraform (as in the error message): `module.fleet-events-with-existing-project.module.fleet-events.google_firestore_database.database`
-* Database resource path: `<PROJECT_FLEETEVENTS>/(default)`. Note that Firestore database instance name is always “(default)”
+* Database resource path: `<PROJECT_FLEETEVENTS>/(default)`. Note that Firestore database instance name defaults to `(default)`
 
 Therefore, the import command can be run as follows:
 
@@ -336,7 +341,7 @@ module.fleet-events-with-existing-project.module.fleet-events.google_firestore_d
 
 If both identifiers are recognized, you will see a message like this.
 
-```shell
+```text
 ...
 module.fleet-events-with-existing-project.module.fleet-events.google_firestore_database.database: Import prepared!
 Prepared google_firestore_database for import
@@ -380,7 +385,7 @@ For developers considering wider adoption of terraform, below is a recommended r
 
 ## Limitations
 
-[PubSub Triggers](https://firebase.google.com/docs/functions/pubsub-events?gen=2nd) delivers fleet logs to Cloud Functions. These triggers do not guarantee ordering. Out of order eventing can originate from:
+[PubSub Triggers](https://firebase.google.com/docs/functions/pubsub-events?gen=2nd) deliver fleet logs to Cloud Functions. These triggers do not guarantee ordering. Out of order eventing can originate from:
 
 * Logs delivered out of order by Cloud Logging (if used)
 * Logs delivered out of order by PubSub (see [Cloud PubSub: Ordering Messages](https://cloud.google.com/pubsub/docs/ordering))
