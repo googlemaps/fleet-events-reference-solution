@@ -17,7 +17,9 @@ package com.google.fleetevents.beam;
 import com.google.fleetevents.beam.util.ProtoParser;
 import com.google.logging.v2.LogEntry;
 import com.google.protobuf.InvalidProtocolBufferException;
-
+import google.maps.fleetengine.delivery.v1.DeliveryVehicle;
+import java.io.IOException;
+import java.io.Serializable;
 import org.apache.beam.examples.common.WriteOneFilePerWindow;
 import org.apache.beam.sdk.Pipeline;
 import org.apache.beam.sdk.io.gcp.pubsub.PubsubIO;
@@ -36,11 +38,6 @@ import org.apache.beam.sdk.transforms.windowing.Window;
 import org.apache.beam.sdk.values.KV;
 import org.apache.beam.sdk.values.PCollection;
 import org.joda.time.Duration;
-
-import java.io.IOException;
-import java.io.Serializable;
-
-import google.maps.fleetengine.delivery.v1.DeliveryVehicle;
 
 // run with
 // mvn compile exec:java \
@@ -63,12 +60,12 @@ public class PubSubToGcs {
 
     void setInputTopic(String value);
 
-//
-//    @Description("The Cloud Pub/Sub topic to write to.")
-//    @Required
-//    String getOutputTopic();
+    //
+    //    @Description("The Cloud Pub/Sub topic to write to.")
+    //    @Required
+    //    String getOutputTopic();
 
-   // void setOutputTopic(String value);
+    // void setOutputTopic(String value);
 
     @Description("Output file's window size in number of minutes.")
     @Default.Integer(1)
@@ -102,7 +99,8 @@ public class PubSubToGcs {
     }
 
     @DoFn.ProcessElement
-    public void processElement(@Element String element, OutputReceiver<Pair> receiver) throws InvalidProtocolBufferException {
+    public void processElement(@Element String element, OutputReceiver<Pair> receiver)
+        throws InvalidProtocolBufferException {
       LogEntry logEntry;
       try {
         logEntry = stringToLogEntry(element);
@@ -117,13 +115,12 @@ public class PubSubToGcs {
         System.out.println("not a fleet log " + logEntry.getLogName());
         return;
       }
-      String truncatedLogName =
-              logEntry.getLogName().substring(split + 3);
+      String truncatedLogName = logEntry.getLogName().substring(split + 3);
       if (truncatedLogName.equals("update_delivery_vehicle")) {
         DeliveryVehicle response;
         try {
-          response = ProtoParser.parseLogEntryResponse(
-                  logEntry, DeliveryVehicle.getDefaultInstance());
+          response =
+              ProtoParser.parseLogEntryResponse(logEntry, DeliveryVehicle.getDefaultInstance());
         } catch (Exception e) {
           e.printStackTrace();
           return;
@@ -135,12 +132,14 @@ public class PubSubToGcs {
 
   static class PairVehicleIdToLogEntryFn extends DoFn<Pair, KV<String, Pair>> {
     @DoFn.ProcessElement
-    public void processElement(@Element Pair element, OutputReceiver<KV<String, Pair>> receiver) throws InvalidProtocolBufferException {
-        receiver.output(KV.of(element.deliveryVehicle.getName(), element));
+    public void processElement(@Element Pair element, OutputReceiver<KV<String, Pair>> receiver)
+        throws InvalidProtocolBufferException {
+      receiver.output(KV.of(element.deliveryVehicle.getName(), element));
     }
   }
 
-  public static class GetBoundariesFn extends Combine.CombineFn<Pair, GetBoundariesFn.Boundary, GetBoundariesFn.Boundary> {
+  public static class GetBoundariesFn
+      extends Combine.CombineFn<Pair, GetBoundariesFn.Boundary, GetBoundariesFn.Boundary> {
     public static class Boundary implements Serializable {
       long min = Long.MAX_VALUE;
       long max = Long.MIN_VALUE;
@@ -157,29 +156,36 @@ public class PubSubToGcs {
       }
 
       public Boundary() {}
+
       @Override
       public boolean equals(Object other) {
         if (other == null) return false;
         if (other == this) return true;
-        if (!(other instanceof Boundary))return false;
+        if (!(other instanceof Boundary)) return false;
 
-
-        Boundary o = (Boundary)other;
+        Boundary o = (Boundary) other;
         return this.min == o.min && this.max == o.max;
       }
 
       @Override
       public String toString() {
-        return "Boundary{" +
-                "min=" + min +
-                ", max=" + max +
-                ", minId='" + minId  +
-                ", maxId='" + maxId  +
-                '}';
+        return "Boundary{"
+            + "min="
+            + min
+            + ", max="
+            + max
+            + ", minId='"
+            + minId
+            + ", maxId='"
+            + maxId
+            + '}';
       }
     }
+
     @Override
-    public Boundary createAccumulator() {return new Boundary(); }
+    public Boundary createAccumulator() {
+      return new Boundary();
+    }
 
     @Override
     public Boundary addInput(Boundary accumulator, Pair input) {
@@ -223,7 +229,8 @@ public class PubSubToGcs {
     }
   }
 
-  public static class ConvertToString extends SimpleFunction<KV<String, GetBoundariesFn.Boundary>, String> {
+  public static class ConvertToString
+      extends SimpleFunction<KV<String, GetBoundariesFn.Boundary>, String> {
     @Override
     public String apply(KV<String, GetBoundariesFn.Boundary> input) {
       System.out.printf("got boundary %s:%s%n", input.getKey(), input.getValue());
@@ -232,13 +239,13 @@ public class PubSubToGcs {
   }
 
   public static PCollection<String> processMessages(PCollection<String> messages) {
-    return messages.apply(Window.into(Sessions.withGapDuration(Duration.standardMinutes(3))))
-            .apply(ParDo.of(new ProcessLogEntryFn()))
-            .apply(ParDo.of(new PairVehicleIdToLogEntryFn()))
-            .apply(Combine.perKey(new GetBoundariesFn()))
-            .apply(MapElements.via(new ConvertToString()));
+    return messages
+        .apply(Window.into(Sessions.withGapDuration(Duration.standardMinutes(3))))
+        .apply(ParDo.of(new ProcessLogEntryFn()))
+        .apply(ParDo.of(new PairVehicleIdToLogEntryFn()))
+        .apply(Combine.perKey(new GetBoundariesFn()))
+        .apply(MapElements.via(new ConvertToString()));
   }
-
 
   public static void main(String[] args) throws IOException {
     // The maximum number of shards when writing output.
@@ -248,10 +255,12 @@ public class PubSubToGcs {
     options.setStreaming(true);
 
     Pipeline pipeline = Pipeline.create(options);
-   PCollection<String> messages = pipeline
-        .apply("Read PubSub Messages", PubsubIO.readStrings().fromTopic(options.getInputTopic()));
-   PCollection<String> processedMessages = processMessages(messages);
-    processedMessages.apply("Write Files to GCS", new WriteOneFilePerWindow(options.getOutput(), numShards));
+    PCollection<String> messages =
+        pipeline.apply(
+            "Read PubSub Messages", PubsubIO.readStrings().fromTopic(options.getInputTopic()));
+    PCollection<String> processedMessages = processMessages(messages);
+    processedMessages.apply(
+        "Write Files to GCS", new WriteOneFilePerWindow(options.getOutput(), numShards));
     pipeline.run().waitUntilFinish();
   }
 }
