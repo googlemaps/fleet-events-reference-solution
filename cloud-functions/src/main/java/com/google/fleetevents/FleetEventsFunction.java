@@ -55,7 +55,6 @@ public class FleetEventsFunction implements CloudEventsFunction {
       try {
         LogEntry logEntry = ProtoParser.cloudEventDataToLogEntry(cloudEvent.getData());
         outputEvents = fleetEventCreator.processCloudLog(logEntry, fleetEventHandlers);
-        fleetEventCreator.addExtraInfo(outputEvents);
         var outputTopicId = FleetEventConfig.getOutputTopicId();
         if (outputTopicId != null) {
           PubSubWriter.publishOutputEvents(
