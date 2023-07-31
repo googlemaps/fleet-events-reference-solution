@@ -3,16 +3,16 @@ package com.google.fleetevents.lmfs.models;
 import java.util.Objects;
 
 public class LatLng {
-  private Double latitute;
+  private Double latitude;
 
   private Double longitude;
 
-  public Double getLatitute() {
-    return latitute;
+  public Double getLatitude() {
+    return latitude;
   }
 
-  public void setLatitute(Double latitute) {
-    this.latitute = latitute;
+  public void setLatitude(Double latitude) {
+    this.latitude = latitude;
   }
 
   public Double getLongitude() {
@@ -26,7 +26,7 @@ public class LatLng {
   @Override
   public boolean equals(Object object) {
     if (object instanceof LatLng that) {
-      return Objects.equals(that.latitute, this.latitute)
+      return Objects.equals(that.latitude, this.latitude)
           && Objects.equals(that.longitude, this.longitude);
     }
     return false;
@@ -34,7 +34,7 @@ public class LatLng {
 
   @Override
   public String toString() {
-    return "LatLng{" + "latitute=" + latitute + ", longitude=" + longitude + '}';
+    return "LatLng{" + "latitute=" + latitude + ", longitude=" + longitude + '}';
   }
 
   public static final class Builder {
@@ -53,7 +53,7 @@ public class LatLng {
 
     public LatLng build() {
       LatLng latLng = new LatLng();
-      latLng.setLatitute(latitude);
+      latLng.setLatitude(latitude);
       latLng.setLongitude(longitude);
       return latLng;
     }

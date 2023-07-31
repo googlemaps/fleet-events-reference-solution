@@ -266,7 +266,7 @@ public class FleetEventCreatorTests {
     DeliveryTaskFleetEvent deliveryTaskFleetEvent =
         (DeliveryTaskFleetEvent) enrichedOutputEvent.getFleetEvent();
     assertEquals(
-        deliveryTaskFleetEvent.plannedLocation().getLatitute().doubleValue(),
+        deliveryTaskFleetEvent.plannedLocation().getLatitude().doubleValue(),
         task.getPlannedLocation().getPoint().getLatitude(),
         0);
     assertEquals(
