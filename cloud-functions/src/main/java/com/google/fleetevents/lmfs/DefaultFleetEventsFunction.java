@@ -16,6 +16,7 @@
 
 package com.google.fleetevents.lmfs;
 
+import com.google.fleetengine.auth.token.factory.signer.SignerInitializationException;
 import com.google.fleetevents.FleetEventsFunction;
 import com.google.fleetevents.lmfs.handlers.DistanceRemainingHandler;
 import com.google.fleetevents.lmfs.handlers.EtaChangeHandler;
@@ -30,7 +31,7 @@ import java.io.IOException;
  */
 public class DefaultFleetEventsFunction extends FleetEventsFunction {
 
-  public DefaultFleetEventsFunction() throws IOException {
+  public DefaultFleetEventsFunction() throws IOException, SignerInitializationException {
     super(new DefaultFleetEventCreator());
     registerFleetEventHandler(new TaskOutcomeHandler());
     registerFleetEventHandler(new TimeRemainingHandler());

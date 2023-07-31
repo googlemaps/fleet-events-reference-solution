@@ -22,6 +22,9 @@ import com.google.common.collect.ImmutableList;
 import com.google.fleetevents.common.database.FirestoreDatabaseClient;
 import com.google.fleetevents.common.models.FleetEvent;
 import com.google.fleetevents.common.models.Pair;
+import com.google.fleetevents.common.util.FleetEngineClient;
+import com.google.fleetevents.lmfs.models.DeliveryTaskFleetEvent;
+import com.google.fleetevents.lmfs.models.LatLng;
 import com.google.fleetevents.lmfs.models.outputs.OutputEvent;
 import com.google.fleetevents.lmfs.transactions.BatchCreateDeliveryTasksTransaction;
 import com.google.fleetevents.lmfs.transactions.CreateDeliveryTaskTransaction;
@@ -30,6 +33,7 @@ import com.google.fleetevents.lmfs.transactions.UpdateDeliveryTaskTransaction;
 import com.google.fleetevents.lmfs.transactions.UpdateDeliveryVehicleTransaction;
 import com.google.logging.v2.LogEntry;
 import com.google.protobuf.InvalidProtocolBufferException;
+import google.maps.fleetengine.delivery.v1.Task;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -156,5 +160,33 @@ public abstract class FleetEventCreator {
     return outputEventsBuilder.build();
   }
 
+  // Enrich output events with information retrieved from the Fleet Engine service
+  public void addExtraInfo(List<OutputEvent> outputs) {
+    for (OutputEvent output : outputs) {
+      if (output.getFleetEvent() == null) {
+        continue;
+      }
+      if (output.getFleetEvent().getEventType() == FleetEvent.Type.DELIVERY_TASK_FLEET_EVENT) {
+        DeliveryTaskFleetEvent taskFleetEvent = (DeliveryTaskFleetEvent) output.getFleetEvent();
+        Task task =
+            getFleetEngineClient().getTask(taskFleetEvent.newDeliveryTask().getDeliveryTaskId());
+        DeliveryTaskFleetEvent enrichedTaskFleetEvent =
+            taskFleetEvent.toBuilder()
+                .setPlannedLocation(
+                    new LatLng.Builder()
+                        .setLatitude(task.getPlannedLocation().getPoint().getLatitude())
+                        .setLongitude(task.getPlannedLocation().getPoint().getLongitude())
+                        .build())
+                .build();
+        output.setFleetEvent(enrichedTaskFleetEvent);
+      } else if (output.getFleetEvent().getEventType()
+          == FleetEvent.Type.DELIVERY_VEHICLE_FLEET_EVENT) {
+        // not implemented
+      }
+    }
+  }
+
   public abstract FirestoreDatabaseClient getDatabase();
+
+  public abstract FleetEngineClient getFleetEngineClient();
 }

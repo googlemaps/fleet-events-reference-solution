@@ -24,6 +24,7 @@ public class TaskInfo {
   // duration in milliseconds.
   private Long taskDuration;
   private String taskId;
+  private LatLng plannedlocation;
 
   public Long getTaskDuration() {
     return taskDuration;
@@ -41,24 +42,43 @@ public class TaskInfo {
     this.taskId = taskId;
   }
 
+  public LatLng getPlannedlocation() {
+    return plannedlocation;
+  }
+
+  public void setPlannedlocation(LatLng plannedlocation) {
+    this.plannedlocation = plannedlocation;
+  }
+
   @Override
   public boolean equals(Object object) {
     if (object instanceof TaskInfo that) {
       return Objects.equals(that.taskId, this.taskId)
-          && Objects.equals(that.taskDuration, this.taskDuration);
+          && Objects.equals(that.taskDuration, this.taskDuration)
+          && Objects.equals(that.plannedlocation, this.plannedlocation);
     }
     return false;
   }
 
   @Override
   public String toString() {
-    return "TaskInfo{" + "taskId=" + taskId + ", taskDuration=" + taskDuration + "ms}";
+    return "TaskInfo{"
+        + "taskDuration="
+        + taskDuration
+        + ", taskId='"
+        + taskId
+        + '\''
+        + ", plannedlocation="
+        + plannedlocation
+        + '}';
   }
 
   public static final class Builder {
 
     private Long taskDuration;
     private String taskId;
+
+    private LatLng plannedlocation;
 
     public Builder setTaskDuration(Long taskDuration) {
       this.taskDuration = taskDuration;
@@ -70,10 +90,16 @@ public class TaskInfo {
       return this;
     }
 
+    public Builder setPlannedLocation(LatLng plannedLocation) {
+      this.plannedlocation = plannedLocation;
+      return this;
+    }
+
     public TaskInfo build() {
       TaskInfo taskInfo = new TaskInfo();
       taskInfo.setTaskDuration(taskDuration);
       taskInfo.setTaskId(taskId);
+      taskInfo.setPlannedlocation(plannedlocation);
       return taskInfo;
     }
   }

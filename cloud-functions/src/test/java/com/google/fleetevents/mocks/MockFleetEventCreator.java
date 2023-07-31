@@ -18,6 +18,7 @@ package com.google.fleetevents.mocks;
 
 import com.google.fleetevents.FleetEventCreator;
 import com.google.fleetevents.common.database.FirestoreDatabaseClient;
+import com.google.fleetevents.common.util.FleetEngineClient;
 import com.google.fleetevents.lmfs.models.DeliveryTaskData;
 import com.google.fleetevents.lmfs.models.DeliveryVehicleData;
 import java.util.HashMap;
@@ -31,6 +32,7 @@ public class MockFleetEventCreator extends FleetEventCreator {
   public static Map<String, DeliveryVehicleData> mockVehicles = new HashMap<>();
 
   static FirestoreDatabaseClient firestore;
+  static FleetEngineClient fleetEngineClient;
 
   @Override
   public FirestoreDatabaseClient getDatabase() {
@@ -38,5 +40,13 @@ public class MockFleetEventCreator extends FleetEventCreator {
       firestore = Mockito.mock(FirestoreDatabaseClient.class);
     }
     return firestore;
+  }
+
+  @Override
+  public FleetEngineClient getFleetEngineClient() {
+    if (fleetEngineClient == null) {
+      fleetEngineClient = Mockito.mock(FleetEngineClient.class);
+    }
+    return fleetEngineClient;
   }
 }

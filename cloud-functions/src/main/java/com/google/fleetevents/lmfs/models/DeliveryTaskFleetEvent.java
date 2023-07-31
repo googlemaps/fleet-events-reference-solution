@@ -62,6 +62,9 @@ public abstract class DeliveryTaskFleetEvent implements FleetEvent, Serializable
 
   public abstract boolean taskMovedFromCurrentToPlanned();
 
+  @Nullable
+  public abstract LatLng plannedLocation();
+
   @AutoValue.Builder
   public abstract static class Builder {
 
@@ -80,6 +83,8 @@ public abstract class DeliveryTaskFleetEvent implements FleetEvent, Serializable
     public abstract Builder setTaskDifferences(Map<String, Change> taskDifferences);
 
     public abstract Builder setTaskMovedFromCurrentToPlanned(boolean taskMovedFromCurrentToPlanned);
+
+    public abstract Builder setPlannedLocation(LatLng plannedLocation);
 
     public abstract DeliveryTaskFleetEvent build();
   }

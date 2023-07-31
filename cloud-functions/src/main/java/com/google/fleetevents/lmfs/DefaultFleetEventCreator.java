@@ -16,22 +16,31 @@
 
 package com.google.fleetevents.lmfs;
 
+import com.google.fleetengine.auth.token.factory.signer.SignerInitializationException;
 import com.google.fleetevents.FleetEventCreator;
 import com.google.fleetevents.common.database.FirestoreDatabaseClient;
+import com.google.fleetevents.common.util.FleetEngineClient;
 import java.io.IOException;
 
 /** Default implementation of the fleet event creator class. Modify for custom logic. */
 public class DefaultFleetEventCreator extends FleetEventCreator {
 
   private static FirestoreDatabaseClient db;
+  private static FleetEngineClient fleetEngineClient;
 
-  public DefaultFleetEventCreator() throws IOException {
+  public DefaultFleetEventCreator() throws IOException, SignerInitializationException {
     super();
     db = new FirestoreDatabaseClient();
+    fleetEngineClient = new FleetEngineClient();
   }
 
   @Override
   public FirestoreDatabaseClient getDatabase() {
     return db;
+  }
+
+  @Override
+  public FleetEngineClient getFleetEngineClient() {
+    return fleetEngineClient;
   }
 }
