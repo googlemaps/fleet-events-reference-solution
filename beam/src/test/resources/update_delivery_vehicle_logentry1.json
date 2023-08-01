@@ -1,0 +1,105 @@
+{
+  "insertId": "159733b879b0e36f5c35d41998aa51c9",
+  "jsonPayload": {
+    "response": {
+      "name": "providers/fake-gcp-project/deliveryVehicles/sample_fleet_events_demo_vehicle_d0fba8",
+      "remainingDuration": "14.734266s",
+      "remainingVehicleJourneySegments": [
+        {
+          "drivingDistanceMeters": 123,
+          "drivingDuration": "48.964803s",
+          "pathHandle": "AdSiwAwC2Hxx0Vb7kCnDlrz9Nv80N1K/inZIBjgNmn+XaS1V/qY+T2DdE8+xfO8x7Pto3j5C9EoBQk0CEuM11i334Y6JphC2BF2stmfaopz99Jc=",
+          "stop": {
+            "state": "VEHICLE_STOP_STATE_LOG_ENROUTE",
+            "tasks": [
+              {
+                "taskId": "sample_fleet_events_demo_warehouse1_taskid1_d0fba8",
+                "taskDuration": "300s"
+              }
+            ]
+          }
+        },
+        {
+          "drivingDuration": "90s",
+          "stop": {
+            "tasks": [
+              {
+                "taskId": "sample_fleet_events_demo_google_taskid2_d0fba8",
+                "taskDuration": "500s"
+              }
+            ],
+            "state": "VEHICLE_STOP_STATE_LOG_NEW"
+          },
+          "pathHandle": "AdSiwAwD3hSWiQS6qhjtE9xwKSMP4xXEACv1HMBCPccaaWF6opaGwbzyTiQfeoZ+5BvbeY4Wtuxc5Aw07EMbu9rMmaBPqRVqDMwI7HImfIBkVyAdwgCLg4iD9CMv",
+          "drivingDistanceMeters": 323
+        }
+      ],
+      "lastLocation": {
+        "altitude": 0,
+        "serverTime": "2023-04-14T20:06:36.685410Z",
+        "altitudeAccuracy": 0,
+        "rawLocation": {
+          "longitude": -122.09312841296196,
+          "latitude": 37.42313515367058
+        },
+        "rawLocationAccuracy": 5.989999771118164,
+        "speedAccuracy": 0,
+        "location": {
+          "latitude": 37.42274454041616,
+          "longitude": -122.09311064332722
+        },
+        "locationSensor": "LOCATION_SENSOR_GPS",
+        "rawLocationTime": "2023-04-06T01:23:04.560Z",
+        "heading": 0,
+        "speed": 1.2666549682617188
+      },
+      "remainingDistanceMeters": 123,
+      "navigationStatus": "NAVIGATION_STATUS_ENROUTE_TO_DESTINATION",
+      "currentRouteSegmentEndPointHandle": "AdSiwAwDADfDdenCssjlUbo9l5STEX1R1Unpa/9DNf4GWEHtnVY6u2DyYLXl0GQl8SoN54OGB6QhsoM2h+75JmPib1k0DJUbXJTwd1QUGpSvvHVT",
+      "currentRouteSegmentHandle": "AdSiwAwCJ14KVRrM/BRX2o6DrAI6MFT6oqP0/tRHTsXO3y1nosrwBR16/jSgSMNHeSgC+BviCK4c7Fwvgqx2baaZYmvSQGGAAuiYlQJcJv85MqJlVCzCJOYOc1Y="
+    },
+    "request": {
+      "deliveryVehicleId": "sample_fleet_events_demo_vehicle_d0fba8",
+      "deliveryVehicle": {
+        "currentRouteSegmentHandle": "AdSiwAwC9q78aFXgenuZ8eHFzSbLd0Un+XxjXpvia3fZS1e7NC1nEGIUX+B0624GAQoRTl5tqTGOw4mfp/M1Ub8A",
+        "name": "providers/fake-gcp-project/deliveryVehicles/sample_fleet_events_demo_vehicle_d0fba8",
+        "currentRouteSegmentEndPointHandle": "AdSiwAwCDOWFa8ftomprE1s80YBxiQZDyYvC5E5IS6owgEvAf/5Oi8D8FmH0TEfU8KT2jNdaWEopgV5yJXXB7XPn",
+        "lastLocation": {
+          "speed": 1.2666549682617188,
+          "altitude": 0,
+          "location": {
+            "latitude": 37.42274454041616,
+            "longitude": -122.09311064332722
+          },
+          "isGpsSensorEnabled": true,
+          "speedAccuracy": 0,
+          "heading": 0,
+          "altitudeAccuracy": 0,
+          "rawLocationAccuracy": 5.989999771118164,
+          "locationSensor": "LOCATION_SENSOR_GPS",
+          "rawLocationTime": "2023-04-06T01:23:04.560Z",
+          "rawLocation": {
+            "longitude": -122.09312841296196,
+            "latitude": 37.42313515367058
+          }
+        }
+      },
+      "updateMask": "lastLocation"
+    },
+    "@type": "type.googleapis.com/maps.fleetengine.delivery.log.v1.UpdateDeliveryVehicleLog"
+  },
+  "resource": {
+    "type": "fleetengine.googleapis.com/DeliveryFleet",
+    "labels": {
+      "resource_container": "projects/fake-gcp-project",
+      "location": "global"
+    }
+  },
+  "timestamp": "2023-04-14T20:06:36.837518Z",
+  "labels": {
+    "delivery_vehicle_id": "sample_fleet_events_demo_vehicle_d0fba8",
+    "environment": "autopush"
+  },
+  "logName": "projects/fake-gcp-project/logs/fleetengine.googleapis.com%2Fupdate_delivery_vehicle",
+  "receiveTimestamp": "2023-04-14T20:06:37.165892557Z"
+}
