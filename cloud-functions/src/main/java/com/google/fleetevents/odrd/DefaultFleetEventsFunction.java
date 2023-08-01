@@ -16,6 +16,7 @@
 
 package com.google.fleetevents.odrd;
 
+import com.google.fleetengine.auth.token.factory.signer.SignerInitializationException;
 import com.google.fleetevents.FleetEventsFunction;
 import java.io.IOException;
 
@@ -25,7 +26,7 @@ import java.io.IOException;
  */
 public class DefaultFleetEventsFunction extends FleetEventsFunction {
 
-  public DefaultFleetEventsFunction() throws IOException {
+  public DefaultFleetEventsFunction() throws IOException, SignerInitializationException {
     super(new DefaultFleetEventCreator());
   }
 }

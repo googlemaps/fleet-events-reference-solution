@@ -24,6 +24,7 @@ import com.google.api.core.ApiFutures;
 import com.google.cloud.firestore.Transaction.Function;
 import com.google.common.collect.ImmutableList;
 import com.google.fleetevents.common.database.FirestoreDatabaseClient;
+import com.google.fleetevents.common.util.FleetEngineClient;
 import com.google.fleetevents.helpers.FleetEventsTestHelper;
 import com.google.fleetevents.lmfs.models.DeliveryTaskData;
 import com.google.fleetevents.lmfs.models.DeliveryTaskFleetEvent;
@@ -32,7 +33,11 @@ import com.google.fleetevents.lmfs.models.DeliveryVehicleFleetEvent;
 import com.google.fleetevents.lmfs.models.outputs.OutputEvent;
 import com.google.fleetevents.mocks.MockFleetEventCreator;
 import com.google.logging.v2.LogEntry;
+import com.google.type.LatLng;
+import google.maps.fleetengine.delivery.v1.LocationInfo;
+import google.maps.fleetengine.delivery.v1.Task;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -226,5 +231,47 @@ public class FleetEventCreatorTests {
     List<OutputEvent> outputEvents =
         spyFleetEventCreator.processCloudLog(logEntry, ImmutableList.of());
     assertEquals(Collections.emptyList(), outputEvents);
+  }
+
+  @Test
+  public void addExtraInfo_addPlannedLocationToTask() {
+    FleetEventCreator spyFleetEventCreator = Mockito.spy(new MockFleetEventCreator());
+    FleetEngineClient mockFleetEngineClient = spyFleetEventCreator.getFleetEngineClient();
+
+    Task task =
+        Task.newBuilder()
+            .setPlannedLocation(
+                LocationInfo.newBuilder()
+                    .setPoint(LatLng.newBuilder().setLatitude(111).setLongitude(222)))
+            .build();
+    doReturn(task).when(mockFleetEngineClient).getTask(any(String.class));
+
+    DeliveryTaskData taskData =
+        DeliveryTaskData.builder()
+            .setDeliveryVehicleId("testDeliveryVehicleId1")
+            .setDeliveryTaskId("testDeliveryTaskId1")
+            .setName("providers/test-123/deliveryVehicles/testDeliveryVehicleId1")
+            .build();
+    DeliveryTaskFleetEvent taskFleetEvent =
+        DeliveryTaskFleetEvent.builder()
+            .setDeliveryTaskId("testDeliveryTaskId1")
+            .setNewDeliveryTask(taskData)
+            .build();
+    OutputEvent outputEvent = new OutputEvent();
+    outputEvent.setFleetEvent(taskFleetEvent);
+    List<OutputEvent> outputEvents = Arrays.asList(outputEvent);
+    spyFleetEventCreator.addExtraInfo(outputEvents);
+    assertEquals(outputEvents.size(), 1);
+    OutputEvent enrichedOutputEvent = outputEvents.get(0);
+    DeliveryTaskFleetEvent deliveryTaskFleetEvent =
+        (DeliveryTaskFleetEvent) enrichedOutputEvent.getFleetEvent();
+    assertEquals(
+        deliveryTaskFleetEvent.plannedLocation().getLatitude().doubleValue(),
+        task.getPlannedLocation().getPoint().getLatitude(),
+        0);
+    assertEquals(
+        deliveryTaskFleetEvent.plannedLocation().getLongitude().doubleValue(),
+        task.getPlannedLocation().getPoint().getLongitude(),
+        0);
   }
 }
