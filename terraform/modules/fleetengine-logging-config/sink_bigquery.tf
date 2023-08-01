@@ -29,6 +29,7 @@ resource "google_bigquery_dataset" "fleetengine-logging-sink-bq" {
   location                        = var.GCP_REGION
   labels                          = local.labels_common
   max_time_travel_hours           = "168"
+  default_table_expiration_ms     = tonumber(var.RETENTION) * 24 * 3600 * 1000
   default_partition_expiration_ms = tonumber(var.RETENTION) * 24 * 3600 * 1000
   count                           = var.FLAG_SETUP_LOGGING_BIGQUERY ? 1 : 0
   delete_contents_on_destroy      = true
