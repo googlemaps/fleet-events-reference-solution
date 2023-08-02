@@ -36,7 +36,9 @@ import com.google.protobuf.InvalidProtocolBufferException;
 import google.maps.fleetengine.delivery.v1.Task;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /** Creates events from Fleet Engine cloud logs. */
@@ -168,8 +170,17 @@ public abstract class FleetEventCreator {
       }
       if (output.getFleetEvent().getEventType() == FleetEvent.Type.DELIVERY_TASK_FLEET_EVENT) {
         DeliveryTaskFleetEvent taskFleetEvent = (DeliveryTaskFleetEvent) output.getFleetEvent();
-        Task task =
+        Optional<Task> optionalTask =
             getFleetEngineClient().getTask(taskFleetEvent.newDeliveryTask().getDeliveryTaskId());
+        if (optionalTask.isEmpty()) {
+          logger.log(
+              Level.WARNING,
+              String.format(
+                  "Failed to retrieve planned_location from Fleet Engine for task %s",
+                  taskFleetEvent.newDeliveryTask().getDeliveryTaskId()));
+          continue;
+        }
+        Task task = optionalTask.get();
         DeliveryTaskFleetEvent enrichedTaskFleetEvent =
             taskFleetEvent.toBuilder()
                 .setPlannedLocation(

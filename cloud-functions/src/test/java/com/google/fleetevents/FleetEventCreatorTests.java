@@ -40,6 +40,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -244,7 +245,7 @@ public class FleetEventCreatorTests {
                 LocationInfo.newBuilder()
                     .setPoint(LatLng.newBuilder().setLatitude(111).setLongitude(222)))
             .build();
-    doReturn(task).when(mockFleetEngineClient).getTask(any(String.class));
+    doReturn(Optional.of(task)).when(mockFleetEngineClient).getTask(any(String.class));
 
     DeliveryTaskData taskData =
         DeliveryTaskData.builder()
@@ -273,5 +274,40 @@ public class FleetEventCreatorTests {
         deliveryTaskFleetEvent.plannedLocation().getLongitude().doubleValue(),
         task.getPlannedLocation().getPoint().getLongitude(),
         0);
+  }
+
+  @Test
+  public void addExtraInfo_failToGetTask() {
+    FleetEventCreator spyFleetEventCreator = Mockito.spy(new MockFleetEventCreator());
+    FleetEngineClient mockFleetEngineClient = spyFleetEventCreator.getFleetEngineClient();
+
+    Task task =
+        Task.newBuilder()
+            .setPlannedLocation(
+                LocationInfo.newBuilder()
+                    .setPoint(LatLng.newBuilder().setLatitude(111).setLongitude(222)))
+            .build();
+    doReturn(Optional.empty()).when(mockFleetEngineClient).getTask(any(String.class));
+
+    DeliveryTaskData taskData =
+        DeliveryTaskData.builder()
+            .setDeliveryVehicleId("testDeliveryVehicleId1")
+            .setDeliveryTaskId("testDeliveryTaskId1")
+            .setName("providers/test-123/deliveryVehicles/testDeliveryVehicleId1")
+            .build();
+    DeliveryTaskFleetEvent taskFleetEvent =
+        DeliveryTaskFleetEvent.builder()
+            .setDeliveryTaskId("testDeliveryTaskId1")
+            .setNewDeliveryTask(taskData)
+            .build();
+    OutputEvent outputEvent = new OutputEvent();
+    outputEvent.setFleetEvent(taskFleetEvent);
+    List<OutputEvent> outputEvents = Arrays.asList(outputEvent);
+    spyFleetEventCreator.addExtraInfo(outputEvents);
+    assertEquals(outputEvents.size(), 1);
+    OutputEvent nonEnrichedOutputEvent = outputEvents.get(0);
+    DeliveryTaskFleetEvent deliveryTaskFleetEvent =
+        (DeliveryTaskFleetEvent) nonEnrichedOutputEvent.getFleetEvent();
+    assertEquals(deliveryTaskFleetEvent.plannedLocation(), null);
   }
 }
