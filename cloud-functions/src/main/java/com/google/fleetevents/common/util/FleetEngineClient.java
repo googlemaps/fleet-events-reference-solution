@@ -16,7 +16,11 @@ import google.maps.fleetengine.delivery.v1.Task;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.Metadata;
+import io.grpc.StatusRuntimeException;
 import io.grpc.stub.MetadataUtils;
+import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Client class to create requests to Fleet Engine to retrieve latest state for task and delivery
@@ -24,6 +28,7 @@ import io.grpc.stub.MetadataUtils;
  */
 public class FleetEngineClient {
 
+  private static final Logger logger = Logger.getLogger(FleetEngineClient.class.getName());
   private final ServerTokenProvider fleetEngineTokenProvider;
   private final String projectId;
 
@@ -32,30 +37,43 @@ public class FleetEngineClient {
     this.fleetEngineTokenProvider = new ServerTokenProvider(createMinter());
   }
 
-  public Task getTask(String taskId) {
-    var channel = getChannel();
-    DeliveryServiceGrpc.DeliveryServiceBlockingStub stub =
-        DeliveryServiceGrpc.newBlockingStub(channel);
-    String taskName = getTaskName(taskId);
-
-    GetTaskRequest getTaskRequest = GetTaskRequest.newBuilder().setName(taskName).build();
-
-    Task task = stub.getTask(getTaskRequest);
-    channel.shutdown();
-    return task;
-  }
-
-  public DeliveryVehicle getDeliveryVehicle(String deliveryVehicleId) {
-
-    String deliveryVehicleName = getDeliveryVehicleName(deliveryVehicleId);
-
-    GetDeliveryVehicleRequest getDeliveryVehicleRequest =
-        GetDeliveryVehicleRequest.newBuilder().setName(deliveryVehicleName).build();
+  public Optional<Task> getTask(String taskId) {
     var channel = getChannel();
     var stub = DeliveryServiceGrpc.newBlockingStub(channel);
-    DeliveryVehicle deliveryVehicle = stub.getDeliveryVehicle(getDeliveryVehicleRequest);
+
+    String taskName = getTaskName(taskId);
+    GetTaskRequest getTaskRequest = GetTaskRequest.newBuilder().setName(taskName).build();
+
+    Optional<Task> optionalTask;
+    try {
+      Task task = stub.getTask(getTaskRequest);
+      optionalTask = Optional.of(task);
+    } catch (StatusRuntimeException e) {
+      logger.log(Level.WARNING, "Attempted to retrieve entity, but encountered error", e);
+      optionalTask = Optional.empty();
+    }
     channel.shutdown();
-    return deliveryVehicle;
+    return optionalTask;
+  }
+
+  public Optional<DeliveryVehicle> getDeliveryVehicle(String deliveryVehicleId) {
+    var channel = getChannel();
+    var stub = DeliveryServiceGrpc.newBlockingStub(channel);
+
+    String deliveryVehicleName = getDeliveryVehicleName(deliveryVehicleId);
+    GetDeliveryVehicleRequest getDeliveryVehicleRequest =
+        GetDeliveryVehicleRequest.newBuilder().setName(deliveryVehicleName).build();
+
+    Optional<DeliveryVehicle> optionalDeliveryVehicle;
+    try {
+      DeliveryVehicle deliveryVehicle = stub.getDeliveryVehicle(getDeliveryVehicleRequest);
+      optionalDeliveryVehicle = Optional.of(deliveryVehicle);
+    } catch (StatusRuntimeException e) {
+      logger.log(Level.WARNING, "Attempted to retrieve entity, but encountered error", e);
+      optionalDeliveryVehicle = Optional.empty();
+    }
+    channel.shutdown();
+    return optionalDeliveryVehicle;
   }
 
   private String getTaskName(String taskId) {
