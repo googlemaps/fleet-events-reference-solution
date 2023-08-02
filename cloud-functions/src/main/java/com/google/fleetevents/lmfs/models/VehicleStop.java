@@ -22,6 +22,8 @@ import java.util.Objects;
 /** Firestore serializable representation of the vehicle stop. */
 public class VehicleStop {
 
+  private LatLng plannedLocation;
+
   private List<TaskInfo> taskInfos;
 
   public List<TaskInfo> getTaskInfos() {
@@ -32,15 +34,24 @@ public class VehicleStop {
     this.taskInfos = taskInfos;
   }
 
+  public LatLng getPlannedLocation() {
+    return plannedLocation;
+  }
+
+  public void setPlannedLocation(LatLng plannedLocation) {
+    this.plannedLocation = plannedLocation;
+  }
+
   @Override
   public String toString() {
-    return "VehicleStop{" + "taskInfos=" + taskInfos + '}';
+    return "VehicleStop{" + "plannedLocation=" + plannedLocation + ", taskInfos=" + taskInfos + '}';
   }
 
   @Override
   public boolean equals(Object object) {
     if (object instanceof VehicleStop that) {
-      return Objects.equals(that.taskInfos, this.taskInfos);
+      return Objects.equals(that.taskInfos, this.taskInfos)
+          && Objects.equals(that.plannedLocation, this.plannedLocation);
     }
     return false;
   }
@@ -48,9 +59,15 @@ public class VehicleStop {
   public static final class Builder {
 
     private List<TaskInfo> taskInfos;
+    private LatLng plannedLocation;
 
     public Builder setTaskInfos(List<TaskInfo> taskInfos) {
       this.taskInfos = taskInfos;
+      return this;
+    }
+
+    public Builder setPlannedLocation(LatLng plannedLocation) {
+      this.plannedLocation = plannedLocation;
       return this;
     }
 

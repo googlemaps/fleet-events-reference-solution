@@ -30,12 +30,16 @@ import com.google.fleetevents.lmfs.models.DeliveryTaskData;
 import com.google.fleetevents.lmfs.models.DeliveryTaskFleetEvent;
 import com.google.fleetevents.lmfs.models.DeliveryVehicleData;
 import com.google.fleetevents.lmfs.models.DeliveryVehicleFleetEvent;
+import com.google.fleetevents.lmfs.models.TaskInfo;
 import com.google.fleetevents.lmfs.models.outputs.OutputEvent;
 import com.google.fleetevents.mocks.MockFleetEventCreator;
 import com.google.logging.v2.LogEntry;
 import com.google.type.LatLng;
+import google.maps.fleetengine.delivery.v1.DeliveryVehicle;
 import google.maps.fleetengine.delivery.v1.LocationInfo;
 import google.maps.fleetengine.delivery.v1.Task;
+import google.maps.fleetengine.delivery.v1.VehicleJourneySegment;
+import google.maps.fleetengine.delivery.v1.VehicleStop;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
@@ -281,12 +285,6 @@ public class FleetEventCreatorTests {
     FleetEventCreator spyFleetEventCreator = Mockito.spy(new MockFleetEventCreator());
     FleetEngineClient mockFleetEngineClient = spyFleetEventCreator.getFleetEngineClient();
 
-    Task task =
-        Task.newBuilder()
-            .setPlannedLocation(
-                LocationInfo.newBuilder()
-                    .setPoint(LatLng.newBuilder().setLatitude(111).setLongitude(222)))
-            .build();
     doReturn(Optional.empty()).when(mockFleetEngineClient).getTask(any(String.class));
 
     DeliveryTaskData taskData =
@@ -309,5 +307,180 @@ public class FleetEventCreatorTests {
     DeliveryTaskFleetEvent deliveryTaskFleetEvent =
         (DeliveryTaskFleetEvent) nonEnrichedOutputEvent.getFleetEvent();
     assertEquals(deliveryTaskFleetEvent.plannedLocation(), null);
+  }
+
+  @Test
+  public void addExtraInfo_addPlannedLocationToVehicleMatchesCorrectTask() throws IOException {
+    FleetEventCreator spyFleetEventCreator = Mockito.spy(new MockFleetEventCreator());
+    FleetEngineClient mockFleetEngineClient = spyFleetEventCreator.getFleetEngineClient();
+
+    DeliveryVehicle vehicle =
+        DeliveryVehicle.newBuilder()
+            .addRemainingVehicleJourneySegments(
+                VehicleJourneySegment.newBuilder()
+                    .setStop(
+                        VehicleStop.newBuilder()
+                            .setPlannedLocation(
+                                LocationInfo.newBuilder()
+                                    .setPoint(
+                                        LatLng.newBuilder().setLongitude(123).setLatitude(456)))
+                            .addTasks(
+                                VehicleStop.TaskInfo.newBuilder().setTaskId("matchingTask1"))))
+            .addRemainingVehicleJourneySegments(
+                VehicleJourneySegment.newBuilder()
+                    .setStop(
+                        VehicleStop.newBuilder()
+                            .setPlannedLocation(
+                                LocationInfo.newBuilder()
+                                    .setPoint(
+                                        LatLng.newBuilder().setLongitude(789).setLatitude(987)))
+                            .addTasks(
+                                VehicleStop.TaskInfo.newBuilder().setTaskId("nonMatchingTask"))))
+            .build();
+    doReturn(Optional.of(vehicle))
+        .when(mockFleetEngineClient)
+        .getDeliveryVehicle(any(String.class));
+
+    DeliveryVehicleData expectedDeliveryVehicleData =
+        DeliveryVehicleData.builder()
+            .setDeliveryVehicleId("testDeliveryVehicleId1")
+            .setName("providers/test-123/deliveryVehicles/testDeliveryVehicleId1")
+            .setRemainingVehicleJourneySegments(
+                Arrays.asList(
+                    com.google.fleetevents.lmfs.models.VehicleJourneySegment.builder()
+                        .setVehicleStop(
+                            new com.google.fleetevents.lmfs.models.VehicleStop.Builder()
+                                .setTaskInfos(
+                                    Arrays.asList(
+                                        new TaskInfo.Builder().setTaskId("matchingTask1").build()))
+                                .setPlannedLocation(
+                                    new com.google.fleetevents.lmfs.models.LatLng.Builder()
+                                        .setLatitude(123.0)
+                                        .setLongitude(456.0)
+                                        .build())
+                                .build())
+                        .build()))
+            .build();
+    DeliveryVehicleFleetEvent deliveryVehicleFleetEvent =
+        DeliveryVehicleFleetEvent.builder()
+            .setDeliveryVehicleId("testDeliveryVehicleId1")
+            .setNewDeliveryVehicle(expectedDeliveryVehicleData)
+            .build();
+    OutputEvent expectedOutputEvent = new OutputEvent();
+    expectedOutputEvent.setFleetEvent(deliveryVehicleFleetEvent);
+
+    OutputEvent outputEvent = new OutputEvent();
+    outputEvent.setFleetEvent(deliveryVehicleFleetEvent);
+    List<OutputEvent> outputEvents = Arrays.asList(outputEvent);
+    spyFleetEventCreator.addExtraInfo(outputEvents);
+    assertEquals(outputEvents.size(), 1);
+    OutputEvent enrichedOutputEvent = outputEvents.get(0);
+    DeliveryVehicleFleetEvent outputDeliveryVehicle =
+        (DeliveryVehicleFleetEvent) enrichedOutputEvent.getFleetEvent();
+    assertEquals(
+        outputDeliveryVehicle.newDeliveryVehicle().getRemainingVehicleJourneySegments().size(), 1);
+    assertEquals(
+        outputDeliveryVehicle
+            .newDeliveryVehicle()
+            .getRemainingVehicleJourneySegments()
+            .get(0)
+            .getVehicleStop()
+            .getPlannedLocation()
+            .getLongitude(),
+        123,
+        0);
+    assertEquals(
+        outputDeliveryVehicle
+            .newDeliveryVehicle()
+            .getRemainingVehicleJourneySegments()
+            .get(0)
+            .getVehicleStop()
+            .getPlannedLocation()
+            .getLatitude(),
+        456,
+        0);
+  }
+
+  @Test
+  public void addExtraInfo_addPlannedLocationToVehicleDoesNotAddExtraTask() throws IOException {
+    FleetEventCreator spyFleetEventCreator = Mockito.spy(new MockFleetEventCreator());
+    FleetEngineClient mockFleetEngineClient = spyFleetEventCreator.getFleetEngineClient();
+
+    DeliveryVehicle vehicle =
+        DeliveryVehicle.newBuilder()
+            .addRemainingVehicleJourneySegments(
+                VehicleJourneySegment.newBuilder()
+                    .setStop(
+                        VehicleStop.newBuilder()
+                            .setPlannedLocation(
+                                LocationInfo.newBuilder()
+                                    .setPoint(
+                                        LatLng.newBuilder().setLongitude(123).setLatitude(456)))
+                            .addTasks(VehicleStop.TaskInfo.newBuilder().setTaskId("matchingTask1"))
+                            .addTasks(
+                                VehicleStop.TaskInfo.newBuilder().setTaskId("nonMatchingTask1"))))
+            .build();
+    doReturn(Optional.of(vehicle))
+        .when(mockFleetEngineClient)
+        .getDeliveryVehicle(any(String.class));
+
+    DeliveryVehicleData expectedDeliveryVehicleData =
+        DeliveryVehicleData.builder()
+            .setDeliveryVehicleId("testDeliveryVehicleId1")
+            .setName("providers/test-123/deliveryVehicles/testDeliveryVehicleId1")
+            .setRemainingVehicleJourneySegments(
+                Arrays.asList(
+                    com.google.fleetevents.lmfs.models.VehicleJourneySegment.builder()
+                        .setVehicleStop(
+                            new com.google.fleetevents.lmfs.models.VehicleStop.Builder()
+                                .setTaskInfos(
+                                    Arrays.asList(
+                                        new TaskInfo.Builder().setTaskId("matchingTask1").build()))
+                                .setPlannedLocation(
+                                    new com.google.fleetevents.lmfs.models.LatLng.Builder()
+                                        .setLatitude(123.0)
+                                        .setLongitude(456.0)
+                                        .build())
+                                .build())
+                        .build()))
+            .build();
+    DeliveryVehicleFleetEvent deliveryVehicleFleetEvent =
+        DeliveryVehicleFleetEvent.builder()
+            .setDeliveryVehicleId("testDeliveryVehicleId1")
+            .setNewDeliveryVehicle(expectedDeliveryVehicleData)
+            .build();
+    OutputEvent expectedOutputEvent = new OutputEvent();
+    expectedOutputEvent.setFleetEvent(deliveryVehicleFleetEvent);
+
+    OutputEvent outputEvent = new OutputEvent();
+    outputEvent.setFleetEvent(deliveryVehicleFleetEvent);
+    List<OutputEvent> outputEvents = Arrays.asList(outputEvent);
+    spyFleetEventCreator.addExtraInfo(outputEvents);
+    assertEquals(outputEvents.size(), 1);
+    OutputEvent enrichedOutputEvent = outputEvents.get(0);
+    DeliveryVehicleFleetEvent outputDeliveryVehicle =
+        (DeliveryVehicleFleetEvent) enrichedOutputEvent.getFleetEvent();
+    assertEquals(
+        outputDeliveryVehicle.newDeliveryVehicle().getRemainingVehicleJourneySegments().size(), 1);
+    assertEquals(
+        outputDeliveryVehicle
+            .newDeliveryVehicle()
+            .getRemainingVehicleJourneySegments()
+            .get(0)
+            .getVehicleStop()
+            .getPlannedLocation()
+            .getLongitude(),
+        123,
+        0);
+    assertEquals(
+        outputDeliveryVehicle
+            .newDeliveryVehicle()
+            .getRemainingVehicleJourneySegments()
+            .get(0)
+            .getVehicleStop()
+            .getPlannedLocation()
+            .getLatitude(),
+        456,
+        0);
   }
 }
