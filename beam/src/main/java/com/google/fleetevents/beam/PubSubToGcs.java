@@ -46,11 +46,9 @@ import org.joda.time.Duration;
 // -Dexec.args=" \
 //    --project=$PROJECT_ID \
 //    --region=$REGION \
-//    --inputTopic=projects/$PROJECT_ID/topics/$TOPIC_ID \
 //    --runner=DataflowRunner \
-//    --windowSize=2 \
+//    --gapSize=3 \
 //    --output=gs://$BUCKET_NAME/samples/output "
-//    --outputTopic=projects/crystal-gcp-project/topics/FleetEventsOutput2 "
 public class PubSubToGcs {
 
   public interface PubSubToGcsOptions extends StreamingOptions {
@@ -67,11 +65,11 @@ public class PubSubToGcs {
 
     // void setOutputTopic(String value);
 
-    @Description("Output file's window size in number of minutes.")
-    @Default.Integer(1)
-    Integer getWindowSize();
+    @Description("How long to wait (in minutes) before considering a Vehicle to be offline.")
+    @Default.Integer(3)
+    Integer getGapSize();
 
-    void setWindowSize(Integer value);
+    void setGapSize(Integer value);
 
     @Description("Path of the output file including its filename prefix.")
     @Required
@@ -238,9 +236,9 @@ public class PubSubToGcs {
     }
   }
 
-  public static PCollection<String> processMessages(PCollection<String> messages) {
+  public static PCollection<String> processMessages(PCollection<String> messages, Integer gapSize) {
     return messages
-        .apply(Window.into(Sessions.withGapDuration(Duration.standardMinutes(3))))
+        .apply(Window.into(Sessions.withGapDuration(Duration.standardMinutes(gapSize))))
         .apply(ParDo.of(new ProcessLogEntryFn()))
         .apply(ParDo.of(new PairVehicleIdToLogEntryFn()))
         .apply(Combine.perKey(new GetBoundariesFn()))
@@ -258,7 +256,7 @@ public class PubSubToGcs {
     PCollection<String> messages =
         pipeline.apply(
             "Read PubSub Messages", PubsubIO.readStrings().fromTopic(options.getInputTopic()));
-    PCollection<String> processedMessages = processMessages(messages);
+    PCollection<String> processedMessages = processMessages(messages, options.getGapSize());
     processedMessages.apply(
         "Write Files to GCS", new WriteOneFilePerWindow(options.getOutput(), numShards));
     pipeline.run().waitUntilFinish();

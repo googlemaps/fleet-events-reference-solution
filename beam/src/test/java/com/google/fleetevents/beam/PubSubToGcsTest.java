@@ -26,15 +26,17 @@ import org.junit.runners.JUnit4;
 @RunWith(JUnit4.class)
 public class PubSubToGcsTest {
   @Rule public final transient TestPipeline pipeline = TestPipeline.create();
-  private static final int THRESHOLD = 60 * 3;
+  private static final int GAP_SIZE = 3;
+  private static final int THRESHOLD = 60 * GAP_SIZE;
   private static final int SECONDS_TO_MILLIS = 1000;
+
   PubSubToGcs job = new PubSubToGcs();
 
   @Test
   public void testOneLog() throws IOException {
     LogEntry logEntry = getUpdateDeliveryVehicleLogEntry1();
     PCollection<String> input = pipeline.apply(Create.of(Arrays.asList(getJson(logEntry))));
-    PCollection<String> output = PubSubToGcs.processMessages(input);
+    PCollection<String> output = PubSubToGcs.processMessages(input, GAP_SIZE);
 
     String expectedResult =
         "providers/fake-gcp-project/deliveryVehicles/sample_fleet_events_demo_vehicle_d0fba8: "
@@ -58,7 +60,7 @@ public class PubSubToGcsTest {
 
     PCollection<String> input =
         pipeline.apply(Create.of(Arrays.asList(getJson(logEntry1), getJson(logEntry2))));
-    PCollection<String> output = PubSubToGcs.processMessages(input);
+    PCollection<String> output = PubSubToGcs.processMessages(input, GAP_SIZE);
 
     String expectedResult =
         "providers/fake-gcp-project/deliveryVehicles/sample_fleet_events_demo_vehicle_d0fba8: "
@@ -88,7 +90,7 @@ public class PubSubToGcsTest {
             .advanceWatermarkToInfinity();
 
     PCollection<String> input = pipeline.apply(createLogs);
-    PCollection<String> output = PubSubToGcs.processMessages(input);
+    PCollection<String> output = PubSubToGcs.processMessages(input, GAP_SIZE);
 
     String expectedResult1 =
         "providers/fake-gcp-project/deliveryVehicles/sample_fleet_events_demo_vehicle_d0fba8: "
@@ -125,7 +127,7 @@ public class PubSubToGcsTest {
     PCollection<String> input =
         pipeline.apply(
             Create.of(Arrays.asList(getJson(logEntry1), getJson(logEntry2), getJson(logEntry3))));
-    PCollection<String> output = PubSubToGcs.processMessages(input);
+    PCollection<String> output = PubSubToGcs.processMessages(input, GAP_SIZE);
 
     String expectedResult1 =
         "providers/fake-gcp-project/deliveryVehicles/sample_fleet_events_demo_vehicle_d0fba8: "
@@ -167,7 +169,7 @@ public class PubSubToGcsTest {
             .advanceWatermarkToInfinity();
 
     PCollection<String> input = pipeline.apply(createLogs);
-    PCollection<String> output = PubSubToGcs.processMessages(input);
+    PCollection<String> output = PubSubToGcs.processMessages(input, GAP_SIZE);
 
     String expectedResult1 =
         "providers/fake-gcp-project/deliveryVehicles/sample_fleet_events_demo_vehicle_d0fba8: "
