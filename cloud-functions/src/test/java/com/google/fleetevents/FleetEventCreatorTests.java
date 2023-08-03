@@ -379,26 +379,19 @@ public class FleetEventCreatorTests {
         (DeliveryVehicleFleetEvent) enrichedOutputEvent.getFleetEvent();
     assertEquals(
         outputDeliveryVehicle.newDeliveryVehicle().getRemainingVehicleJourneySegments().size(), 1);
+    com.google.fleetevents.lmfs.models.LatLng expectedPlannedLocation =
+        new com.google.fleetevents.lmfs.models.LatLng.Builder()
+            .setLongitude(123.0)
+            .setLatitude(345.0)
+            .build();
     assertEquals(
         outputDeliveryVehicle
             .newDeliveryVehicle()
             .getRemainingVehicleJourneySegments()
             .get(0)
             .getVehicleStop()
-            .getPlannedLocation()
-            .getLongitude(),
-        123,
-        0);
-    assertEquals(
-        outputDeliveryVehicle
-            .newDeliveryVehicle()
-            .getRemainingVehicleJourneySegments()
-            .get(0)
-            .getVehicleStop()
-            .getPlannedLocation()
-            .getLatitude(),
-        456,
-        0);
+            .getPlannedLocation(),
+        expectedPlannedLocation);
   }
 
   @Test
@@ -462,25 +455,18 @@ public class FleetEventCreatorTests {
         (DeliveryVehicleFleetEvent) enrichedOutputEvent.getFleetEvent();
     assertEquals(
         outputDeliveryVehicle.newDeliveryVehicle().getRemainingVehicleJourneySegments().size(), 1);
+    com.google.fleetevents.lmfs.models.LatLng expectedPlannedLocation =
+        new com.google.fleetevents.lmfs.models.LatLng.Builder()
+            .setLongitude(123.0)
+            .setLatitude(345.0)
+            .build();
     assertEquals(
         outputDeliveryVehicle
             .newDeliveryVehicle()
             .getRemainingVehicleJourneySegments()
             .get(0)
             .getVehicleStop()
-            .getPlannedLocation()
-            .getLongitude(),
-        123,
-        0);
-    assertEquals(
-        outputDeliveryVehicle
-            .newDeliveryVehicle()
-            .getRemainingVehicleJourneySegments()
-            .get(0)
-            .getVehicleStop()
-            .getPlannedLocation()
-            .getLatitude(),
-        456,
-        0);
+            .getPlannedLocation(),
+        expectedPlannedLocation);
   }
 }
