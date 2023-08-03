@@ -16,7 +16,6 @@
 
 package com.google.fleetevents.lmfs.models;
 
-import com.google.cloud.firestore.GeoPoint;
 import com.google.fleetevents.common.util.TimeUtil;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -26,8 +25,6 @@ import java.util.stream.Collectors;
 
 /** Firestore serializable representation of the vehicle journey segment object. */
 public class VehicleJourneySegment implements Serializable {
-
-  private GeoPoint plannedLocation;
   private Long duration;
   private int distance;
   private List<String> taskIds;
@@ -39,7 +36,6 @@ public class VehicleJourneySegment implements Serializable {
     return new VehicleJourneySegment.Builder()
         .setDistance(0)
         .setDuration(0L)
-        .setPlannedLocation(new GeoPoint(0, 0))
         .setTaskIds(new ArrayList<>());
   }
 
@@ -53,7 +49,6 @@ public class VehicleJourneySegment implements Serializable {
                 .collect(Collectors.toList()))
         .setDistance(vjs.getDrivingDistanceMeters().getValue())
         .setDuration(TimeUtil.protobufToLong(vjs.getDrivingDuration()))
-        .setPlannedLocation(new GeoPoint(latLng.getLatitude(), latLng.getLongitude()))
         .setVehicleStop(
             new VehicleStop.Builder()
                 .setTaskInfos(
@@ -71,10 +66,6 @@ public class VehicleJourneySegment implements Serializable {
 
   public Builder toBuilder() {
     return new Builder(this);
-  }
-
-  public GeoPoint getPlannedLocation() {
-    return plannedLocation;
   }
 
   // duration in milliseconds.
@@ -97,8 +88,6 @@ public class VehicleJourneySegment implements Serializable {
   @Override
   public String toString() {
     return "VehicleJourneySegment{"
-        + "plannedLocation="
-        + plannedLocation
         + ", duration="
         + duration
         + ", distance="
@@ -113,8 +102,7 @@ public class VehicleJourneySegment implements Serializable {
   @Override
   public boolean equals(Object object) {
     if (object instanceof VehicleJourneySegment that) {
-      return Objects.equals(that.plannedLocation, this.plannedLocation)
-          && Objects.equals(that.duration, this.duration)
+      return Objects.equals(that.duration, this.duration)
           && Objects.equals(that.distance, this.distance)
           && Objects.equals(that.taskIds, this.taskIds)
           && Objects.equals(that.vehicleStop, this.vehicleStop);
@@ -132,11 +120,6 @@ public class VehicleJourneySegment implements Serializable {
 
     Builder(VehicleJourneySegment vehicleJourneySegment) {
       this.vehicleJourneySegment = vehicleJourneySegment;
-    }
-
-    public Builder setPlannedLocation(GeoPoint plannedLocation) {
-      vehicleJourneySegment.plannedLocation = plannedLocation;
-      return this;
     }
 
     public Builder setDuration(Long duration) {

@@ -24,7 +24,11 @@ import com.google.fleetevents.common.models.FleetEvent;
 import com.google.fleetevents.common.models.Pair;
 import com.google.fleetevents.common.util.FleetEngineClient;
 import com.google.fleetevents.lmfs.models.DeliveryTaskFleetEvent;
+import com.google.fleetevents.lmfs.models.DeliveryVehicleFleetEvent;
 import com.google.fleetevents.lmfs.models.LatLng;
+import com.google.fleetevents.lmfs.models.TaskInfo;
+import com.google.fleetevents.lmfs.models.VehicleJourneySegment;
+import com.google.fleetevents.lmfs.models.VehicleStop;
 import com.google.fleetevents.lmfs.models.outputs.OutputEvent;
 import com.google.fleetevents.lmfs.transactions.BatchCreateDeliveryTasksTransaction;
 import com.google.fleetevents.lmfs.transactions.CreateDeliveryTaskTransaction;
@@ -33,6 +37,7 @@ import com.google.fleetevents.lmfs.transactions.UpdateDeliveryTaskTransaction;
 import com.google.fleetevents.lmfs.transactions.UpdateDeliveryVehicleTransaction;
 import com.google.logging.v2.LogEntry;
 import com.google.protobuf.InvalidProtocolBufferException;
+import google.maps.fleetengine.delivery.v1.DeliveryVehicle;
 import google.maps.fleetengine.delivery.v1.Task;
 import java.util.ArrayList;
 import java.util.List;
@@ -40,6 +45,7 @@ import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 /** Creates events from Fleet Engine cloud logs. */
 public abstract class FleetEventCreator {
@@ -192,9 +198,55 @@ public abstract class FleetEventCreator {
         output.setFleetEvent(enrichedTaskFleetEvent);
       } else if (output.getFleetEvent().getEventType()
           == FleetEvent.Type.DELIVERY_VEHICLE_FLEET_EVENT) {
-        // not implemented
+        DeliveryVehicleFleetEvent deliveryVehicleFleetEvent =
+            (DeliveryVehicleFleetEvent) output.getFleetEvent();
+        Optional<DeliveryVehicle> optionalDeliveryVehicle =
+            getFleetEngineClient()
+                .getDeliveryVehicle(deliveryVehicleFleetEvent.deliveryVehicleId());
+        if (optionalDeliveryVehicle.isEmpty()) {
+          logger.log(
+              Level.WARNING,
+              String.format(
+                  "Failed to retrieve planned_location from Fleet Engine for vehicle %s",
+                  deliveryVehicleFleetEvent.deliveryVehicleId()));
+          continue;
+        }
+        DeliveryVehicle deliveryVehicle = optionalDeliveryVehicle.get();
+        // Match each stop with a fleet stop, if available, and enrich with planned_location.
+        for (VehicleJourneySegment rvjs :
+            deliveryVehicleFleetEvent.newDeliveryVehicle().getRemainingVehicleJourneySegments()) {
+          Optional<google.maps.fleetengine.delivery.v1.VehicleStop> matchedStop =
+              deliveryVehicle.getRemainingVehicleJourneySegmentsList().stream()
+                  .map(x -> x.getStop())
+                  .filter(stop -> isMatchingStop(rvjs.getVehicleStop(), stop))
+                  .findFirst();
+          if (matchedStop.isPresent()) {
+            com.google.type.LatLng matchedPlannedLocation =
+                matchedStop.get().getPlannedLocation().getPoint();
+            rvjs.getVehicleStop()
+                .setPlannedLocation(
+                    new LatLng.Builder()
+                        .setLongitude(matchedPlannedLocation.getLongitude())
+                        .setLatitude(matchedPlannedLocation.getLatitude())
+                        .build());
+          }
+        }
       }
     }
+  }
+
+  // Returns true if any taskid from stop matches one from fleetStop
+  private boolean isMatchingStop(
+      VehicleStop stop, google.maps.fleetengine.delivery.v1.VehicleStop fleetStop) {
+    for (TaskInfo info : stop.getTaskInfos()) {
+      List<String> matches =
+          fleetStop.getTasksList().stream()
+              .map(t -> t.getTaskId())
+              .filter(t -> t.equals(info.getTaskId()))
+              .collect(Collectors.toList());
+      if (matches.size() > 0) return true;
+    }
+    return false;
   }
 
   public abstract FirestoreDatabaseClient getDatabase();
