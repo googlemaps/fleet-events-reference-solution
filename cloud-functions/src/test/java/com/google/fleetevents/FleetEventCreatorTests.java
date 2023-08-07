@@ -382,7 +382,7 @@ public class FleetEventCreatorTests {
     com.google.fleetevents.lmfs.models.LatLng expectedPlannedLocation =
         new com.google.fleetevents.lmfs.models.LatLng.Builder()
             .setLongitude(123.0)
-            .setLatitude(345.0)
+            .setLatitude(456.0)
             .build();
     assertEquals(
         outputDeliveryVehicle
@@ -458,7 +458,7 @@ public class FleetEventCreatorTests {
     com.google.fleetevents.lmfs.models.LatLng expectedPlannedLocation =
         new com.google.fleetevents.lmfs.models.LatLng.Builder()
             .setLongitude(123.0)
-            .setLatitude(345.0)
+            .setLatitude(456.0)
             .build();
     assertEquals(
         outputDeliveryVehicle
