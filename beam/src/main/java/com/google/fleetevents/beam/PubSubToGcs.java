@@ -18,8 +18,9 @@ import com.google.fleetevents.beam.util.ProtoParser;
 import com.google.logging.v2.LogEntry;
 import com.google.protobuf.InvalidProtocolBufferException;
 import google.maps.fleetengine.delivery.v1.DeliveryVehicle;
-import java.io.IOException;
 import java.io.Serializable;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.apache.beam.examples.common.WriteOneFilePerWindow;
 import org.apache.beam.sdk.Pipeline;
 import org.apache.beam.sdk.io.gcp.pubsub.PubsubIO;
@@ -33,6 +34,7 @@ import org.apache.beam.sdk.transforms.DoFn;
 import org.apache.beam.sdk.transforms.MapElements;
 import org.apache.beam.sdk.transforms.ParDo;
 import org.apache.beam.sdk.transforms.SimpleFunction;
+import org.apache.beam.sdk.transforms.windowing.FixedWindows;
 import org.apache.beam.sdk.transforms.windowing.Sessions;
 import org.apache.beam.sdk.transforms.windowing.Window;
 import org.apache.beam.sdk.values.KV;
@@ -50,26 +52,40 @@ import org.joda.time.Duration;
 //    --gapSize=3 \
 //    --output=gs://$BUCKET_NAME/samples/output "
 public class PubSubToGcs {
+  private static final Logger logger = Logger.getLogger(PubSubToGcs.class.getName());
+
+  public enum SampleFunction {
+    TASK_OUTCOME,
+    VEHICLE_OFFLINE;
+  }
 
   public interface PubSubToGcsOptions extends StreamingOptions {
+
+    @Description("Choose the sample function to run.")
+    @Required
+    SampleFunction getFunctionName();
+
+    void setFunctionName(SampleFunction value);
+
     @Description("The Cloud Pub/Sub topic to read from.")
     @Required
     String getInputTopic();
 
     void setInputTopic(String value);
 
-    //
-    //    @Description("The Cloud Pub/Sub topic to write to.")
-    //    @Required
-    //    String getOutputTopic();
-
-    // void setOutputTopic(String value);
-
     @Description("How long to wait (in minutes) before considering a Vehicle to be offline.")
     @Default.Integer(3)
     Integer getGapSize();
 
     void setGapSize(Integer value);
+
+    @Description(
+        "Window size to use to process events, in minutes. This parameter does not apply to"
+            + " VEHICLE_OFFLINE jobs.")
+    @Default.Integer(3)
+    Integer getWindowSize();
+
+    void setWindowSize(Integer value);
 
     @Description("Path of the output file including its filename prefix.")
     @Required
@@ -92,7 +108,6 @@ public class PubSubToGcs {
     private LogEntry stringToLogEntry(String json) throws InvalidProtocolBufferException {
       LogEntry.Builder logEntryBuilder = LogEntry.newBuilder();
       ProtoParser.parseJson(json, logEntryBuilder);
-      System.out.println("built " + logEntryBuilder.build().getLogName());
       return logEntryBuilder.build();
     }
 
@@ -103,14 +118,13 @@ public class PubSubToGcs {
       try {
         logEntry = stringToLogEntry(element);
       } catch (InvalidProtocolBufferException e) {
-        System.out.println("unable to translate " + element);
+        logger.log(Level.WARNING, "unable to translate " + element);
         throw new RuntimeException(e);
       }
 
       int split = logEntry.getLogName().indexOf("%2F");
       if (split == -1) {
         // this is not a fleet log.
-        System.out.println("not a fleet log " + logEntry.getLogName());
         return;
       }
       String truncatedLogName = logEntry.getLogName().substring(split + 3);
@@ -207,12 +221,10 @@ public class PubSubToGcs {
       Boundary boundary = new Boundary();
       for (Boundary a : accumulators) {
         if (a.min < boundary.min) {
-          System.out.printf("updated min boundary %s:%d%n", a.minId, a.min);
           boundary.min = a.min;
           boundary.minId = a.minId;
         }
         if (a.max > boundary.max) {
-          System.out.printf("updated max boundary %s:%d%n", a.maxId, a.max);
           boundary.max = a.max;
           boundary.maxId = a.maxId;
           boundary.maxVehicle = a.maxVehicle;
@@ -236,7 +248,8 @@ public class PubSubToGcs {
     }
   }
 
-  public static PCollection<String> processMessages(PCollection<String> messages, Integer gapSize) {
+  public static PCollection<String> processVehicleOffline(
+      PCollection<String> messages, Integer gapSize) {
     return messages
         .apply(Window.into(Sessions.withGapDuration(Duration.standardMinutes(gapSize))))
         .apply(ParDo.of(new ProcessLogEntryFn()))
@@ -245,9 +258,10 @@ public class PubSubToGcs {
         .apply(MapElements.via(new ConvertToString()));
   }
 
-  public static void main(String[] args) throws IOException {
+  public static void main(String[] args) {
     // The maximum number of shards when writing output.
     int numShards = 1;
+
     PubSubToGcsOptions options =
         PipelineOptionsFactory.fromArgs(args).withValidation().as(PubSubToGcsOptions.class);
     options.setStreaming(true);
@@ -256,7 +270,33 @@ public class PubSubToGcs {
     PCollection<String> messages =
         pipeline.apply(
             "Read PubSub Messages", PubsubIO.readStrings().fromTopic(options.getInputTopic()));
-    PCollection<String> processedMessages = processMessages(messages, options.getGapSize());
+    PCollection<String> processedMessages;
+    switch (options.getFunctionName()) {
+      case TASK_OUTCOME:
+        {
+          processedMessages =
+              messages
+                  .apply(ParDo.of(new TaskOutcome.ConvertToTask()))
+                  .apply(
+                      Window.into(
+                          FixedWindows.of(Duration.standardMinutes(options.getWindowSize()))))
+                  .apply(ParDo.of(new TaskOutcome.ConvertToString()));
+          break;
+        }
+      case VEHICLE_OFFLINE:
+        {
+          processedMessages = processVehicleOffline(messages, options.getGapSize());
+          break;
+        }
+      default:
+        logger.log(
+            Level.WARNING,
+            String.format(
+                "Function name %s is not supported. Exiting without running job.",
+                options.getFunctionName().toString()));
+        System.exit(0);
+        return;
+    }
     processedMessages.apply(
         "Write Files to GCS", new WriteOneFilePerWindow(options.getOutput(), numShards));
     pipeline.run().waitUntilFinish();
