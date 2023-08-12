@@ -7,6 +7,11 @@ import google.maps.fleetengine.delivery.v1.Task;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.beam.sdk.transforms.DoFn;
+import org.apache.beam.sdk.transforms.ParDo;
+import org.apache.beam.sdk.transforms.windowing.FixedWindows;
+import org.apache.beam.sdk.transforms.windowing.Window;
+import org.apache.beam.sdk.values.PCollection;
+import org.joda.time.Duration;
 
 public class TaskOutcome {
   private static final Logger logger = Logger.getLogger(TaskOutcome.class.getName());
@@ -52,5 +57,14 @@ public class TaskOutcome {
     public void processElement(@Element Task element, OutputReceiver<String> receiver) {
       receiver.output(element.getName());
     }
+  }
+
+  public static PCollection<String> run(PCollection<String> input, Integer windowSize) {
+    PCollection<String> processedInput =
+        input
+            .apply(ParDo.of(new TaskOutcome.ConvertToTask()))
+            .apply(Window.into(FixedWindows.of(Duration.standardMinutes(windowSize))))
+            .apply(ParDo.of(new TaskOutcome.ConvertToString()));
+    return processedInput;
   }
 }

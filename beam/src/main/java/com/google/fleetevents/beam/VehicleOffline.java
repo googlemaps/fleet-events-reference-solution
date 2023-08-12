@@ -1,17 +1,3 @@
-// Copyright 2019 Google Inc.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
 package com.google.fleetevents.beam;
 
 import com.google.fleetevents.beam.util.ProtoParser;
@@ -21,78 +7,19 @@ import google.maps.fleetengine.delivery.v1.DeliveryVehicle;
 import java.io.Serializable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.apache.beam.examples.common.WriteOneFilePerWindow;
-import org.apache.beam.sdk.Pipeline;
-import org.apache.beam.sdk.io.gcp.pubsub.PubsubIO;
-import org.apache.beam.sdk.options.Default;
-import org.apache.beam.sdk.options.Description;
-import org.apache.beam.sdk.options.PipelineOptionsFactory;
-import org.apache.beam.sdk.options.StreamingOptions;
-import org.apache.beam.sdk.options.Validation.Required;
 import org.apache.beam.sdk.transforms.Combine;
 import org.apache.beam.sdk.transforms.DoFn;
 import org.apache.beam.sdk.transforms.MapElements;
 import org.apache.beam.sdk.transforms.ParDo;
 import org.apache.beam.sdk.transforms.SimpleFunction;
-import org.apache.beam.sdk.transforms.windowing.FixedWindows;
 import org.apache.beam.sdk.transforms.windowing.Sessions;
 import org.apache.beam.sdk.transforms.windowing.Window;
 import org.apache.beam.sdk.values.KV;
 import org.apache.beam.sdk.values.PCollection;
 import org.joda.time.Duration;
 
-// run with
-// mvn compile exec:java \
-// -Dexec.mainClass=com.google.fleetevents.beam.PubSubToGcs \
-// -Dexec.cleanupDaemonThreads=false \
-// -Dexec.args=" \
-//    --project=$PROJECT_ID \
-//    --region=$REGION \
-//    --runner=DataflowRunner \
-//    --gapSize=3 \
-//    --output=gs://$BUCKET_NAME/samples/output "
-public class PubSubToGcs {
-  private static final Logger logger = Logger.getLogger(PubSubToGcs.class.getName());
-
-  public enum SampleFunction {
-    TASK_OUTCOME,
-    VEHICLE_OFFLINE;
-  }
-
-  public interface PubSubToGcsOptions extends StreamingOptions {
-
-    @Description("Choose the sample function to run.")
-    @Required
-    SampleFunction getFunctionName();
-
-    void setFunctionName(SampleFunction value);
-
-    @Description("The Cloud Pub/Sub topic to read from.")
-    @Required
-    String getInputTopic();
-
-    void setInputTopic(String value);
-
-    @Description("How long to wait (in minutes) before considering a Vehicle to be offline.")
-    @Default.Integer(3)
-    Integer getGapSize();
-
-    void setGapSize(Integer value);
-
-    @Description(
-        "Window size to use to process events, in minutes. This parameter does not apply to"
-            + " VEHICLE_OFFLINE jobs.")
-    @Default.Integer(3)
-    Integer getWindowSize();
-
-    void setWindowSize(Integer value);
-
-    @Description("Path of the output file including its filename prefix.")
-    @Required
-    String getOutput();
-
-    void setOutput(String value);
-  }
+public class VehicleOffline {
+  private static final Logger logger = Logger.getLogger(VehicleOffline.class.getName());
 
   static class Pair implements Serializable {
     private LogEntry logEntry;
@@ -248,57 +175,12 @@ public class PubSubToGcs {
     }
   }
 
-  public static PCollection<String> processVehicleOffline(
-      PCollection<String> messages, Integer gapSize) {
+  public static PCollection<String> run(PCollection<String> messages, Integer gapSize) {
     return messages
         .apply(Window.into(Sessions.withGapDuration(Duration.standardMinutes(gapSize))))
         .apply(ParDo.of(new ProcessLogEntryFn()))
         .apply(ParDo.of(new PairVehicleIdToLogEntryFn()))
         .apply(Combine.perKey(new GetBoundariesFn()))
         .apply(MapElements.via(new ConvertToString()));
-  }
-
-  public static void main(String[] args) {
-    // The maximum number of shards when writing output.
-    int numShards = 1;
-
-    PubSubToGcsOptions options =
-        PipelineOptionsFactory.fromArgs(args).withValidation().as(PubSubToGcsOptions.class);
-    options.setStreaming(true);
-
-    Pipeline pipeline = Pipeline.create(options);
-    PCollection<String> messages =
-        pipeline.apply(
-            "Read PubSub Messages", PubsubIO.readStrings().fromTopic(options.getInputTopic()));
-    PCollection<String> processedMessages;
-    switch (options.getFunctionName()) {
-      case TASK_OUTCOME:
-        {
-          processedMessages =
-              messages
-                  .apply(ParDo.of(new TaskOutcome.ConvertToTask()))
-                  .apply(
-                      Window.into(
-                          FixedWindows.of(Duration.standardMinutes(options.getWindowSize()))))
-                  .apply(ParDo.of(new TaskOutcome.ConvertToString()));
-          break;
-        }
-      case VEHICLE_OFFLINE:
-        {
-          processedMessages = processVehicleOffline(messages, options.getGapSize());
-          break;
-        }
-      default:
-        logger.log(
-            Level.WARNING,
-            String.format(
-                "Function name %s is not supported. Exiting without running job.",
-                options.getFunctionName().toString()));
-        System.exit(0);
-        return;
-    }
-    processedMessages.apply(
-        "Write Files to GCS", new WriteOneFilePerWindow(options.getOutput(), numShards));
-    pipeline.run().waitUntilFinish();
   }
 }
