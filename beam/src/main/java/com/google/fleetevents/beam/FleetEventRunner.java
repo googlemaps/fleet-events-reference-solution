@@ -14,6 +14,7 @@
 
 package com.google.fleetevents.beam;
 
+import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.beam.examples.common.WriteOneFilePerWindow;
@@ -79,7 +80,8 @@ public class FleetEventRunner {
     void setOutput(String value);
   }
 
-  public static void main(String[] args) {
+  public static void main(String[] args) throws IOException {
+
     // The maximum number of shards when writing output.
     int numShards = 1;
 
@@ -95,7 +97,7 @@ public class FleetEventRunner {
     switch (options.getFunctionName()) {
       case TASK_OUTCOME:
         {
-          processedMessages = TaskOutcome.run(messages, options.getWindowSize());
+          processedMessages = new TaskOutcome().run(messages, options.getWindowSize());
           break;
         }
       case VEHICLE_OFFLINE:
