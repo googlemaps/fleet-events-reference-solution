@@ -14,6 +14,7 @@
 
 package com.google.fleetevents.beam;
 
+import com.google.fleetevents.beam.config.DataflowJobConfig;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -51,7 +52,13 @@ public class FleetEventRunner {
     @Required
     SampleFunction getFunctionName();
 
-    void setFunctionName(SampleFunction value);
+    void setFunctionName(String value);
+
+    @Description("Choose the gcp project with datastore.")
+    @Required
+    String getDatastoreProjectId();
+
+    void setDatastoreProjectId(String value);
 
     @Description("The Cloud Pub/Sub topic to read from.")
     @Required
@@ -94,15 +101,21 @@ public class FleetEventRunner {
         pipeline.apply(
             "Read PubSub Messages", PubsubIO.readStrings().fromTopic(options.getInputTopic()));
     PCollection<String> processedMessages;
+    DataflowJobConfig config =
+        DataflowJobConfig.Builder.newBuilder()
+            .setWindowSize(options.getWindowSize())
+            .setGapSize(options.getGapSize())
+            .setDatastoreProjectId(options.getDatastoreProjectId())
+            .build();
     switch (options.getFunctionName()) {
       case TASK_OUTCOME:
         {
-          processedMessages = new TaskOutcome().run(messages, options.getWindowSize());
+          processedMessages = new TaskOutcome().run(messages, config);
           break;
         }
       case VEHICLE_OFFLINE:
         {
-          processedMessages = VehicleOffline.run(messages, options.getGapSize());
+          processedMessages = VehicleOffline.run(messages, config);
           break;
         }
       default:

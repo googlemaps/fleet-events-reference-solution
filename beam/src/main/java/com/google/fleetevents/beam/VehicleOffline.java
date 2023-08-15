@@ -1,5 +1,6 @@
 package com.google.fleetevents.beam;
 
+import com.google.fleetevents.beam.config.DataflowJobConfig;
 import com.google.fleetevents.beam.util.ProtoParser;
 import com.google.logging.v2.LogEntry;
 import com.google.protobuf.InvalidProtocolBufferException;
@@ -175,9 +176,9 @@ public class VehicleOffline {
     }
   }
 
-  public static PCollection<String> run(PCollection<String> messages, Integer gapSize) {
+  public static PCollection<String> run(PCollection<String> messages, DataflowJobConfig config) {
     return messages
-        .apply(Window.into(Sessions.withGapDuration(Duration.standardMinutes(gapSize))))
+        .apply(Window.into(Sessions.withGapDuration(Duration.standardMinutes(config.getGapSize()))))
         .apply(ParDo.of(new ProcessLogEntryFn()))
         .apply(ParDo.of(new PairVehicleIdToLogEntryFn()))
         .apply(Combine.perKey(new GetBoundariesFn()))

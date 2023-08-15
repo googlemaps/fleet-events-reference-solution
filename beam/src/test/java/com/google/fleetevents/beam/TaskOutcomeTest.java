@@ -3,6 +3,7 @@ package com.google.fleetevents.beam;
 import static org.mockito.Mockito.doReturn;
 
 import com.google.fleetevents.beam.client.FirestoreEmulatorDatabaseClient;
+import com.google.fleetevents.beam.config.DataflowJobConfig;
 import com.google.fleetevents.beam.model.output.TaskOutcomeResult;
 import com.google.fleetevents.beam.util.SampleLogs;
 import google.maps.fleetengine.delivery.v1.Task;
@@ -30,12 +31,19 @@ public class TaskOutcomeTest {
 
   // window in minutes
   private static final int WINDOW_SIZE = 3;
+  private static final String PROJECT_ID = "gcp-project";
 
   private TaskOutcome mockedTaskOutcome;
   private FirestoreEmulatorDatabaseClient firestoreClient;
+  private DataflowJobConfig config;
 
   @Before
   public void setup() throws IOException {
+    config =
+        DataflowJobConfig.Builder.newBuilder()
+            .setWindowSize(WINDOW_SIZE)
+            .setDatastoreProjectId(PROJECT_ID)
+            .build();
     mockedTaskOutcome = Mockito.spy(TaskOutcome.class);
     firestoreClient = new FirestoreEmulatorDatabaseClient();
     doReturn(firestoreClient).when(mockedTaskOutcome).getFirestoreDatabaseClient();
@@ -43,7 +51,7 @@ public class TaskOutcomeTest {
 
   @After
   public void cleanup() throws IOException {
-    firestoreClient.cleanupTest();
+    firestoreClient.cleanupTest(PROJECT_ID);
   }
 
   @Test
@@ -55,7 +63,7 @@ public class TaskOutcomeTest {
             .build();
     PCollection<Task> input = pipeline.apply(Create.of(Arrays.asList(createTask)));
 
-    PCollection<String> output = mockedTaskOutcome.getTaskOutcomeChanges(input, WINDOW_SIZE);
+    PCollection<String> output = mockedTaskOutcome.getTaskOutcomeChanges(input, config);
 
     TaskOutcomeResult expectedResult = new TaskOutcomeResult();
     expectedResult.setNewState("TASK_OUTCOME_UNSPECIFIED");
@@ -84,7 +92,7 @@ public class TaskOutcomeTest {
 
     PCollection<Task> input1 = pipeline.apply(tasks);
 
-    PCollection<String> output1 = mockedTaskOutcome.getTaskOutcomeChanges(input1, WINDOW_SIZE);
+    PCollection<String> output1 = mockedTaskOutcome.getTaskOutcomeChanges(input1, config);
 
     TaskOutcomeResult expectedResult1 = new TaskOutcomeResult();
     expectedResult1.setNewState("TASK_OUTCOME_UNSPECIFIED");
@@ -118,7 +126,7 @@ public class TaskOutcomeTest {
 
     PCollection<Task> input1 = pipeline.apply(tasks);
 
-    PCollection<String> output1 = mockedTaskOutcome.getTaskOutcomeChanges(input1, WINDOW_SIZE);
+    PCollection<String> output1 = mockedTaskOutcome.getTaskOutcomeChanges(input1, config);
 
     TaskOutcomeResult expectedResult1 = new TaskOutcomeResult();
     expectedResult1.setNewState("SUCCEEDED");

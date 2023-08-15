@@ -27,20 +27,17 @@ public class FirestoreDatabaseClient {
   private static final Logger logger = Logger.getLogger(FirestoreDatabaseClient.class.getName());
 
   protected final String TASK_COLLECTION_NAME = "dataflowTaskMetadata";
-  private static final String PROJECT_ID = "";
   protected Firestore firestore;
 
   public FirestoreDatabaseClient() throws IOException {}
 
-  public Firestore initFirestore(String appName) throws IOException {
+  public Firestore initFirestore(String projectId, String appName) throws IOException {
+
     try {
       if (this.firestore != null) return firestore;
       GoogleCredentials credentials = GoogleCredentials.getApplicationDefault();
       FirebaseOptions options =
-          new FirebaseOptions.Builder()
-              .setCredentials(credentials)
-              .setProjectId(PROJECT_ID)
-              .build();
+          new FirebaseOptions.Builder().setCredentials(credentials).setProjectId(projectId).build();
       logger.log(Level.INFO, "firestore initialized");
       FirebaseApp app = FirebaseApp.initializeApp(options, appName);
       this.firestore = FirestoreClient.getFirestore(app);

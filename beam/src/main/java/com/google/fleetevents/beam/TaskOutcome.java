@@ -4,6 +4,7 @@ import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.DocumentReference;
 import com.google.cloud.firestore.Transaction;
 import com.google.fleetevents.beam.client.FirestoreDatabaseClient;
+import com.google.fleetevents.beam.config.DataflowJobConfig;
 import com.google.fleetevents.beam.model.TaskMetadata;
 import com.google.fleetevents.beam.model.output.TaskOutcomeResult;
 import com.google.fleetevents.beam.util.ProtoParser;
@@ -71,11 +72,16 @@ public class TaskOutcome implements Serializable {
 
     private FirestoreDatabaseClient firestoreClient = getFirestoreDatabaseClient();
 
-    private GetTaskStateChanges() throws IOException {}
+    private DataflowJobConfig config;
+
+    public GetTaskStateChanges(DataflowJobConfig config) throws IOException {
+      this.config = config;
+    }
 
     @DoFn.Setup
     public void setup() throws IOException {
-      firestoreClient.initFirestore(TaskOutcome.class.getName() + "_" + UUID.randomUUID());
+      firestoreClient.initFirestore(
+          config.getDatastoreProjectId(), TaskOutcome.class.getName() + "_" + UUID.randomUUID());
     }
 
     @DoFn.Teardown
@@ -88,11 +94,9 @@ public class TaskOutcome implements Serializable {
         throws ExecutionException, InterruptedException {
 
       DocumentReference taskReference = firestoreClient.getTaskReference(element.getName());
-
       ApiFuture<TaskOutcomeResult> taskOutcomeResult =
           firestoreClient.runTransaction(
               new Transaction.Function<TaskOutcomeResult>() {
-
                 @Override
                 public TaskOutcomeResult updateCallback(Transaction transaction)
                     throws ExecutionException, InterruptedException {
@@ -147,18 +151,19 @@ public class TaskOutcome implements Serializable {
     }
   }
 
-  protected PCollection<String> getTaskOutcomeChanges(PCollection<Task> tasks, Integer windowSize)
-      throws IOException {
+  protected PCollection<String> getTaskOutcomeChanges(
+      PCollection<Task> tasks, DataflowJobConfig config) throws IOException {
     PCollection<String> results =
         tasks
-            .apply(ParDo.of(new GetTaskStateChanges()))
+            .apply(ParDo.of(new GetTaskStateChanges(config)))
             .apply(ParDo.of(new ConvertToString()))
-            .apply(Window.into(FixedWindows.of(Duration.standardMinutes(windowSize))));
+            .apply(Window.into(FixedWindows.of(Duration.standardMinutes(config.getWindowSize()))));
     return results;
   }
 
-  public PCollection<String> run(PCollection<String> input, Integer windowSize) throws IOException {
+  public PCollection<String> run(PCollection<String> input, DataflowJobConfig config)
+      throws IOException {
     PCollection<Task> processedInput = input.apply(ParDo.of(new ConvertToTask()));
-    return getTaskOutcomeChanges(processedInput, windowSize);
+    return getTaskOutcomeChanges(processedInput, config);
   }
 }
