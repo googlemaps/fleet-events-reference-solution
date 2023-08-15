@@ -83,6 +83,13 @@
     </repositories>
 
     <build>
+        <extensions>
+            <extension>
+                <artifactId>artifactregistry-maven-wagon</artifactId>
+                <groupId>com.google.cloud.artifactregistry</groupId>
+                <version>2.1.4</version>
+            </extension>
+        </extensions>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -230,9 +237,9 @@
 
         <!-- testing -->
         <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-params</artifactId>
-            <version>5.9.3</version>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.13.2</version>
             <scope>test</scope>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.mockito/mockito-inline -->
