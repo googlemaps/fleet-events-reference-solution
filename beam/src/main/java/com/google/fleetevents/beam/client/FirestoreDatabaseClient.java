@@ -12,6 +12,7 @@ import com.google.firebase.FirebaseOptions;
 import com.google.firebase.cloud.FirestoreClient;
 import com.google.fleetevents.beam.model.TaskMetadata;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -23,7 +24,7 @@ import org.apache.beam.vendor.guava.v26_0_jre.com.google.common.base.Preconditio
  * Client for firestore with convenience methods for accessing a vehicle or task object through the
  * Firestore connection.
  */
-public class FirestoreDatabaseClient {
+public class FirestoreDatabaseClient implements Serializable {
   private static final Logger logger = Logger.getLogger(FirestoreDatabaseClient.class.getName());
 
   protected final String TASK_COLLECTION_NAME = "dataflowTaskMetadata";

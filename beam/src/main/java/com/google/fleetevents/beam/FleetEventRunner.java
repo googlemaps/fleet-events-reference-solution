@@ -18,7 +18,6 @@ import com.google.fleetevents.beam.config.DataflowJobConfig;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.apache.beam.examples.common.WriteOneFilePerWindow;
 import org.apache.beam.sdk.Pipeline;
 import org.apache.beam.sdk.io.gcp.pubsub.PubsubIO;
 import org.apache.beam.sdk.options.Default;
@@ -30,14 +29,17 @@ import org.apache.beam.sdk.values.PCollection;
 
 // run with
 // mvn compile exec:java \
-// -Dexec.mainClass=com.google.fleetevents.beam.FleetEventRunner \
-// -Dexec.cleanupDaemonThreads=false \
-// -Dexec.args=" \
+//        -Dexec.mainClass=com.google.fleetevents.beam.FleetEventRunner \
+//        -Dexec.cleanupDaemonThreads=false \
+//        -Dexec.args=" \
 //    --project=$PROJECT_ID \
 //    --region=$REGION \
 //    --runner=DataflowRunner \
-//    --gapSize=3 \
-//    --output=gs://$BUCKET_NAME/samples/output "
+//    --outputTopic=projects/$PROJECT_ID/topics/$OUTPUT_TOPIC_ID \
+//    --inputTopic=projects/$PROJECT_ID/topics/$TOPIC_ID  \
+//    --functionName=$JOB_NAME \
+//    --datastoreProjectId=$PROJECT_ID \
+//    --windowSize=3 "
 public class FleetEventRunner {
   private static final Logger logger = Logger.getLogger(FleetEventRunner.class.getName());
 
@@ -52,7 +54,7 @@ public class FleetEventRunner {
     @Required
     SampleFunction getFunctionName();
 
-    void setFunctionName(String value);
+    void setFunctionName(SampleFunction value);
 
     @Description("Choose the gcp project with datastore.")
     @Required
@@ -80,11 +82,11 @@ public class FleetEventRunner {
 
     void setWindowSize(Integer value);
 
-    @Description("Path of the output file including its filename prefix.")
+    @Description("Path of the output Pub/Sub topic.")
     @Required
-    String getOutput();
+    String getOutputTopic();
 
-    void setOutput(String value);
+    void setOutputTopic(String value);
   }
 
   public static void main(String[] args) throws IOException {
@@ -128,7 +130,8 @@ public class FleetEventRunner {
         return;
     }
     processedMessages.apply(
-        "Write Files to GCS", new WriteOneFilePerWindow(options.getOutput(), numShards));
+        "Write messages to topic", PubsubIO.writeStrings().to(options.getOutputTopic()));
+
     pipeline.run().waitUntilFinish();
   }
 }

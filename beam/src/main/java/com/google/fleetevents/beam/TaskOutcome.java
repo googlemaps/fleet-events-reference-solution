@@ -109,7 +109,6 @@ public class TaskOutcome implements Serializable {
                       result.setTask(element);
                       result.setPrevState(null);
                       result.setNewState(element.getTaskOutcome().toString());
-                      receiver.output(result);
                       // create new metadata
                       TaskMetadata newTaskMetadata = new TaskMetadata();
                       newTaskMetadata.setName(element.getName());
@@ -117,15 +116,16 @@ public class TaskOutcome implements Serializable {
                       firestoreClient.updateTask(taskReference, newTaskMetadata);
                     } else {
                       // check if state has changed
-                      if (!element
-                          .getTaskOutcome()
-                          .toString()
-                          .equals(taskMetadata.getTaskOutcome())) {
+                      if ((element.getTaskOutcome() == null
+                              && taskMetadata.getTaskOutcome() != null)
+                          || !element
+                              .getTaskOutcome()
+                              .toString()
+                              .equals(taskMetadata.getTaskOutcome())) {
                         result = new TaskOutcomeResult();
                         result.setTask(element);
                         result.setPrevState(taskMetadata.getTaskOutcome());
                         result.setNewState(element.getTaskOutcome().toString());
-                        receiver.output(result);
                         // update metadata
                         taskMetadata.setTaskOutcome(element.getTaskOutcome().toString());
                         firestoreClient.updateTask(taskReference, taskMetadata);
@@ -138,7 +138,8 @@ public class TaskOutcome implements Serializable {
                   }
                 }
               });
-      TaskOutcomeResult metadata = taskOutcomeResult.get();
+      TaskOutcomeResult result = taskOutcomeResult.get();
+      if (result != null) receiver.output(result);
     }
   }
 
