@@ -19,7 +19,7 @@ package com.google.fleetevents.common.util;
 /** Returns task ids from formal name. */
 public class NameFormatter {
 
-  // Get Id from Name, which is formatted as "/providers/{provider}/task/{taskId}
+  // Get Id from Name, which is formatted as "/providers/{provider}/task/{taskId}"
   public static String getIdFromName(String name) {
     String[] splitString = name.split("/");
     if (splitString.length != 4) {

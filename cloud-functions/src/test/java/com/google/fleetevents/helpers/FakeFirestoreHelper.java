@@ -79,6 +79,9 @@ public class FakeFirestoreHelper {
               var data = fakeBackend.get(docRef.getId());
               var docSnapshot = Mockito.mock(DocumentSnapshot.class);
               doReturn(data).when(docSnapshot).toObject(any(Class.class));
+              if (fakeBackend.containsKey(docRef.getId())) {
+                doReturn(true).when(docSnapshot).exists();
+              }
               return ApiFutures.immediateFuture(docSnapshot);
             })
         .when(transaction)
