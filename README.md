@@ -391,9 +391,24 @@ For developers considering wider adoption of terraform, below is a recommended r
 * Logs delivered out of order by PubSub (see [Cloud PubSub: Ordering Messages](https://cloud.google.com/pubsub/docs/ordering))
 * Logs processed out of order by Cloud Functions
 
-The volume of out of order logs increases when a function does not have enough compute infrastructure. For example, if memory consumption is reaching capacity (see[Monitoring Cloud Functions](https://cloud.google.com/functions/docs/monitoring)) for the deployed Cloud Function, we recommend re-deploying the function with more memory.
+The volume of out of order logs increases when a function does not have enough compute infrastructure. For example, if memory consumption is reaching capacity (see [Monitoring Cloud Functions](https://cloud.google.com/functions/docs/monitoring)) for the deployed Cloud Function, we recommend re-deploying the function with more memory. 
+to detect out of order events, enable [Monitoring out of order events](#monitoring-out-of-order-events).
 
 By default, Fleet Events does not enable retries. This may cause events to be dropped if logs fail to be delivered or processed by Cloud Functions.
+
+### Monitoring out of order events
+
+Fleet Events can detect out of order events by setting a watermark during event processing. This functionality is disabled by default to reduce Firestore
+costs, but can be enabled by setting the [runtime environment variable](https://cloud.google.com/functions/docs/configuring/env-var)
+`MEASURE_OUT_OF_ORDER = true` in your Cloud Function. This functionality can be used to determine if larger instance sizes need
+to be configured to reduce out of order events. 
+
+Upon re-deployment, your function will track a watermark based on the event time of each fleet log (per entity id), and output a 
+warning whenever an out of order event is detected. It is persisted in Firestore, which does incur Firestore read/write costs. 
+See [UpdateWatermarkTransaction](cloud-functions/src/main/java/com/google/fleetevents/lmfs/transactions/UpdateWatermarkTransaction.java) for more information.
+
+You can set up logs-based monitoring to alert on these out of order events. See [logs based metrics](https://cloud.google.com/logging/docs/logs-based-metrics)
+to configure an end-to-end alert flow.
 
 ## Conclusion
 
