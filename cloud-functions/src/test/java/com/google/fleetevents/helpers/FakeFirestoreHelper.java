@@ -28,10 +28,12 @@ import com.google.cloud.firestore.Firestore;
 import com.google.cloud.firestore.Transaction;
 import com.google.fleetevents.common.database.FirestoreDatabaseClient;
 import java.util.HashMap;
+import java.util.Map;
 import org.mockito.Mockito;
 
 /** Helper for creating a fake firestore used in testing transactions. */
 public class FakeFirestoreHelper {
+  private static final String WATERMARK_DOCUMENT_KEY = "value";
 
   public static FirestoreDatabaseClient getFakeFirestoreDatabaseClient() {
     Firestore mockFirestore = Mockito.mock(Firestore.class);
@@ -78,6 +80,12 @@ public class FakeFirestoreHelper {
               var docRef = (DocumentReference) args[0];
               var data = fakeBackend.get(docRef.getId());
               var docSnapshot = Mockito.mock(DocumentSnapshot.class);
+              // this mocks out UpdateWatermarkTransaction, which does a "getLong"
+              if (data instanceof HashMap) {
+                doReturn(((Map) data).get(WATERMARK_DOCUMENT_KEY))
+                    .when(docSnapshot)
+                    .getLong(any(String.class));
+              }
               doReturn(data).when(docSnapshot).toObject(any(Class.class));
               if (fakeBackend.containsKey(docRef.getId())) {
                 doReturn(true).when(docSnapshot).exists();

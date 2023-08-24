@@ -46,7 +46,7 @@ public class UpdateWatermarkTransaction implements Transaction.Function<Long> {
     long currentWatermark;
     if (watermark.exists()) {
       // Check if logEntry is out of order
-      currentWatermark = (Long) watermark.toObject(Map.class).get(DOCUMENT_KEY);
+      currentWatermark = watermark.getLong(DOCUMENT_KEY);
       if (currentWatermark > TimeUtil.protobufToLong(logEntry.getTimestamp())) {
         logger.warn(
             String.format("found out of order event"),
