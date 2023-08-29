@@ -4,7 +4,7 @@ import static org.mockito.Mockito.doReturn;
 
 import com.google.fleetevents.beam.client.FirestoreEmulatorDatabaseClient;
 import com.google.fleetevents.beam.config.DataflowJobConfig;
-import com.google.fleetevents.beam.model.output.TaskOutcomeResult;
+import com.google.fleetevents.beam.model.output.TaskOutcomeChangeOutputEvent;
 import com.google.fleetevents.beam.util.SampleLogs;
 import google.maps.fleetengine.delivery.v1.Task;
 import java.io.IOException;
@@ -26,14 +26,14 @@ import org.junit.runners.JUnit4;
 import org.mockito.Mockito;
 
 @RunWith(JUnit4.class)
-public class TaskOutcomeTest {
+public class TaskOutcomeChangeTest {
   @Rule public final transient TestPipeline pipeline = TestPipeline.create();
 
   // window in minutes
   private static final int WINDOW_SIZE = 3;
   private static final String PROJECT_ID = "gcp-project";
 
-  private TaskOutcome mockedTaskOutcome;
+  private TaskOutcomeChange mockedTaskOutcomeChange;
   private FirestoreEmulatorDatabaseClient firestoreClient;
   private DataflowJobConfig config;
 
@@ -44,9 +44,10 @@ public class TaskOutcomeTest {
             .setWindowSize(WINDOW_SIZE)
             .setDatastoreProjectId(PROJECT_ID)
             .build();
-    mockedTaskOutcome = Mockito.spy(TaskOutcome.class);
+    TaskOutcomeChange taskOutcomeChange = new TaskOutcomeChange(config);
+    mockedTaskOutcomeChange = Mockito.spy(taskOutcomeChange);
     firestoreClient = new FirestoreEmulatorDatabaseClient();
-    doReturn(firestoreClient).when(mockedTaskOutcome).getFirestoreDatabaseClient();
+    doReturn(firestoreClient).when(mockedTaskOutcomeChange).getFirestoreDatabaseClient();
   }
 
   @After
@@ -63,10 +64,10 @@ public class TaskOutcomeTest {
             .build();
     PCollection<Task> input = pipeline.apply(Create.of(Arrays.asList(createTask)));
 
-    PCollection<String> output = mockedTaskOutcome.getTaskOutcomeChanges(input, config);
+    PCollection<String> output = mockedTaskOutcomeChange.getTaskOutcomeChanges(input, config);
 
-    TaskOutcomeResult expectedResult = new TaskOutcomeResult();
-    expectedResult.setNewState("TASK_OUTCOME_UNSPECIFIED");
+    TaskOutcomeChangeOutputEvent expectedResult = new TaskOutcomeChangeOutputEvent();
+    expectedResult.setNewOutcome("TASK_OUTCOME_UNSPECIFIED");
     expectedResult.setTask(createTask);
     PAssert.that(output).containsInAnyOrder(expectedResult.toString());
     pipeline.run();
@@ -92,14 +93,14 @@ public class TaskOutcomeTest {
 
     PCollection<Task> input1 = pipeline.apply(tasks);
 
-    PCollection<String> output1 = mockedTaskOutcome.getTaskOutcomeChanges(input1, config);
+    PCollection<String> output1 = mockedTaskOutcomeChange.getTaskOutcomeChanges(input1, config);
 
-    TaskOutcomeResult expectedResult1 = new TaskOutcomeResult();
-    expectedResult1.setNewState("TASK_OUTCOME_UNSPECIFIED");
+    TaskOutcomeChangeOutputEvent expectedResult1 = new TaskOutcomeChangeOutputEvent();
+    expectedResult1.setNewOutcome("TASK_OUTCOME_UNSPECIFIED");
     expectedResult1.setTask(createTask);
-    TaskOutcomeResult expectedResult2 = new TaskOutcomeResult();
-    expectedResult2.setPrevState("TASK_OUTCOME_UNSPECIFIED");
-    expectedResult2.setNewState("SUCCEEDED");
+    TaskOutcomeChangeOutputEvent expectedResult2 = new TaskOutcomeChangeOutputEvent();
+    expectedResult2.setPreviousOutcome("TASK_OUTCOME_UNSPECIFIED");
+    expectedResult2.setNewOutcome("SUCCEEDED");
     expectedResult2.setTask(updateTask);
     PAssert.that(output1)
         .containsInAnyOrder(expectedResult1.toString(), expectedResult2.toString());
@@ -126,10 +127,10 @@ public class TaskOutcomeTest {
 
     PCollection<Task> input1 = pipeline.apply(tasks);
 
-    PCollection<String> output1 = mockedTaskOutcome.getTaskOutcomeChanges(input1, config);
+    PCollection<String> output1 = mockedTaskOutcomeChange.getTaskOutcomeChanges(input1, config);
 
-    TaskOutcomeResult expectedResult1 = new TaskOutcomeResult();
-    expectedResult1.setNewState("SUCCEEDED");
+    TaskOutcomeChangeOutputEvent expectedResult1 = new TaskOutcomeChangeOutputEvent();
+    expectedResult1.setNewOutcome("SUCCEEDED");
     expectedResult1.setTask(updateTask1);
     PAssert.that(output1).containsInAnyOrder(expectedResult1.toString());
     pipeline.run();

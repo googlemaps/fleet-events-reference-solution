@@ -1,6 +1,7 @@
 package com.google.fleetevents.beam;
 
 import com.google.fleetevents.beam.config.DataflowJobConfig;
+import com.google.fleetevents.beam.model.output.VehicleNotUpdatingOutputEvent;
 import com.google.fleetevents.beam.util.SampleLogs;
 import com.google.logging.v2.LogEntry;
 import com.google.protobuf.InvalidProtocolBufferException;
@@ -24,7 +25,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 @RunWith(JUnit4.class)
-public class VehicleOfflineTest {
+public class VehicleNotUpdatingTest {
   @Rule public final transient TestPipeline pipeline = TestPipeline.create();
   private static final int GAP_SIZE = 3;
   private static final int THRESHOLD = 60 * GAP_SIZE;
@@ -41,14 +42,14 @@ public class VehicleOfflineTest {
   public void testOneLog() throws IOException {
     LogEntry logEntry = SampleLogs.getUpdateDeliveryVehicleLogEntry1();
     PCollection<String> input = pipeline.apply(Create.of(Arrays.asList(getJson(logEntry))));
-    PCollection<String> output = VehicleOffline.run(input, config);
+    PCollection<String> output = new VehicleNotUpdating(config).run(input);
 
-    String expectedResult =
-        "providers/fake-gcp-project/deliveryVehicles/sample_fleet_events_demo_vehicle_d0fba8: "
-            + "Boundary{min=1681502796, max=1681502796, "
-            + "minId='159733b879b0e36f5c35d41998aa51c9, "
-            + "maxId='159733b879b0e36f5c35d41998aa51c9}";
-    PAssert.that(output).containsInAnyOrder(expectedResult);
+    VehicleNotUpdatingOutputEvent expectedOutput = new VehicleNotUpdatingOutputEvent();
+    expectedOutput.setLastUpdateTime(1681502796);
+    expectedOutput.setFirstUpdateTime(1681502796);
+    expectedOutput.setDeliveryVehicle(SampleLogs.getUpdateDeliveryVehicle1());
+    expectedOutput.setGapDuration(config.getGapSize());
+    PAssert.that(output).containsInAnyOrder(expectedOutput.toString());
     pipeline.run();
   }
 
@@ -65,14 +66,13 @@ public class VehicleOfflineTest {
 
     PCollection<String> input =
         pipeline.apply(Create.of(Arrays.asList(getJson(logEntry1), getJson(logEntry2))));
-    PCollection<String> output = VehicleOffline.run(input, config);
-
-    String expectedResult =
-        "providers/fake-gcp-project/deliveryVehicles/sample_fleet_events_demo_vehicle_d0fba8: "
-            + "Boundary{min=0, max=180, "
-            + "minId='159733b879b0e36f5c35d41998aa51c9, "
-            + "maxId='159733b879b0e36f5c35d41998aa51c9}";
-    PAssert.that(output).containsInAnyOrder(expectedResult);
+    PCollection<String> output = new VehicleNotUpdating(config).run(input);
+    VehicleNotUpdatingOutputEvent expectedOutput = new VehicleNotUpdatingOutputEvent();
+    expectedOutput.setLastUpdateTime(180);
+    expectedOutput.setFirstUpdateTime(0);
+    expectedOutput.setDeliveryVehicle(SampleLogs.getUpdateDeliveryVehicle1());
+    expectedOutput.setGapDuration(config.getGapSize());
+    PAssert.that(output).containsInAnyOrder(expectedOutput.toString());
     pipeline.run();
   }
 
@@ -95,19 +95,20 @@ public class VehicleOfflineTest {
             .advanceWatermarkToInfinity();
 
     PCollection<String> input = pipeline.apply(createLogs);
-    PCollection<String> output = VehicleOffline.run(input, config);
+    PCollection<String> output = new VehicleNotUpdating(config).run(input);
 
-    String expectedResult1 =
-        "providers/fake-gcp-project/deliveryVehicles/sample_fleet_events_demo_vehicle_d0fba8: "
-            + "Boundary{min=0, max=0, "
-            + "minId='159733b879b0e36f5c35d41998aa51c9, "
-            + "maxId='159733b879b0e36f5c35d41998aa51c9}";
-    String expectedResult2 =
-        "providers/fake-gcp-project/deliveryVehicles/sample_fleet_events_demo_vehicle_d0fba8: "
-            + "Boundary{min=181, max=181, "
-            + "minId='159733b879b0e36f5c35d41998aa51c9, "
-            + "maxId='159733b879b0e36f5c35d41998aa51c9}";
-    PAssert.that(output).containsInAnyOrder(Arrays.asList(expectedResult1, expectedResult2));
+    VehicleNotUpdatingOutputEvent expectedOutput1 = new VehicleNotUpdatingOutputEvent();
+    expectedOutput1.setLastUpdateTime(0);
+    expectedOutput1.setFirstUpdateTime(0);
+    expectedOutput1.setDeliveryVehicle(SampleLogs.getUpdateDeliveryVehicle1());
+    expectedOutput1.setGapDuration(config.getGapSize());
+    VehicleNotUpdatingOutputEvent expectedOutput2 = new VehicleNotUpdatingOutputEvent();
+    expectedOutput2.setLastUpdateTime(181);
+    expectedOutput2.setFirstUpdateTime(181);
+    expectedOutput2.setDeliveryVehicle(SampleLogs.getUpdateDeliveryVehicle1());
+    expectedOutput2.setGapDuration(config.getGapSize());
+    PAssert.that(output)
+        .containsInAnyOrder(Arrays.asList(expectedOutput1.toString(), expectedOutput2.toString()));
     pipeline.run();
   }
 
@@ -132,19 +133,22 @@ public class VehicleOfflineTest {
     PCollection<String> input =
         pipeline.apply(
             Create.of(Arrays.asList(getJson(logEntry1), getJson(logEntry2), getJson(logEntry3))));
-    PCollection<String> output = VehicleOffline.run(input, config);
+    PCollection<String> output = new VehicleNotUpdating(config).run(input);
 
-    String expectedResult1 =
-        "providers/fake-gcp-project/deliveryVehicles/sample_fleet_events_demo_vehicle_d0fba8: "
-            + "Boundary{min=0, max=90, "
-            + "minId='testStartId, "
-            + "maxId='testEndId}";
-    String expectedResult2 =
-        "providers/fake-gcp-project/deliveryVehicles/sample_fleet_events_demo_vehicle_1884d0: "
-            + "Boundary{min=0, max=0, "
-            + "minId='testOtherId, "
-            + "maxId='testOtherId}";
-    PAssert.that(output).containsInAnyOrder(Arrays.asList(expectedResult1, expectedResult2));
+    VehicleNotUpdatingOutputEvent expectedOutput1 = new VehicleNotUpdatingOutputEvent();
+    expectedOutput1.setLastUpdateTime(90);
+    expectedOutput1.setFirstUpdateTime(0);
+    expectedOutput1.setDeliveryVehicle(SampleLogs.getUpdateDeliveryVehicle1());
+    expectedOutput1.setGapDuration(config.getGapSize());
+
+    VehicleNotUpdatingOutputEvent expectedOutput2 = new VehicleNotUpdatingOutputEvent();
+    expectedOutput2.setLastUpdateTime(0);
+    expectedOutput2.setFirstUpdateTime(0);
+    expectedOutput2.setDeliveryVehicle(SampleLogs.getUpdateDeliveryVehicle2());
+    expectedOutput2.setGapDuration(config.getGapSize());
+    PAssert.that(output)
+        .containsInAnyOrder(Arrays.asList(expectedOutput1.toString(), expectedOutput2.toString()));
+
     pipeline.run();
   }
 
@@ -174,25 +178,31 @@ public class VehicleOfflineTest {
             .advanceWatermarkToInfinity();
 
     PCollection<String> input = pipeline.apply(createLogs);
-    PCollection<String> output = VehicleOffline.run(input, config);
+    PCollection<String> output = new VehicleNotUpdating(config).run(input);
 
-    String expectedResult1 =
-        "providers/fake-gcp-project/deliveryVehicles/sample_fleet_events_demo_vehicle_d0fba8: "
-            + "Boundary{min=0, max=0, "
-            + "minId='testKey1Window1, "
-            + "maxId='testKey1Window1}";
-    String expectedResult2 =
-        "providers/fake-gcp-project/deliveryVehicles/sample_fleet_events_demo_vehicle_1884d0: "
-            + "Boundary{min=0, max=0, "
-            + "minId='testKey2Window1, "
-            + "maxId='testKey2Window1}";
-    String expectedResult3 =
-        "providers/fake-gcp-project/deliveryVehicles/sample_fleet_events_demo_vehicle_d0fba8: "
-            + "Boundary{min=181, max=181, "
-            + "minId='testKey1Window2, "
-            + "maxId='testKey1Window2}";
+    VehicleNotUpdatingOutputEvent expectedOutput1 = new VehicleNotUpdatingOutputEvent();
+    expectedOutput1.setLastUpdateTime(0);
+    expectedOutput1.setFirstUpdateTime(0);
+    expectedOutput1.setDeliveryVehicle(SampleLogs.getUpdateDeliveryVehicle1());
+    expectedOutput1.setGapDuration(config.getGapSize());
+
+    VehicleNotUpdatingOutputEvent expectedOutput2 = new VehicleNotUpdatingOutputEvent();
+    expectedOutput2.setLastUpdateTime(0);
+    expectedOutput2.setFirstUpdateTime(0);
+    expectedOutput2.setDeliveryVehicle(SampleLogs.getUpdateDeliveryVehicle2());
+    expectedOutput2.setGapDuration(config.getGapSize());
+
+    VehicleNotUpdatingOutputEvent expectedOutput3 = new VehicleNotUpdatingOutputEvent();
+    expectedOutput3.setLastUpdateTime(181);
+    expectedOutput3.setFirstUpdateTime(181);
+    expectedOutput3.setDeliveryVehicle(SampleLogs.getUpdateDeliveryVehicle1());
+    expectedOutput3.setGapDuration(config.getGapSize());
     PAssert.that(output)
-        .containsInAnyOrder(Arrays.asList(expectedResult1, expectedResult2, expectedResult3));
+        .containsInAnyOrder(
+            Arrays.asList(
+                expectedOutput1.toString(),
+                expectedOutput2.toString(),
+                expectedOutput3.toString()));
     pipeline.run();
   }
 

@@ -6,7 +6,7 @@ import com.google.cloud.firestore.Transaction;
 import com.google.fleetevents.beam.client.FirestoreDatabaseClient;
 import com.google.fleetevents.beam.config.DataflowJobConfig;
 import com.google.fleetevents.beam.model.TaskMetadata;
-import com.google.fleetevents.beam.model.output.TaskOutcomeResult;
+import com.google.fleetevents.beam.model.output.TaskOutcomeChangeOutputEvent;
 import com.google.fleetevents.beam.util.ProtoParser;
 import com.google.logging.v2.LogEntry;
 import com.google.protobuf.InvalidProtocolBufferException;
@@ -24,8 +24,18 @@ import org.apache.beam.sdk.transforms.windowing.Window;
 import org.apache.beam.sdk.values.PCollection;
 import org.joda.time.Duration;
 
-public class TaskOutcome implements Serializable {
-  private static final Logger logger = Logger.getLogger(TaskOutcome.class.getName());
+public class TaskOutcomeChange implements Serializable {
+  private static final Logger logger = Logger.getLogger(TaskOutcomeChange.class.getName());
+
+  private final DataflowJobConfig config;
+
+  public TaskOutcomeChange() {
+    this.config = new DataflowJobConfig();
+  }
+
+  public TaskOutcomeChange(DataflowJobConfig config) {
+    this.config = config;
+  }
 
   private class ConvertToTask extends DoFn<String, Task> {
     private LogEntry stringToLogEntry(String json) throws InvalidProtocolBufferException {
@@ -68,7 +78,7 @@ public class TaskOutcome implements Serializable {
     return new FirestoreDatabaseClient();
   }
 
-  private class GetTaskStateChanges extends DoFn<Task, TaskOutcomeResult> {
+  private class GetTaskStateChanges extends DoFn<Task, TaskOutcomeChangeOutputEvent> {
 
     private FirestoreDatabaseClient firestoreClient = getFirestoreDatabaseClient();
 
@@ -81,7 +91,8 @@ public class TaskOutcome implements Serializable {
     @DoFn.Setup
     public void setup() throws IOException {
       firestoreClient.initFirestore(
-          config.getDatastoreProjectId(), TaskOutcome.class.getName() + "_" + UUID.randomUUID());
+          config.getDatastoreProjectId(),
+          TaskOutcomeChange.class.getName() + "_" + UUID.randomUUID());
     }
 
     @DoFn.Teardown
@@ -90,25 +101,26 @@ public class TaskOutcome implements Serializable {
     }
 
     @DoFn.ProcessElement
-    public void processElement(@Element Task element, OutputReceiver<TaskOutcomeResult> receiver)
+    public void processElement(
+        @Element Task element, OutputReceiver<TaskOutcomeChangeOutputEvent> receiver)
         throws ExecutionException, InterruptedException {
 
       DocumentReference taskReference = firestoreClient.getTaskReference(element.getName());
-      ApiFuture<TaskOutcomeResult> taskOutcomeResult =
+      ApiFuture<TaskOutcomeChangeOutputEvent> taskOutcomeResult =
           firestoreClient.runTransaction(
-              new Transaction.Function<TaskOutcomeResult>() {
+              new Transaction.Function<TaskOutcomeChangeOutputEvent>() {
                 @Override
-                public TaskOutcomeResult updateCallback(Transaction transaction)
+                public TaskOutcomeChangeOutputEvent updateCallback(Transaction transaction)
                     throws ExecutionException, InterruptedException {
                   try {
                     TaskMetadata taskMetadata = firestoreClient.getTask(taskReference);
-                    TaskOutcomeResult result = null;
+                    TaskOutcomeChangeOutputEvent result = null;
                     if (taskMetadata == null) {
                       // this task is new
-                      result = new TaskOutcomeResult();
+                      result = new TaskOutcomeChangeOutputEvent();
                       result.setTask(element);
-                      result.setPrevState(null);
-                      result.setNewState(element.getTaskOutcome().toString());
+                      result.setPreviousOutcome(null);
+                      result.setNewOutcome(element.getTaskOutcome().toString());
                       // create new metadata
                       TaskMetadata newTaskMetadata = new TaskMetadata();
                       newTaskMetadata.setName(element.getName());
@@ -122,10 +134,10 @@ public class TaskOutcome implements Serializable {
                               .getTaskOutcome()
                               .toString()
                               .equals(taskMetadata.getTaskOutcome())) {
-                        result = new TaskOutcomeResult();
+                        result = new TaskOutcomeChangeOutputEvent();
                         result.setTask(element);
-                        result.setPrevState(taskMetadata.getTaskOutcome());
-                        result.setNewState(element.getTaskOutcome().toString());
+                        result.setPreviousOutcome(taskMetadata.getTaskOutcome());
+                        result.setNewOutcome(element.getTaskOutcome().toString());
                         // update metadata
                         taskMetadata.setTaskOutcome(element.getTaskOutcome().toString());
                         firestoreClient.updateTask(taskReference, taskMetadata);
@@ -138,15 +150,15 @@ public class TaskOutcome implements Serializable {
                   }
                 }
               });
-      TaskOutcomeResult result = taskOutcomeResult.get();
+      TaskOutcomeChangeOutputEvent result = taskOutcomeResult.get();
       if (result != null) receiver.output(result);
     }
   }
 
-  private static class ConvertToString extends DoFn<TaskOutcomeResult, String> {
+  private class ConvertToString extends DoFn<TaskOutcomeChangeOutputEvent, String> {
     @DoFn.ProcessElement
     public void processElement(
-        @Element TaskOutcomeResult element, OutputReceiver<String> receiver) {
+            @Element TaskOutcomeChangeOutputEvent element, OutputReceiver<String> receiver) {
       logger.log(Level.INFO, String.format("Outputting element %s", element.toString()));
       receiver.output(element.toString());
     }
@@ -162,8 +174,7 @@ public class TaskOutcome implements Serializable {
     return results;
   }
 
-  public PCollection<String> run(PCollection<String> input, DataflowJobConfig config)
-      throws IOException {
+  public PCollection<String> run(PCollection<String> input) throws IOException {
     PCollection<Task> processedInput = input.apply(ParDo.of(new ConvertToTask()));
     return getTaskOutcomeChanges(processedInput, config);
   }

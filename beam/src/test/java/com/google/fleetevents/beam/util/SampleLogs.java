@@ -6,6 +6,7 @@ import com.google.protobuf.Message;
 import com.google.protobuf.Struct;
 import com.google.protobuf.Value;
 import com.google.protobuf.util.JsonFormat;
+import google.maps.fleetengine.delivery.v1.DeliveryVehicle;
 import google.maps.fleetengine.delivery.v1.Task;
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -47,6 +48,20 @@ public class SampleLogs {
   public static Task getUpdateTask1() throws IOException {
     Task task = parseLogEntryResponse(getUpdateTaskLogEntry1(), Task.getDefaultInstance());
     return task;
+  }
+
+  public static DeliveryVehicle getUpdateDeliveryVehicle1() throws IOException {
+    DeliveryVehicle deliveryVehicle =
+        parseLogEntryResponse(
+            getUpdateDeliveryVehicleLogEntry1(), DeliveryVehicle.getDefaultInstance());
+    return deliveryVehicle;
+  }
+
+  public static DeliveryVehicle getUpdateDeliveryVehicle2() throws IOException {
+    DeliveryVehicle deliveryVehicle =
+        parseLogEntryResponse(
+            getUpdateDeliveryVehicleLogEntry2(), DeliveryVehicle.getDefaultInstance());
+    return deliveryVehicle;
   }
 
   public static LogEntry getCreateTaskLogEntry1() throws IOException {

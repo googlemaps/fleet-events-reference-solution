@@ -1,6 +1,7 @@
 package com.google.fleetevents.beam;
 
 import com.google.fleetevents.beam.config.DataflowJobConfig;
+import com.google.fleetevents.beam.model.output.VehicleNotUpdatingOutputEvent;
 import com.google.fleetevents.beam.util.ProtoParser;
 import com.google.logging.v2.LogEntry;
 import com.google.protobuf.InvalidProtocolBufferException;
@@ -19,8 +20,13 @@ import org.apache.beam.sdk.values.KV;
 import org.apache.beam.sdk.values.PCollection;
 import org.joda.time.Duration;
 
-public class VehicleOffline {
-  private static final Logger logger = Logger.getLogger(VehicleOffline.class.getName());
+public class VehicleNotUpdating implements Serializable {
+  private static final Logger logger = Logger.getLogger(VehicleNotUpdating.class.getName());
+  private final int GAP_DURATION;
+
+  public VehicleNotUpdating(DataflowJobConfig config) {
+    this.GAP_DURATION = config.getGapSize();
+  }
 
   static class Pair implements Serializable {
     private LogEntry logEntry;
@@ -167,21 +173,27 @@ public class VehicleOffline {
     }
   }
 
-  public static class ConvertToString
+  public class ConvertToOutput
       extends SimpleFunction<KV<String, GetBoundariesFn.Boundary>, String> {
     @Override
     public String apply(KV<String, GetBoundariesFn.Boundary> input) {
       System.out.printf("got boundary %s:%s%n", input.getKey(), input.getValue());
-      return input.getKey() + ": " + input.getValue().toString();
+      GetBoundariesFn.Boundary boundary = input.getValue();
+      VehicleNotUpdatingOutputEvent output = new VehicleNotUpdatingOutputEvent();
+      output.setGapDuration(GAP_DURATION);
+      output.setFirstUpdateTime(boundary.min);
+      output.setLastUpdateTime(boundary.max);
+      output.setDeliveryVehicle(boundary.maxVehicle);
+      return output.toString();
     }
   }
 
-  public static PCollection<String> run(PCollection<String> messages, DataflowJobConfig config) {
+  public PCollection<String> run(PCollection<String> messages) {
     return messages
-        .apply(Window.into(Sessions.withGapDuration(Duration.standardMinutes(config.getGapSize()))))
+        .apply(Window.into(Sessions.withGapDuration(Duration.standardMinutes(GAP_DURATION))))
         .apply(ParDo.of(new ProcessLogEntryFn()))
         .apply(ParDo.of(new PairVehicleIdToLogEntryFn()))
         .apply(Combine.perKey(new GetBoundariesFn()))
-        .apply(MapElements.via(new ConvertToString()));
+        .apply(MapElements.via(new ConvertToOutput()));
   }
 }
