@@ -17,7 +17,7 @@
 package com.google.fleetevents.lmfs;
 
 import com.google.fleetengine.auth.token.factory.signer.SignerInitializationException;
-import com.google.fleetevents.FleetEventsFunction;
+import com.google.fleetevents.FleetEventsFunctionBase;
 import com.google.fleetevents.lmfs.handlers.DistanceRemainingHandler;
 import com.google.fleetevents.lmfs.handlers.EtaChangeHandler;
 import com.google.fleetevents.lmfs.handlers.TaskOutcomeHandler;
@@ -29,10 +29,10 @@ import java.io.IOException;
  * Default fleet events function implementation. Modify for custom logic. Register Fleet Event
  * handlers here. Entrypoint class for Cloud Functions.
  */
-public class DefaultFleetEventsFunction extends FleetEventsFunction {
+public class FleetEventsFunction extends FleetEventsFunctionBase {
 
-  public DefaultFleetEventsFunction() throws IOException, SignerInitializationException {
-    super(new DefaultFleetEventCreator());
+  public FleetEventsFunction() throws IOException, SignerInitializationException {
+    super(new FleetEventCreator());
     registerFleetEventHandler(new TaskOutcomeHandler());
     registerFleetEventHandler(new TimeRemainingHandler());
     registerFleetEventHandler(new EtaChangeHandler());

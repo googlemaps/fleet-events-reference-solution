@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-package com.google.fleetevents.lmfs.models.outputs;
+package com.google.fleetevents.common.models;
 
-import com.google.fleetevents.common.models.FleetEvent;
 import java.util.Objects;
 
 /**
@@ -25,8 +24,8 @@ import java.util.Objects;
  */
 public class OutputEvent {
 
-  FleetEvent fleetEvent;
-  Type type;
+  protected FleetEvent fleetEvent;
+  protected Type type;
 
   public FleetEvent getFleetEvent() {
     return fleetEvent;
@@ -40,7 +39,7 @@ public class OutputEvent {
     return type;
   }
 
-  void setType(Type type) {
+  public void setType(Type type) {
     this.type = type;
   }
 
@@ -63,6 +62,7 @@ public class OutputEvent {
     RELATIVE_ETA,
     DISTANCE_REMAINING,
     TIME_REMAINING,
-    TASK_STATE_CHANGED
+    TASK_STATE_CHANGED,
+    TRIP_STATUS_CHANGED
   }
 }

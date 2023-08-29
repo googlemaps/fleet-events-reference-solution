@@ -19,15 +19,15 @@ package com.google.fleetevents.lmfs.transactions;
 import com.google.cloud.firestore.DocumentReference;
 import com.google.cloud.firestore.Transaction;
 import com.google.common.collect.ImmutableList;
-import com.google.fleetevents.FleetEventCreator;
+import com.google.fleetevents.FleetEventCreatorBase;
 import com.google.fleetevents.FleetEventHandler;
 import com.google.fleetevents.common.database.FirestoreDatabaseClient;
+import com.google.fleetevents.common.models.OutputEvent;
 import com.google.fleetevents.common.util.ProtoParser;
 import com.google.fleetevents.common.util.TimeUtil;
 import com.google.fleetevents.lmfs.models.DeliveryTaskData;
 import com.google.fleetevents.lmfs.models.DeliveryTaskFleetEvent;
 import com.google.fleetevents.lmfs.models.DeliveryVehicleData;
-import com.google.fleetevents.lmfs.models.outputs.OutputEvent;
 import com.google.logging.v2.LogEntry;
 import com.google.protobuf.InvalidProtocolBufferException;
 import google.maps.fleetengine.delivery.v1.CreateTaskRequest;
@@ -64,7 +64,7 @@ public class CreateDeliveryTaskTransaction implements Transaction.Function<List<
     newDeliveryTaskDocRef = firestoreDatabaseClient.getTaskDocument(deliveryTaskId);
     // delivery_vehicle_id for create_task_log is usually empty
     if (deliveryVehicleId != null && !deliveryVehicleId.isEmpty()) {
-      deliveryVehicleDocRef = firestoreDatabaseClient.getVehicleDocument(deliveryVehicleId);
+      deliveryVehicleDocRef = firestoreDatabaseClient.getDeliveryVehicleDocument(deliveryVehicleId);
     } else {
       deliveryVehicleDocRef = null;
     }
@@ -96,7 +96,7 @@ public class CreateDeliveryTaskTransaction implements Transaction.Function<List<
     }
 
     List<OutputEvent> outputEvents =
-        FleetEventCreator.callFleetEventHandlers(
+        FleetEventCreatorBase.callFleetEventHandlers(
             ImmutableList.of(deliveryTaskFleetEventBuilder.build()),
             fleetEventHandlers,
             transaction,

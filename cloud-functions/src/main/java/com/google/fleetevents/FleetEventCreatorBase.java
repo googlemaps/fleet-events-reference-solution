@@ -19,25 +19,27 @@ package com.google.fleetevents;
 import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.Transaction;
 import com.google.common.collect.ImmutableList;
+import com.google.fleetevents.common.config.FleetEventConfig;
 import com.google.fleetevents.common.database.FirestoreDatabaseClient;
 import com.google.fleetevents.common.models.FleetEvent;
+import com.google.fleetevents.common.models.OutputEvent;
 import com.google.fleetevents.common.models.Pair;
 import com.google.fleetevents.common.util.FleetEngineClient;
 import com.google.fleetevents.common.util.ProtoParser;
-import com.google.fleetevents.lmfs.config.FleetEventConfig;
 import com.google.fleetevents.lmfs.models.DeliveryTaskFleetEvent;
 import com.google.fleetevents.lmfs.models.DeliveryVehicleFleetEvent;
 import com.google.fleetevents.lmfs.models.LatLng;
 import com.google.fleetevents.lmfs.models.TaskInfo;
 import com.google.fleetevents.lmfs.models.VehicleJourneySegment;
 import com.google.fleetevents.lmfs.models.VehicleStop;
-import com.google.fleetevents.lmfs.models.outputs.OutputEvent;
 import com.google.fleetevents.lmfs.transactions.BatchCreateDeliveryTasksTransaction;
 import com.google.fleetevents.lmfs.transactions.CreateDeliveryTaskTransaction;
 import com.google.fleetevents.lmfs.transactions.CreateDeliveryVehicleTransaction;
 import com.google.fleetevents.lmfs.transactions.UpdateDeliveryTaskTransaction;
 import com.google.fleetevents.lmfs.transactions.UpdateDeliveryVehicleTransaction;
 import com.google.fleetevents.lmfs.transactions.UpdateWatermarkTransaction;
+import com.google.fleetevents.odrd.transactions.CreateTripTransaction;
+import com.google.fleetevents.odrd.transactions.UpdateTripTransaction;
 import com.google.logging.v2.LogEntry;
 import com.google.protobuf.InvalidProtocolBufferException;
 import google.maps.fleetengine.delivery.v1.CreateDeliveryVehicleRequest;
@@ -55,17 +57,20 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 /** Creates events from Fleet Engine cloud logs. */
-public abstract class FleetEventCreator {
-
-  private static final Logger logger = Logger.getLogger(FleetEventCreator.class.getName());
+public abstract class FleetEventCreatorBase {
+  private static final Logger logger = Logger.getLogger(FleetEventCreatorBase.class.getName());
 
   private static final String CREATE_DELIVERY_VEHICLE_LOG_NAME = "create_delivery_vehicle";
   private static final String UPDATE_DELIVERY_VEHICLE_LOG_NAME = "update_delivery_vehicle";
   private static final String UPDATE_TASK_LOG_NAME = "update_task";
   private static final String CREATE_TASK_LOG_NAME = "create_task";
   private static final String BATCH_CREATE_TASKS_LOG_NAME = "batch_create_tasks";
+  private static final String CREATE_VEHICLE_LOG_NAME = "create_vehicle";
+  private static final String UPDATE_VEHICLE_LOG_NAME = "update_vehicle";
+  private static final String CREATE_TRIP_LOG_NAME = "create_trip";
+  private static final String UPDATE_TRIP_LOG_NAME = "update_trip";
 
-  public FleetEventCreator() {}
+  public FleetEventCreatorBase() {}
 
   public static List<OutputEvent> callFleetEventHandlers(
       List<FleetEvent> fleetEvents,
@@ -80,8 +85,12 @@ public abstract class FleetEventCreator {
     for (FleetEvent fleetEvent : fleetEvents) {
       List<FleetEventHandler> responders = new ArrayList<>();
       for (FleetEventHandler fleetEventHandler : fleetEventHandlers) {
-        if (fleetEventHandler.respondsTo(fleetEvent, transaction, firestoreDatabaseClient)) {
-          responders.add(fleetEventHandler);
+        try {
+          if (fleetEventHandler.respondsTo(fleetEvent, transaction, firestoreDatabaseClient)) {
+            responders.add(fleetEventHandler);
+          }
+        } catch (Exception e) {
+          logger.warning("Error encountered with handler respondsTo: " + e);
         }
       }
       respondingHandlers.add(new Pair<>(fleetEvent, responders));
@@ -91,13 +100,17 @@ public abstract class FleetEventCreator {
     for (var respondingHandler : respondingHandlers) {
       for (FleetEventHandler responder : respondingHandler.getValue()) {
         var fleetEvent = respondingHandler.getKey();
-        List<OutputEvent> outputs = responder.handleEvent(fleetEvent, transaction);
-        for (OutputEvent output : outputs) {
-          if (responder.verifyOutput(output)) {
-            outputEvents.add(output);
-          } else {
-            logger.warning(String.format("Dropped malformed output: %s", output.toString()));
+        try {
+          List<OutputEvent> outputs = responder.handleEvent(fleetEvent, transaction);
+          for (OutputEvent output : outputs) {
+            if (responder.verifyOutput(output)) {
+              outputEvents.add(output);
+            } else {
+              logger.warning(String.format("Dropped malformed output: %s", output.toString()));
+            }
           }
+        } catch (Exception e) {
+          logger.warning("Error encountered with handler in handleEvent: " + e);
         }
       }
     }
@@ -105,7 +118,7 @@ public abstract class FleetEventCreator {
   }
 
   public List<OutputEvent> processCloudLog(
-      final LogEntry logEntry, final List<FleetEventHandler> fleetEventHandlers)
+      LogEntry logEntry, List<FleetEventHandler> fleetEventHandlers)
       throws InvalidProtocolBufferException, ExecutionException, InterruptedException {
     ImmutableList.Builder<OutputEvent> outputEventsBuilder = ImmutableList.builder();
     int split = logEntry.getLogName().indexOf("%2F");
@@ -195,6 +208,42 @@ public abstract class FleetEventCreator {
               db.runTransaction(
                   new UpdateDeliveryTaskTransaction(logEntry, fleetEventHandlers, getDatabase()));
           outputEventsBuilder.addAll(updateDeliveryTaskResult.get());
+          break;
+        }
+      case CREATE_VEHICLE_LOG_NAME:
+        {
+          logger.info("Create Vehicle Log processing");
+          ApiFuture<List<OutputEvent>> createVehicleResult =
+              db.runTransaction(
+                  new UpdateDeliveryTaskTransaction(logEntry, fleetEventHandlers, getDatabase()));
+          outputEventsBuilder.addAll(createVehicleResult.get());
+          break;
+        }
+      case UPDATE_VEHICLE_LOG_NAME:
+        {
+          logger.info("Update Vehicle Log processing");
+          ApiFuture<List<OutputEvent>> updateVehicleResult =
+              db.runTransaction(
+                  new UpdateDeliveryTaskTransaction(logEntry, fleetEventHandlers, getDatabase()));
+          outputEventsBuilder.addAll(updateVehicleResult.get());
+          break;
+        }
+      case CREATE_TRIP_LOG_NAME:
+        {
+          logger.info("Create Trip Log processing");
+          ApiFuture<List<OutputEvent>> createTripResult =
+              db.runTransaction(
+                  new CreateTripTransaction(logEntry, fleetEventHandlers, getDatabase()));
+          outputEventsBuilder.addAll(createTripResult.get());
+          break;
+        }
+      case UPDATE_TRIP_LOG_NAME:
+        {
+          logger.info("Update Trip Log processing");
+          ApiFuture<List<OutputEvent>> updateTripResult =
+              db.runTransaction(
+                  new UpdateTripTransaction(logEntry, fleetEventHandlers, getDatabase()));
+          outputEventsBuilder.addAll(updateTripResult.get());
           break;
         }
       default:

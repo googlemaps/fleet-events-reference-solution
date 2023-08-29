@@ -34,6 +34,7 @@ import java.util.Map;
 public class ProtoParser {
 
   static HashMap<String, Integer> enumStringsMap = new HashMap<>();
+  static HashMap<String, String> fieldRenamingRegexes = new HashMap<>();
 
   static {
     enumStringsMap.put("TASK_OUTCOME_LOG_UNSPECIFIED", 0);
@@ -54,6 +55,40 @@ public class ProtoParser {
     enumStringsMap.put("NAVIGATION_STATUS_ENROUTE_TO_DESTINATION", 2);
     enumStringsMap.put("NAVIGATION_STATUS_OFF_ROUTE", 3);
     enumStringsMap.put("NAVIGATION_STATUS_ARRIVED_AT_DESTINATION", 4);
+
+    enumStringsMap.put("TRIP_STATUS_LOG_UNSPECIFIED", 0);
+    enumStringsMap.put("TRIP_STATUS_NEW", 1);
+    enumStringsMap.put("TRIP_STATUS_ENROUTE_TO_PICKUP", 2);
+    enumStringsMap.put("TRIP_STATUS_ARRIVED_AT_PICKUP", 3);
+    enumStringsMap.put("TRIP_STATUS_ARRIVED_AT_INTERMEDIATE_DESTINATION", 7);
+    enumStringsMap.put("TRIP_STATUS_ENROUTE_TO_INTERMEDIATE_DESTINATION", 8);
+    enumStringsMap.put("TRIP_STATUS_ENROUTE_TO_DROPOFF", 4);
+    enumStringsMap.put("TRIP_STATUS_COMPLETE", 5);
+    enumStringsMap.put("TRIP_STATUS_CANCELED", 6);
+
+    enumStringsMap.put("TRIP_TYPE_LOG_UNSPECIFIED", 0);
+    enumStringsMap.put("SHARED_TRIP", 1);
+    enumStringsMap.put("EXCLUSIVE_TRIP", 2);
+
+    enumStringsMap.put("VEHICLE_STATE_LOG_UNSPECIFIED", 0);
+    enumStringsMap.put("VEHICLE_STATE_OFFLINE", 1);
+    enumStringsMap.put("VEHICLE_STATE_ONLINE", 2);
+
+    enumStringsMap.put("WAYPOINT_TYPE_LOG_UNSPECIFIED", 0);
+    enumStringsMap.put("WAYPOINT_TYPE_PICKUP", 1);
+    enumStringsMap.put("WAYPOINT_TYPE_DROP_OFF", 2);
+    enumStringsMap.put("WAYPOINT_TYPE_INTERMEDIATE_DESTINATION", 3);
+
+    fieldRenamingRegexes.put(
+        "\\\"type\\\"\\:\\s(?=\\\"(WAYPOINT_TYPE_LOG_UNSPECIFIED|WAYPOINT_TYPE_PICKUP|WAYPOINT_TYPE_DROP_OFF|WAYPOINT_TYPE_INTERMEDIATE_DESTINATION)\\\")",
+        "\"waypoint_type\": ");
+    fieldRenamingRegexes.put(
+        "\\\"status\\\"\\:\\s(?=\\\"(TRIP_STATUS_LOG_UNSPECIFIED|TRIP_STATUS_NEW|TRIP_STATUS_ENROUTE_TO_PICKUP|TRIP_STATUS_ARRIVED_AT_PICKUP|TRIP_STATUS_ARRIVED_AT_INTERMEDIATE_DESTINATION|TRIP_STATUS_ENROUTE_TO_INTERMEDIATE_DESTINATION|TRIP_STATUS_ENROUTE_TO_DROPOFF|TRIP_STATUS_COMPLETE|TRIP_STATUS_CANCELED)\\\")",
+        "\"trip_status\": ");
+    fieldRenamingRegexes.put(
+        "\\\"state\\\"\\:\\s(?=\\\"("
+            + " VEHICLE_STATE_LOG_UNSPECIFIED|VEHICLE_STATE_OFFLINE|VEHICLE_STATE_ONLINE)\\\")",
+        "\"vehicle_state\": ");
   }
 
   public static <T extends Message> T parseLogEntryResponse(LogEntry logEntry, T message)
@@ -105,9 +140,13 @@ public class ProtoParser {
 
   private static <T extends Message.Builder> void parseJson(String json, T messageType)
       throws InvalidProtocolBufferException {
+    for (var regex : fieldRenamingRegexes.keySet()) {
+      json = json.replaceAll(regex, fieldRenamingRegexes.get(regex));
+    }
     for (var enumKey : enumStringsMap.keySet()) {
       json = json.replace(enumKey, String.valueOf(enumStringsMap.get(enumKey)));
     }
+
     JsonFormat.parser().ignoringUnknownFields().merge(json, messageType);
   }
 }

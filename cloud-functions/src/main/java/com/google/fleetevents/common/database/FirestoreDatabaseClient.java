@@ -22,9 +22,12 @@ import com.google.cloud.firestore.DocumentReference;
 import com.google.cloud.firestore.Firestore;
 import com.google.cloud.firestore.FirestoreOptions;
 import com.google.cloud.firestore.Transaction.Function;
-import com.google.fleetevents.lmfs.config.FleetEventConfig;
+import com.google.fleetevents.common.config.FleetEventConfig;
+import com.google.fleetevents.lmfs.config.LMFSFleetEventConfig;
+import com.google.fleetevents.odrd.config.ODRDFleetEventConfig;
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
+import java.util.logging.Logger;
 
 /**
  * Client for firestore with convenience methods for accessing a vehicle or task object through the
@@ -32,9 +35,13 @@ import java.util.concurrent.ExecutionException;
  */
 public class FirestoreDatabaseClient {
 
+  private static final Logger logger = Logger.getLogger(FirestoreDatabaseClient.class.getName());
+  private final String DELIVERY_VEHICLE_COLLECTION_NAME;
+  private final String DELIVERY_TASK_COLLECTION_NAME;
   private final String VEHICLE_COLLECTION_NAME;
-  private final String TASK_COLLECTION_NAME;
   private final String WATERMARK_COLLECTION_NAME = "watermark";
+  private final String TRIP_COLLECTION_NAME;
+
   private final Firestore firestore;
 
   public FirestoreDatabaseClient() throws IOException {
@@ -48,14 +55,18 @@ public class FirestoreDatabaseClient {
             .build();
     firestore = firestoreOptions.getService();
 
-    VEHICLE_COLLECTION_NAME = FleetEventConfig.getDeliveryVehicleCollectionName();
-    TASK_COLLECTION_NAME = FleetEventConfig.getTaskCollectionName();
+    DELIVERY_VEHICLE_COLLECTION_NAME = LMFSFleetEventConfig.getDeliveryVehicleCollectionName();
+    DELIVERY_TASK_COLLECTION_NAME = LMFSFleetEventConfig.getTaskCollectionName();
+    VEHICLE_COLLECTION_NAME = ODRDFleetEventConfig.getVehicleCollectionName();
+    TRIP_COLLECTION_NAME = ODRDFleetEventConfig.getTripCollectionName();
   }
 
   public FirestoreDatabaseClient(Firestore firestore) {
     this.firestore = firestore;
-    VEHICLE_COLLECTION_NAME = FleetEventConfig.getDeliveryVehicleCollectionName();
-    TASK_COLLECTION_NAME = FleetEventConfig.getTaskCollectionName();
+    DELIVERY_VEHICLE_COLLECTION_NAME = LMFSFleetEventConfig.getDeliveryVehicleCollectionName();
+    DELIVERY_TASK_COLLECTION_NAME = LMFSFleetEventConfig.getTaskCollectionName();
+    VEHICLE_COLLECTION_NAME = ODRDFleetEventConfig.getVehicleCollectionName();
+    TRIP_COLLECTION_NAME = ODRDFleetEventConfig.getTripCollectionName();
   }
 
   protected Firestore getFirestore() {
@@ -67,11 +78,19 @@ public class FirestoreDatabaseClient {
   }
 
   public DocumentReference getTaskDocument(String deliveryTaskId) {
-    return getDocument(TASK_COLLECTION_NAME, deliveryTaskId);
+    return getDocument(DELIVERY_TASK_COLLECTION_NAME, deliveryTaskId);
   }
 
-  public DocumentReference getVehicleDocument(String deliveryVehicleId) {
-    return getDocument(VEHICLE_COLLECTION_NAME, deliveryVehicleId);
+  public DocumentReference getVehicleDocument(String vehicleId) {
+    return getDocument(VEHICLE_COLLECTION_NAME, vehicleId);
+  }
+
+  public DocumentReference getTripDocument(String tripId) {
+    return getDocument(TRIP_COLLECTION_NAME, tripId);
+  }
+
+  public DocumentReference getDeliveryVehicleDocument(String vehicleId) {
+    return getDocument(DELIVERY_VEHICLE_COLLECTION_NAME, vehicleId);
   }
 
   public DocumentReference getWaterMarkReference(String id)

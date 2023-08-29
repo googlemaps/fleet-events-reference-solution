@@ -24,12 +24,12 @@ import static org.mockito.Mockito.doReturn;
 
 import com.google.fleetevents.common.database.FirestoreDatabaseClient;
 import com.google.fleetevents.common.models.Change;
+import com.google.fleetevents.common.models.OutputEvent;
 import com.google.fleetevents.lmfs.models.DeliveryVehicleData;
 import com.google.fleetevents.lmfs.models.DeliveryVehicleFleetEvent;
 import com.google.fleetevents.lmfs.models.TaskInfo;
 import com.google.fleetevents.lmfs.models.VehicleJourneySegment;
 import com.google.fleetevents.lmfs.models.VehicleStop;
-import com.google.fleetevents.lmfs.models.outputs.OutputEvent;
 import com.google.fleetevents.lmfs.models.outputs.TimeRemainingOutputEvent;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -51,7 +51,7 @@ public class TimeRemainingHandlerTest {
             .build();
     TimeRemainingHandler timeRemainingHandler = new TimeRemainingHandler();
     FirestoreDatabaseClient firestoreDatabaseClient = Mockito.mock(FirestoreDatabaseClient.class);
-    doReturn(null).when(firestoreDatabaseClient).getVehicleDocument(any(String.class));
+    doReturn(null).when(firestoreDatabaseClient).getDeliveryVehicleDocument(any(String.class));
     assertFalse(
         timeRemainingHandler.respondsTo(deliveryTaskFleetEvent, null, firestoreDatabaseClient));
   }

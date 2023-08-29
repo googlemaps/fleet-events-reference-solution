@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.google.fleetevents.odrd.config;
+package com.google.fleetevents.common.config;
 
 import java.util.logging.Logger;
 
@@ -23,14 +23,15 @@ import java.util.logging.Logger;
  * id, pub/sub topic names, firestore collection names, etc. from environment variables.
  */
 public final class FleetEventConfig {
-
   private static final Logger logger = Logger.getLogger(FleetEventConfig.class.getName());
-  private static final String DEFAULT_VEHICLE_COLLECTION_NAME = "deliveryVehicles";
+
+  private static final String DEFAULT_DELIVERY_VEHICLE_COLLECTION_NAME = "deliveryVehicles";
   private static final String DEFAULT_TASK_COLLECTION_NAME = "deliveryTasks";
   private static final String DEFAULT_FLEET_ENGINE_ENDPOINT = "fleetengine.googleapis.com";
   private static final String DEFAULT_TOPIC_OUTPUT_ID = "FleetEventsOutputTopic";
+  private static final Boolean DEFAULT_MEASURE_OUT_OF_ORDER = false;
 
-  private static String getEnvironmentVariable(String variableName) {
+  public static String getEnvironmentVariable(String variableName) {
     var env = System.getenv();
     if (env.containsKey(variableName)) {
       return env.get(variableName);
@@ -73,9 +74,10 @@ public final class FleetEventConfig {
     if (vehicleCollectionName == null) {
       logger.info(
           String.format(
-              "No vehicle collection name found in environment variables, using default: %s",
-              DEFAULT_VEHICLE_COLLECTION_NAME));
-      return DEFAULT_VEHICLE_COLLECTION_NAME;
+              "No delivery vehicle collection name found in environment variables, using default:"
+                  + " %s",
+              DEFAULT_DELIVERY_VEHICLE_COLLECTION_NAME));
+      return DEFAULT_DELIVERY_VEHICLE_COLLECTION_NAME;
     }
     return vehicleCollectionName;
   }
@@ -110,5 +112,14 @@ public final class FleetEventConfig {
       fleetEngineEndpoint = DEFAULT_FLEET_ENGINE_ENDPOINT;
     }
     return fleetEngineEndpoint;
+  }
+
+  public static Boolean measureOutOfOrder() {
+    var measureOutOfOrderString = getEnvironmentVariable("MEASURE_OUT_OF_ORDER");
+    if (measureOutOfOrderString == null) {
+      logger.info("By default, not measuring out of order events");
+      return DEFAULT_MEASURE_OUT_OF_ORDER;
+    }
+    return Boolean.parseBoolean(measureOutOfOrderString);
   }
 }

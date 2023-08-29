@@ -24,13 +24,13 @@ import static org.mockito.Mockito.doReturn;
 
 import com.google.fleetevents.common.database.FirestoreDatabaseClient;
 import com.google.fleetevents.common.models.Change;
+import com.google.fleetevents.common.models.OutputEvent;
 import com.google.fleetevents.lmfs.models.DeliveryVehicleData;
 import com.google.fleetevents.lmfs.models.DeliveryVehicleFleetEvent;
 import com.google.fleetevents.lmfs.models.TaskInfo;
 import com.google.fleetevents.lmfs.models.VehicleJourneySegment;
 import com.google.fleetevents.lmfs.models.VehicleStop;
 import com.google.fleetevents.lmfs.models.outputs.DistanceRemainingOutputEvent;
-import com.google.fleetevents.lmfs.models.outputs.OutputEvent;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -51,7 +51,7 @@ public class DistanceRemainingHandlerTest {
             .build();
     DistanceRemainingHandler distanceRemainingHandler = new DistanceRemainingHandler();
     FirestoreDatabaseClient firestoreDatabaseClient = Mockito.mock(FirestoreDatabaseClient.class);
-    doReturn(null).when(firestoreDatabaseClient).getVehicleDocument(any(String.class));
+    doReturn(null).when(firestoreDatabaseClient).getDeliveryVehicleDocument(any(String.class));
     assertFalse(
         distanceRemainingHandler.respondsTo(deliveryTaskFleetEvent, null, firestoreDatabaseClient));
   }

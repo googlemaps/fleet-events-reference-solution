@@ -5,7 +5,7 @@ import com.google.cloud.firestore.Transaction;
 import com.google.fleetevents.FleetEventHandler;
 import com.google.fleetevents.common.database.FirestoreDatabaseClient;
 import com.google.fleetevents.common.models.FleetEvent;
-import com.google.fleetevents.lmfs.models.outputs.OutputEvent;
+import com.google.fleetevents.common.models.OutputEvent;
 import java.util.List;
 
 public class MockFleetHandler implements FleetEventHandler {

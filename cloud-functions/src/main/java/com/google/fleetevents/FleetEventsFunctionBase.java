@@ -17,13 +17,15 @@
 package com.google.fleetevents;
 
 import com.google.cloud.functions.CloudEventsFunction;
+import com.google.fleetevents.common.config.FleetEventConfig;
+import com.google.fleetevents.common.models.OutputEvent;
 import com.google.fleetevents.common.sinks.PubSubWriter;
 import com.google.fleetevents.common.util.ProtoParser;
-import com.google.fleetevents.lmfs.config.FleetEventConfig;
-import com.google.fleetevents.lmfs.models.outputs.OutputEvent;
 import com.google.logging.v2.LogEntry;
 import com.google.protobuf.InvalidProtocolBufferException;
 import io.cloudevents.CloudEvent;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -32,14 +34,14 @@ import java.util.logging.Logger;
  * Fleet Events function that handles incoming logs from Cloud Logging and outputs events handled by
  * fleet event handlers.
  */
-public class FleetEventsFunction implements CloudEventsFunction {
+public class FleetEventsFunctionBase implements CloudEventsFunction {
 
-  private static final Logger logger = Logger.getLogger(FleetEventsFunction.class.getName());
+  private static final Logger logger = Logger.getLogger(FleetEventsFunctionBase.class.getName());
 
-  FleetEventCreator fleetEventCreator;
+  FleetEventCreatorBase fleetEventCreator;
   List<FleetEventHandler> fleetEventHandlers;
 
-  public FleetEventsFunction(FleetEventCreator fleetEventCreator) {
+  public FleetEventsFunctionBase(FleetEventCreatorBase fleetEventCreator) {
     this.fleetEventCreator = fleetEventCreator;
     fleetEventHandlers = new ArrayList<>();
   }
@@ -62,13 +64,16 @@ public class FleetEventsFunction implements CloudEventsFunction {
               FleetEventConfig.getOutputProjectId(), outputTopicId, outputEvents);
         }
       } catch (InvalidProtocolBufferException e) {
-        logger.warning(String.format("Received protobug parse error %s " + e));
+        logger.warning(String.format("Received protobug parse error " + e));
         logger.warning(
             String.format("Failed to parse message: %s", cloudEvent.getData().toString()));
       } catch (Exception e) {
         // do not throw exception to reduce cold start
         // https://cloud.google.com/functions/docs/bestpractices/tips#error_reporting
-        logger.warning("Encountered error while processing: " + e);
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
+        e.printStackTrace(pw);
+        logger.warning("Encountered error while processing: " + e.getMessage() + "\n" + sw);
       }
     }
   }

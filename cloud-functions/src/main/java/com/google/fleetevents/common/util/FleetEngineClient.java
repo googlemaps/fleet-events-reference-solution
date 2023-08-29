@@ -7,7 +7,7 @@ import com.google.fleetengine.auth.token.FleetEngineToken;
 import com.google.fleetengine.auth.token.factory.signer.ImpersonatedSigner;
 import com.google.fleetengine.auth.token.factory.signer.SignerInitializationException;
 import com.google.fleetengine.auth.token.factory.signer.SigningTokenException;
-import com.google.fleetevents.lmfs.config.FleetEventConfig;
+import com.google.fleetevents.common.config.FleetEventConfig;
 import google.maps.fleetengine.delivery.v1.DeliveryServiceGrpc;
 import google.maps.fleetengine.delivery.v1.DeliveryVehicle;
 import google.maps.fleetengine.delivery.v1.GetDeliveryVehicleRequest;

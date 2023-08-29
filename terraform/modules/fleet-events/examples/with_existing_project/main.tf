@@ -15,10 +15,10 @@
 
 locals {
   labels_common = {
-    "created_by"           = "terraform"
-    "function_fleetevents" = lower(var.FUNCTION_NAME)
-    "project_fleetevents_id"  = var.PROJECT_FLEETEVENTS
-    "project_fleetengine_id"  = var.PROJECT_FLEETENGINE
+    "created_by"             = "terraform"
+    "function_fleetevents"   = lower(var.FUNCTION_NAME)
+    "project_fleetevents_id" = var.PROJECT_FLEETEVENTS
+    "project_fleetengine_id" = var.PROJECT_FLEETENGINE
 
   }
 }
@@ -66,6 +66,7 @@ module "fleet-events" {
   FUNCTION_NAME            = var.FUNCTION_NAME
   TOPIC_FLEETENGINE_LOG    = var.TOPIC_FLEETENGINE_LOG
   TOPIC_FLEETEVENTS_OUTPUT = google_pubsub_topic.output_topic.name
+  MOBILITY_SOLUTION        = var.MOBILITY_SOLUTION
 }
 
 

@@ -24,6 +24,7 @@ import com.google.api.core.ApiFutures;
 import com.google.cloud.firestore.Transaction.Function;
 import com.google.common.collect.ImmutableList;
 import com.google.fleetevents.common.database.FirestoreDatabaseClient;
+import com.google.fleetevents.common.models.OutputEvent;
 import com.google.fleetevents.common.util.FleetEngineClient;
 import com.google.fleetevents.helpers.FleetEventsTestHelper;
 import com.google.fleetevents.lmfs.models.DeliveryTaskData;
@@ -31,7 +32,6 @@ import com.google.fleetevents.lmfs.models.DeliveryTaskFleetEvent;
 import com.google.fleetevents.lmfs.models.DeliveryVehicleData;
 import com.google.fleetevents.lmfs.models.DeliveryVehicleFleetEvent;
 import com.google.fleetevents.lmfs.models.TaskInfo;
-import com.google.fleetevents.lmfs.models.outputs.OutputEvent;
 import com.google.fleetevents.mocks.MockFleetEventCreator;
 import com.google.logging.v2.LogEntry;
 import com.google.type.LatLng;
@@ -50,7 +50,7 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 /** Tests for fleet event creator. */
-public class FleetEventCreatorTests {
+public class FleetEventCreatorBaseTests {
 
   @Test
   public void processCloudLogEntry_createDeliveryVehicleLog_routedCorrectly()
@@ -70,7 +70,7 @@ public class FleetEventCreatorTests {
     OutputEvent expectedOutputEvent = new OutputEvent();
     expectedOutputEvent.setFleetEvent(expectedDeliveryVehicleFleetEvent);
 
-    FleetEventCreator spyFleetEventCreator = Mockito.spy(new MockFleetEventCreator());
+    FleetEventCreatorBase spyFleetEventCreator = Mockito.spy(new MockFleetEventCreator());
     FirestoreDatabaseClient mockFirestore = spyFleetEventCreator.getDatabase();
 
     doReturn(ApiFutures.immediateFuture(ImmutableList.of(expectedOutputEvent)))
@@ -100,7 +100,7 @@ public class FleetEventCreatorTests {
     OutputEvent expectedOutputEvent = new OutputEvent();
     expectedOutputEvent.setFleetEvent(expectedDeliveryVehicleFleetEvent);
 
-    FleetEventCreator spyFleetEventCreator = Mockito.spy(new MockFleetEventCreator());
+    FleetEventCreatorBase spyFleetEventCreator = Mockito.spy(new MockFleetEventCreator());
     FirestoreDatabaseClient mockFirestore = spyFleetEventCreator.getDatabase();
 
     doReturn(ApiFutures.immediateFuture(ImmutableList.of(expectedOutputEvent)))
@@ -138,7 +138,7 @@ public class FleetEventCreatorTests {
     OutputEvent expectedOutputEvent = new OutputEvent();
     expectedOutputEvent.setFleetEvent(expectedDeliveryTaskFleetEvent);
 
-    FleetEventCreator spyFleetEventCreator = Mockito.spy(new MockFleetEventCreator());
+    FleetEventCreatorBase spyFleetEventCreator = Mockito.spy(new MockFleetEventCreator());
     FirestoreDatabaseClient mockFirestore = spyFleetEventCreator.getDatabase();
 
     doReturn(ApiFutures.immediateFuture(ImmutableList.of(expectedOutputEvent)))
@@ -169,7 +169,7 @@ public class FleetEventCreatorTests {
     OutputEvent expectedOutputEvent = new OutputEvent();
     expectedOutputEvent.setFleetEvent(expectedDeliveryTaskFleetEvent);
 
-    FleetEventCreator spyFleetEventCreator = Mockito.spy(new MockFleetEventCreator());
+    FleetEventCreatorBase spyFleetEventCreator = Mockito.spy(new MockFleetEventCreator());
     FirestoreDatabaseClient mockFirestore = spyFleetEventCreator.getDatabase();
 
     doReturn(ApiFutures.immediateFuture(ImmutableList.of(expectedOutputEvent)))
@@ -211,7 +211,7 @@ public class FleetEventCreatorTests {
     OutputEvent expectedOutputEvent2 = new OutputEvent();
     expectedOutputEvent2.setFleetEvent(expectedDeliveryTaskFleetEvent2);
 
-    FleetEventCreator spyFleetEventCreator = Mockito.spy(new MockFleetEventCreator());
+    FleetEventCreatorBase spyFleetEventCreator = Mockito.spy(new MockFleetEventCreator());
     FirestoreDatabaseClient mockFirestore = spyFleetEventCreator.getDatabase();
 
     doReturn(
@@ -231,7 +231,7 @@ public class FleetEventCreatorTests {
     /* Tests whether the cloudLogEntry is correctly routing log entries based on log name. */
     LogEntry logEntry = LogEntry.newBuilder().setLogName("test123").build();
 
-    FleetEventCreator spyFleetEventCreator = Mockito.spy(new MockFleetEventCreator());
+    FleetEventCreatorBase spyFleetEventCreator = Mockito.spy(new MockFleetEventCreator());
 
     List<OutputEvent> outputEvents =
         spyFleetEventCreator.processCloudLog(logEntry, ImmutableList.of());
@@ -240,7 +240,7 @@ public class FleetEventCreatorTests {
 
   @Test
   public void addExtraInfo_addPlannedLocationToTask() {
-    FleetEventCreator spyFleetEventCreator = Mockito.spy(new MockFleetEventCreator());
+    FleetEventCreatorBase spyFleetEventCreator = Mockito.spy(new MockFleetEventCreator());
     FleetEngineClient mockFleetEngineClient = spyFleetEventCreator.getFleetEngineClient();
 
     Task task =
@@ -282,7 +282,7 @@ public class FleetEventCreatorTests {
 
   @Test
   public void addExtraInfo_failToGetTask() {
-    FleetEventCreator spyFleetEventCreator = Mockito.spy(new MockFleetEventCreator());
+    FleetEventCreatorBase spyFleetEventCreator = Mockito.spy(new MockFleetEventCreator());
     FleetEngineClient mockFleetEngineClient = spyFleetEventCreator.getFleetEngineClient();
 
     doReturn(Optional.empty()).when(mockFleetEngineClient).getTask(any(String.class));
@@ -311,7 +311,7 @@ public class FleetEventCreatorTests {
 
   @Test
   public void addExtraInfo_addPlannedLocationToVehicleMatchesCorrectTask() throws IOException {
-    FleetEventCreator spyFleetEventCreator = Mockito.spy(new MockFleetEventCreator());
+    FleetEventCreatorBase spyFleetEventCreator = Mockito.spy(new MockFleetEventCreator());
     FleetEngineClient mockFleetEngineClient = spyFleetEventCreator.getFleetEngineClient();
 
     DeliveryVehicle vehicle =
@@ -396,7 +396,7 @@ public class FleetEventCreatorTests {
 
   @Test
   public void addExtraInfo_addPlannedLocationToVehicleDoesNotAddExtraTask() throws IOException {
-    FleetEventCreator spyFleetEventCreator = Mockito.spy(new MockFleetEventCreator());
+    FleetEventCreatorBase spyFleetEventCreator = Mockito.spy(new MockFleetEventCreator());
     FleetEngineClient mockFleetEngineClient = spyFleetEventCreator.getFleetEngineClient();
 
     DeliveryVehicle vehicle =

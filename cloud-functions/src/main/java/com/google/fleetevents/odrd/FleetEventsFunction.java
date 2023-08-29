@@ -17,16 +17,22 @@
 package com.google.fleetevents.odrd;
 
 import com.google.fleetengine.auth.token.factory.signer.SignerInitializationException;
-import com.google.fleetevents.FleetEventsFunction;
+import com.google.fleetevents.FleetEventsFunctionBase;
+import com.google.fleetevents.odrd.handlers.DistanceRemainingHandler;
+import com.google.fleetevents.odrd.handlers.TimeRemainingHandler;
+import com.google.fleetevents.odrd.handlers.TripStatusHandler;
 import java.io.IOException;
 
 /**
  * Default fleet events function implementation. Modify for custom logic. Register Fleet Event
  * handlers here. Entrypoint class for Cloud Functions.
  */
-public class DefaultFleetEventsFunction extends FleetEventsFunction {
+public class FleetEventsFunction extends FleetEventsFunctionBase {
 
-  public DefaultFleetEventsFunction() throws IOException, SignerInitializationException {
-    super(new DefaultFleetEventCreator());
+  public FleetEventsFunction() throws IOException, SignerInitializationException {
+    super(new FleetEventCreator());
+    registerFleetEventHandler(new DistanceRemainingHandler());
+    registerFleetEventHandler(new TimeRemainingHandler());
+    registerFleetEventHandler(new TripStatusHandler());
   }
 }

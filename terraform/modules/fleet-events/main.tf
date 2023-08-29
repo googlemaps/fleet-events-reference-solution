@@ -47,6 +47,36 @@ locals {
   REGION_STORAGE   = (var.GCP_REGION_STORAGE != "" && var.GCP_REGION_STORAGE != null) ? var.GCP_REGION_STORAGE : var.GCP_REGION
   REGION_FIRESTORE = (var.GCP_REGION_FIRESTORE != "" && var.GCP_REGION_FIRESTORE != null) ? var.GCP_REGION_FIRESTORE : var.GCP_REGION
 
+  # a set of constants set per Mobility solution (LMFS or ODRD)
+  VARS_PER_SOLUTION = {
+    ODRD = {
+      FUNCTION_ENTRYPOINT = "com.google.fleetevents.odrd.FleetEventsFunction"
+      FUNCTION_ADDITIONAL_ENV_VARS = {
+        # name of the firestore collection for the vehicle data
+        VEHICLE_COLLECTION_NAME = "vehicles"
+        # name of the firestore collection for the trip data
+        TRIP_COLLECTION_NAME = "trips"
+        # name of the firestore collection for the waypoint data
+        TRIP_WAYPOINT_COLLECTION_NAME = "waypoints"
+      }
+      SA_FLEETENGINE_ROLES = [
+        "roles/fleetengine.serviceSuperUser"
+
+      ]
+    }
+    LMFS = {
+      FUNCTION_ENTRYPOINT = "com.google.fleetevents.lmfs.FleetEventsFunction"
+      FUNCTION_ADDITIONAL_ENV_VARS = {
+        # name of the firestore collection for the delivery vehicle data
+        DELIVERY_VEHICLE_COLLECTION_NAME = "deliveryVehicles"
+        # name of the firestore collection for the delivery task data
+        DELIVERY_TASK_COLLECTION_NAME = "deliveryTasks"
+      }
+      SA_FLEETENGINE_ROLES = [
+        "roles/fleetengine.deliveryFleetReader"
+      ]
+    }
+  }
 }
 
 resource "google_project_service" "firestore" {
@@ -58,7 +88,7 @@ resource "google_project_service" "firestore" {
 }
 resource "google_firestore_database" "database" {
   project     = data.google_project.project-fleetevents.project_id
-  name        = "(default)"
+  name        = format("%s-%s", var.FUNCTION_NAME, "db")
   location_id = local.REGION_FIRESTORE
   type        = "FIRESTORE_NATIVE"
   # read this for concurrency modes : https://firebase.google.com/docs/firestore/transaction-data-contention
@@ -114,33 +144,27 @@ module "func-fleetevents" {
   FUNCTION_NAME             = var.FUNCTION_NAME
   FUNCTION_RUNTIME          = "java17"
   FUNCTION_DESCRIPTION      = "Function deployed as Fleet Events Reference Solution"
-  FUNCTION_ENTRYPOINT       = "com.google.fleetevents.lmfs.DefaultFleetEventsFunction"
+  FUNCTION_ENTRYPOINT       = local.VARS_PER_SOLUTION[var.MOBILITY_SOLUTION].FUNCTION_ENTRYPOINT
   FUNCTION_AVAILABLE_MEMORY = "256M"
   PROJECT_FLEETENGINE       = data.google_project.project-fleetengine.project_id
   PROJECT_FLEETENGINE_LOG   = data.google_project.project-fleetevents.project_id
   TOPIC_FLEETENGINE_LOG     = data.google_pubsub_topic.logging_topic.name
   TOPIC_FLEETEVENTS_OUTPUT  = data.google_pubsub_topic.events_output_topic.name
-  FUNCTION_ADDITIONAL_ENV_VARS = {
+  FUNCTION_ADDITIONAL_ENV_VARS = merge({
     # The env vars are read by FleetEventConfig class 
     # name of the firestore database (this will always be "(default)")
     DATABASE_NAME = google_firestore_database.database.name
-    # name of the firestore collection for the delivery vehicle data
-    DELIVERY_VEHICLE_COLLECTION_NAME = "deliveryVehicles"
-    # name of the firestore collection for the delivery task data
-    DELIVERY_TASK_COLLECTION_NAME = "deliveryTasks"
     # project in which the output Topic exists
     FUNCTION_OUTPUT_PROJECT_ID = data.google_pubsub_topic.events_output_topic.project
     # name of output Topic
-    FUNCTION_OUTPUT_TOPIC_ID   = data.google_pubsub_topic.events_output_topic.name
-  }
+    FUNCTION_OUTPUT_TOPIC_ID = data.google_pubsub_topic.events_output_topic.name
+  }, local.VARS_PER_SOLUTION[var.MOBILITY_SOLUTION].FUNCTION_ADDITIONAL_ENV_VARS)
 
   SA_APP_ROLES = [
     "roles/datastore.user",
     "roles/artifactregistry.reader"
   ]
-  SA_FLEETENGINE_ROLES = [
-    "roles/fleetengine.deliveryFleetReader"
-  ]
+  SA_FLEETENGINE_ROLES = local.VARS_PER_SOLUTION[var.MOBILITY_SOLUTION].SA_FLEETENGINE_ROLES
   FUNCTION_SRC_EXCLUDE_FILES = [
     "README.md",
     "pom.xml.versionsBackup",
@@ -149,13 +173,15 @@ module "func-fleetevents" {
   FUNCTION_SRC_EXCLUDE_PATTERNS = [
     ".*",
     ".apt_generated_tests/**",
-    ".idea/**",
     ".git/**",
+    ".idea/**",
     ".terraform/**",
     ".vscode/**",
+    "*.zip",
+    "src/main/resources/img/*",
     "src/test/**",
     "target/**",
-    "terraform/**"
+    "terraform/**",
   ]
   depends_on = [
     module.logging_config,

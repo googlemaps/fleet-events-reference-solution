@@ -16,7 +16,7 @@
 
 package com.google.fleetevents.mocks;
 
-import com.google.fleetevents.FleetEventCreator;
+import com.google.fleetevents.FleetEventCreatorBase;
 import com.google.fleetevents.common.database.FirestoreDatabaseClient;
 import com.google.fleetevents.common.util.FleetEngineClient;
 import com.google.fleetevents.lmfs.models.DeliveryTaskData;
@@ -26,7 +26,7 @@ import java.util.Map;
 import org.mockito.Mockito;
 
 /** Mock fleet events creator for use in testing fleet event creator. */
-public class MockFleetEventCreator extends FleetEventCreator {
+public class MockFleetEventCreator extends FleetEventCreatorBase {
 
   public static Map<String, DeliveryTaskData> mockTasks = new HashMap<>();
   public static Map<String, DeliveryVehicleData> mockVehicles = new HashMap<>();
