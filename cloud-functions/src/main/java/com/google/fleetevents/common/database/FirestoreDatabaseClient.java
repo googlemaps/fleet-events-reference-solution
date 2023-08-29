@@ -23,9 +23,8 @@ import com.google.cloud.firestore.Firestore;
 import com.google.cloud.firestore.FirestoreOptions;
 import com.google.cloud.firestore.Transaction.Function;
 import com.google.fleetevents.lmfs.config.FleetEventConfig;
-import com.google.fleetevents.lmfs.models.outputs.OutputEvent;
 import java.io.IOException;
-import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Client for firestore with convenience methods for accessing a vehicle or task object through the
@@ -35,6 +34,7 @@ public class FirestoreDatabaseClient {
 
   private final String VEHICLE_COLLECTION_NAME;
   private final String TASK_COLLECTION_NAME;
+  private final String WATERMARK_COLLECTION_NAME = "watermark";
   private final Firestore firestore;
 
   public FirestoreDatabaseClient() throws IOException {
@@ -62,7 +62,7 @@ public class FirestoreDatabaseClient {
     return this.firestore;
   }
 
-  public ApiFuture<List<OutputEvent>> runTransaction(Function<List<OutputEvent>> function) {
+  public <T> ApiFuture<T> runTransaction(Function<T> function) {
     return getFirestore().runTransaction(function);
   }
 
@@ -72,6 +72,12 @@ public class FirestoreDatabaseClient {
 
   public DocumentReference getVehicleDocument(String deliveryVehicleId) {
     return getDocument(VEHICLE_COLLECTION_NAME, deliveryVehicleId);
+  }
+
+  public DocumentReference getWaterMarkReference(String id)
+      throws ExecutionException, InterruptedException {
+    DocumentReference ref = getFirestore().collection(WATERMARK_COLLECTION_NAME).document(id);
+    return ref;
   }
 
   private DocumentReference getDocument(String collectionName, String id) {

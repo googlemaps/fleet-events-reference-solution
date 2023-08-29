@@ -1,14 +1,13 @@
 package com.google.fleetevents.beam;
 
+import com.google.fleetevents.beam.config.DataflowJobConfig;
+import com.google.fleetevents.beam.util.SampleLogs;
 import com.google.logging.v2.LogEntry;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.Message;
 import com.google.protobuf.Timestamp;
 import com.google.protobuf.util.JsonFormat;
 import java.io.IOException;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.Arrays;
 import org.apache.beam.sdk.coders.StringUtf8Coder;
 import org.apache.beam.sdk.testing.PAssert;
@@ -18,25 +17,31 @@ import org.apache.beam.sdk.transforms.Create;
 import org.apache.beam.sdk.values.PCollection;
 import org.apache.beam.sdk.values.TimestampedValue;
 import org.joda.time.Instant;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 @RunWith(JUnit4.class)
-public class PubSubToGcsTest {
+public class VehicleOfflineTest {
   @Rule public final transient TestPipeline pipeline = TestPipeline.create();
   private static final int GAP_SIZE = 3;
   private static final int THRESHOLD = 60 * GAP_SIZE;
   private static final int SECONDS_TO_MILLIS = 1000;
 
-  PubSubToGcs job = new PubSubToGcs();
+  private DataflowJobConfig config;
+
+  @Before
+  public void setup() {
+    config = DataflowJobConfig.Builder.newBuilder().setGapSize(GAP_SIZE).build();
+  }
 
   @Test
   public void testOneLog() throws IOException {
-    LogEntry logEntry = getUpdateDeliveryVehicleLogEntry1();
+    LogEntry logEntry = SampleLogs.getUpdateDeliveryVehicleLogEntry1();
     PCollection<String> input = pipeline.apply(Create.of(Arrays.asList(getJson(logEntry))));
-    PCollection<String> output = PubSubToGcs.processMessages(input, GAP_SIZE);
+    PCollection<String> output = VehicleOffline.run(input, config);
 
     String expectedResult =
         "providers/fake-gcp-project/deliveryVehicles/sample_fleet_events_demo_vehicle_d0fba8: "
@@ -50,17 +55,17 @@ public class PubSubToGcsTest {
   @Test
   public void testMultiLogOneSession() throws IOException {
     LogEntry logEntry1 =
-        getUpdateDeliveryVehicleLogEntry1().toBuilder()
+        SampleLogs.getUpdateDeliveryVehicleLogEntry1().toBuilder()
             .setTimestamp(Timestamp.newBuilder().setSeconds(0))
             .build();
     LogEntry logEntry2 =
-        getUpdateDeliveryVehicleLogEntry1().toBuilder()
+        SampleLogs.getUpdateDeliveryVehicleLogEntry1().toBuilder()
             .setTimestamp(Timestamp.newBuilder().setSeconds(THRESHOLD))
             .build();
 
     PCollection<String> input =
         pipeline.apply(Create.of(Arrays.asList(getJson(logEntry1), getJson(logEntry2))));
-    PCollection<String> output = PubSubToGcs.processMessages(input, GAP_SIZE);
+    PCollection<String> output = VehicleOffline.run(input, config);
 
     String expectedResult =
         "providers/fake-gcp-project/deliveryVehicles/sample_fleet_events_demo_vehicle_d0fba8: "
@@ -75,11 +80,11 @@ public class PubSubToGcsTest {
   public void testMultiLogTwoSessions() throws IOException {
     Instant startTime = new Instant(0);
     LogEntry logEntry1 =
-        getUpdateDeliveryVehicleLogEntry1().toBuilder()
+        SampleLogs.getUpdateDeliveryVehicleLogEntry1().toBuilder()
             .setTimestamp(Timestamp.newBuilder().setSeconds(0))
             .build();
     LogEntry logEntry2 =
-        getUpdateDeliveryVehicleLogEntry1().toBuilder()
+        SampleLogs.getUpdateDeliveryVehicleLogEntry1().toBuilder()
             .setTimestamp(Timestamp.newBuilder().setSeconds(THRESHOLD + 1))
             .build();
     TestStream<String> createLogs =
@@ -90,7 +95,7 @@ public class PubSubToGcsTest {
             .advanceWatermarkToInfinity();
 
     PCollection<String> input = pipeline.apply(createLogs);
-    PCollection<String> output = PubSubToGcs.processMessages(input, GAP_SIZE);
+    PCollection<String> output = VehicleOffline.run(input, config);
 
     String expectedResult1 =
         "providers/fake-gcp-project/deliveryVehicles/sample_fleet_events_demo_vehicle_d0fba8: "
@@ -109,17 +114,17 @@ public class PubSubToGcsTest {
   @Test
   public void testMultiKeyOneSession() throws IOException {
     LogEntry logEntry1 =
-        getUpdateDeliveryVehicleLogEntry1().toBuilder()
+        SampleLogs.getUpdateDeliveryVehicleLogEntry1().toBuilder()
             .setTimestamp(Timestamp.newBuilder().setSeconds(0))
             .setInsertId("testStartId")
             .build();
     LogEntry logEntry2 =
-        getUpdateDeliveryVehicleLogEntry1().toBuilder()
+        SampleLogs.getUpdateDeliveryVehicleLogEntry1().toBuilder()
             .setTimestamp(Timestamp.newBuilder().setSeconds(THRESHOLD / 2))
             .setInsertId("testEndId")
             .build();
     LogEntry logEntry3 =
-        getUpdateDeliveryVehicleLogEntry2().toBuilder()
+        SampleLogs.getUpdateDeliveryVehicleLogEntry2().toBuilder()
             .setTimestamp(Timestamp.newBuilder().setSeconds(0))
             .setInsertId("testOtherId")
             .build();
@@ -127,7 +132,7 @@ public class PubSubToGcsTest {
     PCollection<String> input =
         pipeline.apply(
             Create.of(Arrays.asList(getJson(logEntry1), getJson(logEntry2), getJson(logEntry3))));
-    PCollection<String> output = PubSubToGcs.processMessages(input, GAP_SIZE);
+    PCollection<String> output = VehicleOffline.run(input, config);
 
     String expectedResult1 =
         "providers/fake-gcp-project/deliveryVehicles/sample_fleet_events_demo_vehicle_d0fba8: "
@@ -146,17 +151,17 @@ public class PubSubToGcsTest {
   @Test
   public void testMultiKeyTwoSession() throws IOException {
     LogEntry logEntry1 =
-        getUpdateDeliveryVehicleLogEntry1().toBuilder()
+        SampleLogs.getUpdateDeliveryVehicleLogEntry1().toBuilder()
             .setTimestamp(Timestamp.newBuilder().setSeconds(0))
             .setInsertId("testKey1Window1")
             .build();
     LogEntry logEntry2 =
-        getUpdateDeliveryVehicleLogEntry1().toBuilder()
+        SampleLogs.getUpdateDeliveryVehicleLogEntry1().toBuilder()
             .setTimestamp(Timestamp.newBuilder().setSeconds(THRESHOLD + 1))
             .setInsertId("testKey1Window2")
             .build();
     LogEntry logEntry3 =
-        getUpdateDeliveryVehicleLogEntry2().toBuilder()
+        SampleLogs.getUpdateDeliveryVehicleLogEntry2().toBuilder()
             .setTimestamp(Timestamp.newBuilder().setSeconds(0))
             .setInsertId("testKey2Window1")
             .build();
@@ -169,7 +174,7 @@ public class PubSubToGcsTest {
             .advanceWatermarkToInfinity();
 
     PCollection<String> input = pipeline.apply(createLogs);
-    PCollection<String> output = PubSubToGcs.processMessages(input, GAP_SIZE);
+    PCollection<String> output = VehicleOffline.run(input, config);
 
     String expectedResult1 =
         "providers/fake-gcp-project/deliveryVehicles/sample_fleet_events_demo_vehicle_d0fba8: "
@@ -196,29 +201,7 @@ public class PubSubToGcsTest {
     return TimestampedValue.of(getJson(s), new Instant(0).plus(d));
   }
 
-  private LogEntry getUpdateDeliveryVehicleLogEntry1() throws IOException {
-    String fileContent =
-        Files.readString(
-            Paths.get("src/test/resources/update_delivery_vehicle_logentry1.json"),
-            Charset.defaultCharset());
-    return getLogEntry(fileContent);
-  }
-
-  private LogEntry getUpdateDeliveryVehicleLogEntry2() throws IOException {
-    String fileContent =
-        Files.readString(
-            Paths.get("src/test/resources/update_delivery_vehicle_logentry2.json"),
-            Charset.defaultCharset());
-    return getLogEntry(fileContent);
-  }
-
-  private static LogEntry getLogEntry(String logEntryJson) throws IOException {
-    LogEntry.Builder logEntryBuilder = LogEntry.newBuilder();
-    JsonFormat.parser().ignoringUnknownFields().merge(logEntryJson, logEntryBuilder);
-    return logEntryBuilder.build();
-  }
-
-  private static String getJson(Message message) throws InvalidProtocolBufferException {
+  public static String getJson(Message message) throws InvalidProtocolBufferException {
     String json = JsonFormat.printer().print(message);
     return json;
   }

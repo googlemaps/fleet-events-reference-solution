@@ -29,6 +29,7 @@ public final class FleetEventConfig {
   private static final String DEFAULT_TASK_COLLECTION_NAME = "deliveryTasks";
   private static final String DEFAULT_FLEET_ENGINE_ENDPOINT = "fleetengine.googleapis.com";
   private static final String DEFAULT_TOPIC_OUTPUT_ID = "FleetEventsOutputTopic";
+  private static final Boolean DEFAULT_MEASURE_OUT_OF_ORDER = false;
 
   private static String getEnvironmentVariable(String variableName) {
     var env = System.getenv();
@@ -110,5 +111,14 @@ public final class FleetEventConfig {
       fleetEngineEndpoint = DEFAULT_FLEET_ENGINE_ENDPOINT;
     }
     return fleetEngineEndpoint;
+  }
+
+  public static Boolean measureOutOfOrder() {
+    var measureOutOfOrderString = getEnvironmentVariable("MEASURE_OUT_OF_ORDER");
+    if (measureOutOfOrderString == null) {
+      logger.info("By default, not measuring out of order events");
+      return DEFAULT_MEASURE_OUT_OF_ORDER;
+    }
+    return Boolean.parseBoolean(measureOutOfOrderString);
   }
 }

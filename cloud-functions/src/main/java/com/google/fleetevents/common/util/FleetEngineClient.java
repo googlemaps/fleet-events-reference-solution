@@ -98,6 +98,7 @@ public class FleetEngineClient {
         String.format("providers/%s", projectId));
 
     return ManagedChannelBuilder.forTarget(FleetEventConfig.getFleetEngineEndpoint())
+        .userAgent("fleet-event-reference-solutions/")
         .intercept(
             FleetEngineAuthClientInterceptor.create(fleetEngineTokenProvider),
             MetadataUtils.newAttachHeadersInterceptor(headers))
