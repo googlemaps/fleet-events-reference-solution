@@ -19,19 +19,17 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>fleetevents-beam-functions</artifactId>
+    <artifactId>fleetevents-beam</artifactId>
     <groupId>com.google.fleetevents.beam</groupId>
     <version>1.0-SNAPSHOT</version>
     <url>https://github.com/googlemaps/fleet-events-reference-solution</url>
-    <description>Fleet Events reference solutions - sample functions</description>
+    <description>Fleet Events reference solutions - beam pipeline</description>
 
     <organization>
         <name>Google</name>
     </organization>
 
     <properties>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <beam.version>2.49.0</beam.version>
