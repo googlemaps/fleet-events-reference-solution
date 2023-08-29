@@ -15,21 +15,7 @@
 
 
 
-# # reference Pub/Sub topic where FleetEngine logs will be published
-# data "google_pubsub_topic" "fleetengine-logging-topic" {
-#   project = data.google_project.project_fleetengine_logs.project_id
-#   name    = var.TOPIC_FLEETENGINE_LOG
-# }
-
-# # allow SA for Pub/Sub Trigger to subscribe to the FleetEngine logs topic
-# resource "google_pubsub_topic_iam_member" "member" {
-#   project = data.google_pubsub_topic.fleetengine-logging-topic.project
-#   topic   = data.google_pubsub_topic.fleetengine-logging-topic.name
-#   role    = "roles/pubsub.subscriber"
-#   member  = format("serviceAccount:%s", google_service_account.sa_trigger.email)
-# }
-
-
+# reference Pub/Sub topic where FleetEngine logs will be published
 data "google_pubsub_topic" "topic-fleetevents-input" {
   project = data.google_project.project_fleetengine_logs.project_id
   name    = var.TOPIC_FLEETENGINE_LOG
@@ -37,6 +23,8 @@ data "google_pubsub_topic" "topic-fleetevents-input" {
 output "var_TOPIC_FLEETENGINE_LOG" {
   value = var.TOPIC_FLEETENGINE_LOG
 }
+
+# allow SA for Pub/Sub Trigger to subscribe to the FleetEngine logs topic
 resource "google_pubsub_topic_iam_member" "input-subscriber-sa" {
   project = data.google_project.project_fleetevents.project_id
   topic   = data.google_pubsub_topic.topic-fleetevents-input.name
@@ -107,33 +95,20 @@ resource "random_id" "jobname_suffix" {
   }
 }
 
-locals {
-  TEMPLATE_NAME          = "fleetevents-beam"
-  BUCKET                 = format("%s-%s", data.google_project.project_fleetevents.project_id, var.PIPELINE_NAME) #"moritani-sandbox-fleetevents-beam-sg"
-  TEMPLATE_FILE_GCS_PATH = format("gs://%s/templates/%s.json", local.BUCKET, local.TEMPLATE_NAME)
-  REPOSITORY_NAME        = "fleetevents-docker"
-  IMAGE_GCR_PATH = format(
-    "%s-docker.pkg.dev/%s/%s/fleetevents/%s:latest",
-    var.GCP_REGION,
-    data.google_project.project_fleetevents.project_id,
-    local.REPOSITORY_NAME,
-    local.TEMPLATE_NAME
-  )
-  PATH_JAR = format("%s/../../../beam/target/fleetevents-beam-bundled-1.0-SNAPSHOT.jar", path.module)
 
-}
 
 resource "google_dataflow_flex_template_job" "beam_job" {
-  provider                     = google-beta
-  project                      = data.google_project.project_fleetevents.project_id
-  name                         = "fleetevents-job-${random_id.jobname_suffix.dec}"
-  region                       = var.GCP_REGION
-  container_spec_gcs_path      = local.TEMPLATE_FILE_GCS_PATH
-  service_account_email        = google_service_account.sa_app.email
-  temp_location                = format("%s/temp", google_storage_bucket.bucket.url)
-  staging_location             = format("%s/staging", google_storage_bucket.bucket.url)
-  skip_wait_on_job_termination = false
-
+  provider                = google-beta
+  project                 = data.google_project.project_fleetevents.project_id
+  name                    = "fleetevents-job-${random_id.jobname_suffix.dec}"
+  region                  = var.GCP_REGION
+  container_spec_gcs_path = local.TEMPLATE_FILE_GCS_PATH
+  service_account_email   = google_service_account.sa_app.email
+  temp_location           = format("%s/temp", google_storage_bucket.bucket.url)
+  staging_location        = format("%s/staging", google_storage_bucket.bucket.url)
+  #skip_wait_on_job_termination = true
+  #on_delete                    = "cancel"
+  # max_workers = 2
   parameters = {
 
     ## pipeline specific params defined in the json
@@ -147,11 +122,13 @@ resource "google_dataflow_flex_template_job" "beam_job" {
 
     ## generic pipeline options
     # https://beam.apache.org/releases/javadoc/current/index.html?org/apache/beam/sdk/options/PipelineOptions.html
-    subnetwork        = format("regions/%s/subnetworks/%s", var.GCP_REGION, google_compute_subnetwork.vpc-subnetwork.name)
-    workerMachineType = "e2-standard-2"
-    numWorkers        = 1
+    # https://cloud.google.com/dataflow/docs/reference/pipeline-options
+    subnetwork = format("regions/%s/subnetworks/%s", var.GCP_REGION, google_compute_subnetwork.vpc-subnetwork.name)
+    #  workerMachineType = "e2-standard-2"
+    # workerRegion      = var.GCP_REGION
     maxNumWorkers     = 2
-    usePublicIps      = false
+    usePublicIps = false
+    #update            = true
   }
   labels = local.labels_common
 }
@@ -199,7 +176,7 @@ output "script_build_jar" {
 
 resource "terraform_data" "script_build_flex_template" {
   triggers_replace = [
-    "aaaa",
+    "aaa",
     #fileexists(format("%s/../../../beam/target/fleetevents-beam-1.0-SNAPSHOT-shaded.jar", path.module)),
     fileexists(abspath(local.PATH_JAR)),
     #data.local_file.jar.content_md5

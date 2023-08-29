@@ -23,6 +23,20 @@ locals {
   }
 }
 
+locals {
+  TEMPLATE_NAME          = "fleetevents-beam"
+  BUCKET                 = format("%s-%s", data.google_project.project_fleetevents.project_id, var.PIPELINE_NAME)
+  TEMPLATE_FILE_GCS_PATH = format("gs://%s/templates/%s.json", local.BUCKET, local.TEMPLATE_NAME)
+  REPOSITORY_NAME        = "fleetevents-docker"
+  PATH_JAR               = format("%s/../../../beam/target/fleetevents-beam-bundled-1.0-SNAPSHOT.jar", path.module)
+  IMAGE_GCR_PATH = format(
+    "%s-docker.pkg.dev/%s/%s/fleetevents/%s:latest",
+    var.GCP_REGION,
+    data.google_project.project_fleetevents.project_id,
+    local.REPOSITORY_NAME,
+    local.TEMPLATE_NAME
+  )
+}
 
 # Reference existing projects
 data "google_project" "project" {
@@ -44,12 +58,19 @@ resource "google_project_service" "gcp_services" {
   project = data.google_project.project.project_id
   for_each = toset([
     "dataflow.googleapis.com",
+    "artifactregistry.googleapis.com",
+    "bigquery.googleapis.com",
+    "cloudbuild.googleapis.com",
+    "cloudresourcemanager.googleapis.com",
+    "logging.googleapis.com",
+    "pubsub.googleapis.com",
+    "storage-api.googleapis.com"
   ])
   service = each.key
-  timeouts {
-    create = "10m"
-    update = "10m"
-  }
+  # timeouts {
+  #   create = "10m"
+  #   update = "10m"
+  # }
   disable_on_destroy = false
   depends_on = [
 
