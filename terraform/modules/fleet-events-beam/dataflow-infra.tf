@@ -13,6 +13,42 @@
 # limitations under the License.
 
 
+
+## Cloud Storage
+
+resource "google_storage_bucket" "bucket" {
+  project                     = data.google_project.project_fleetevents.project_id
+  name                        = local.BUCKET
+  location                    = var.GCP_REGION
+  uniform_bucket_level_access = true
+  public_access_prevention    = "enforced"
+}
+
+data "google_storage_bucket_object" "template_spec" {
+  name   = format("samples/dataflow/templates/%s.json", local.TEMPLATE_NAME)
+  bucket = google_storage_bucket.bucket.id
+  #source = "../../../../../beam/fleetevents-beam.json"
+}
+
+resource "google_storage_bucket_iam_member" "bucket_iam_me" {
+  bucket = google_storage_bucket.bucket.name
+  for_each = toset([
+    "roles/storage.admin"
+  ])
+  role   = each.key
+  member = format("user:%s", var.ME)
+}
+resource "google_storage_bucket_iam_member" "bucket_iam_sa" {
+  bucket = google_storage_bucket.bucket.name
+  for_each = toset([
+    "roles/storage.admin"
+  ])
+  role   = each.key
+  member = format("serviceAccount:%s", google_service_account.sa_app.email)
+}
+
+
+
 ## setup the VPC network and subnetwork dedicated for dataflow worker nodes
 
 resource "google_compute_network" "vpc-network" {
@@ -110,7 +146,8 @@ resource "google_compute_region_network_firewall_policy_rule" "firewall-egress" 
 resource "google_artifact_registry_repository" "repo" {
   project       = data.google_project.project_fleetevents.project_id
   location      = var.GCP_REGION
-  repository_id = "fleetevents"
-  description   = "Repository for FleetEvents flex-template images"
+  repository_id = var.PIPELINE_NAME
+  description   = format("Repository for FleetEvents flex-template images for pipeline \"%s\"", var.PIPELINE_NAME)
   format        = "DOCKER"
+  labels        = local.labels_common
 }

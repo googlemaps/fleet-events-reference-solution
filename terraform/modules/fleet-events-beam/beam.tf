@@ -14,124 +14,19 @@
 
 
 
-
-# reference Pub/Sub topic where FleetEngine logs will be published
-data "google_pubsub_topic" "topic-fleetevents-input" {
-  project = data.google_project.project_fleetengine_logs.project_id
-  name    = var.TOPIC_FLEETENGINE_LOG
-}
-output "var_TOPIC_FLEETENGINE_LOG" {
-  value = var.TOPIC_FLEETENGINE_LOG
-}
-
-# allow SA for Pub/Sub Trigger to subscribe to the FleetEngine logs topic
-resource "google_pubsub_topic_iam_member" "input-subscriber-sa" {
-  project = data.google_project.project_fleetevents.project_id
-  topic   = data.google_pubsub_topic.topic-fleetevents-input.name
-  for_each = toset([
-    "roles/pubsub.subscriber"
-  ])
-  role   = each.value
-  member = format("serviceAccount:%s", google_service_account.sa_app.email)
-}
-
-resource "google_pubsub_topic" "topic-fleetevents-output" {
-  project = data.google_project.project_fleetevents.project_id
-
-  name   = format("fleetevents-output-%s", var.PIPELINE_NAME)
-  labels = local.labels_common
-}
-
-resource "google_pubsub_topic_iam_member" "output-publisher-sa" {
-  project = data.google_project.project_fleetevents.project_id
-  topic   = google_pubsub_topic.topic-fleetevents-output.name
-  for_each = toset([
-    "roles/pubsub.publisher"
-  ])
-  role   = each.value
-  member = format("serviceAccount:%s", google_service_account.sa_app.email)
-}
-
-resource "google_storage_bucket" "bucket" {
-  project                     = data.google_project.project_fleetevents.project_id
-  name                        = local.BUCKET
-  location                    = var.GCP_REGION
-  uniform_bucket_level_access = true
-  public_access_prevention    = "enforced"
-}
-
-data "google_storage_bucket_object" "template_spec" {
-  name   = format("samples/dataflow/templates/%s.json", local.TEMPLATE_NAME)
-  bucket = google_storage_bucket.bucket.id
-  #source = "../../../../../beam/fleetevents-beam.json"
-}
-
-resource "google_storage_bucket_iam_member" "bucket_iam_me" {
-  bucket = google_storage_bucket.bucket.name
-  for_each = toset([
-    "roles/storage.admin"
-  ])
-  role   = each.key
-  member = format("user:%s", var.ME)
-}
-resource "google_storage_bucket_iam_member" "bucket_iam_sa" {
-  bucket = google_storage_bucket.bucket.name
-  for_each = toset([
-    "roles/storage.admin"
-  ])
-  role   = each.key
-  member = format("serviceAccount:%s", google_service_account.sa_app.email)
-}
-
-
 resource "random_id" "jobname_suffix" {
   byte_length = 4
   keepers = {
     region             = var.GCP_REGION
     topic_id           = data.google_pubsub_topic.topic-fleetevents-input.id
     container_spec_md5 = data.google_storage_bucket_object.template_spec.md5hash
-
+    jar                = terraform_data.script_build_jar.id
+    image              = terraform_data.script_build_flex_template.id
     #subscription_id = google_pubsub_subscription.subscription-fleetenginelogs.id
   }
 }
 
 
-
-resource "google_dataflow_flex_template_job" "beam_job" {
-  provider                = google-beta
-  project                 = data.google_project.project_fleetevents.project_id
-  name                    = "fleetevents-job-${random_id.jobname_suffix.dec}"
-  region                  = var.GCP_REGION
-  container_spec_gcs_path = local.TEMPLATE_FILE_GCS_PATH
-  service_account_email   = google_service_account.sa_app.email
-  temp_location           = format("%s/temp", google_storage_bucket.bucket.url)
-  staging_location        = format("%s/staging", google_storage_bucket.bucket.url)
-  #skip_wait_on_job_termination = true
-  #on_delete                    = "cancel"
-  # max_workers = 2
-  parameters = {
-
-    ## pipeline specific params defined in the json
-    functionName       = "TASK_OUTCOME"
-    gapSize            = 3
-    windowSize         = 3
-    datastoreProjectId = var.PROJECT_APP
-    inputTopic         = data.google_pubsub_topic.topic-fleetevents-input.id
-    outputTopic        = google_pubsub_topic.topic-fleetevents-output.id
-
-
-    ## generic pipeline options
-    # https://beam.apache.org/releases/javadoc/current/index.html?org/apache/beam/sdk/options/PipelineOptions.html
-    # https://cloud.google.com/dataflow/docs/reference/pipeline-options
-    subnetwork = format("regions/%s/subnetworks/%s", var.GCP_REGION, google_compute_subnetwork.vpc-subnetwork.name)
-    #  workerMachineType = "e2-standard-2"
-    # workerRegion      = var.GCP_REGION
-    maxNumWorkers     = 2
-    usePublicIps = false
-    #update            = true
-  }
-  labels = local.labels_common
-}
 
 
 
@@ -160,6 +55,7 @@ data "local_file" "src_pipeline" {
 
 resource "terraform_data" "script_build_jar" {
   triggers_replace = [
+    "aaa",
     data.local_file.pom_xml.content_md5,
     data.local_file.src_pipeline.content_md5,
     fileexists(format("%s/../../../beam/target/fleetevents-beam-1.0-SNAPSHOT-shaded.jar", path.module))
@@ -184,33 +80,59 @@ resource "terraform_data" "script_build_flex_template" {
   provisioner "local-exec" {
     #    command     = format("pwd ; echo %s/scripts/scripts.sh tf_buildJar | tee /tmp/out.txt", path.module)
     command = format(
-      "pwd; echo ${path.module};  %s/scripts/scripts.sh tf_buildTemplate %s %s %s %s %s",
+      "pwd; echo ${path.module};  %s/scripts/scripts.sh tf_buildTemplate %s %s %s %s %s %s",
       path.module,                                        # prepend the script path
       data.google_project.project_fleetevents.project_id, # project_id
       local.TEMPLATE_NAME,                                #template 
       local.TEMPLATE_FILE_GCS_PATH,
       abspath("../../../../../beam/fleetevents-beam.json"),
-      abspath(local.PATH_JAR)
-
+      abspath(local.PATH_JAR),
+      google_artifact_registry_repository.repo.name
     )
     interpreter = ["bash", "-c"]
   }
+  depends_on = [terraform_data.script_build_jar]
 }
 
 
-# module "gcloud" {
-#   source  = "terraform-google-modules/gcloud/google"
-#   version = "~> 2.0"
 
-#   platform              = "darwin"
-#   additional_components = ["beta"]
-#   skip_download         = true
-#   #create_cmd_entrypoint  = "gcloud"
-#   create_cmd_body = join(" ", [
-#     format("--project=%s", data.google_project.project_fleetevents.project_id),
-#     "version"
-#   ])
-#   #destroy_cmd_entrypoint = "gcloud"
-#   #destroy_cmd_body       = "version"
-# }
+resource "google_dataflow_flex_template_job" "beam_job" {
+  provider                = google-beta
+  project                 = data.google_project.project_fleetevents.project_id
+  name                    = "fleetevents-job-${random_id.jobname_suffix.dec}"
+  region                  = var.GCP_REGION
+  container_spec_gcs_path = local.TEMPLATE_FILE_GCS_PATH
+  service_account_email   = google_service_account.sa_app.email
+  temp_location           = format("%s/temp", google_storage_bucket.bucket.url)
+  staging_location        = format("%s/staging", google_storage_bucket.bucket.url)
+  #skip_wait_on_job_termination = true
+  on_delete = "cancel"
+  # max_workers = 2
+  subnetwork   = format("regions/%s/subnetworks/%s", var.GCP_REGION, google_compute_subnetwork.vpc-subnetwork.name)
+  # no longer specifying machine spec as it cannot co-exist with Dataflow prime (autoscaling)
+  # machine_type = "e2-standard-2"
+  parameters = {
 
+    ## pipeline specific params defined in the json
+    functionName       = "TASK_OUTCOME"
+    gapSize            = 3
+    windowSize         = 3
+    datastoreProjectId = var.PROJECT_APP
+    inputTopic         = data.google_pubsub_topic.topic-fleetevents-input.id
+    outputTopic        = google_pubsub_topic.topic-fleetevents-output.id
+
+
+    ## generic pipeline options
+    # https://beam.apache.org/releases/javadoc/current/index.html?org/apache/beam/sdk/options/PipelineOptions.html
+    # https://cloud.google.com/dataflow/docs/reference/pipeline-options
+    #workerMachineType = "e2-standard-2"
+    # workerRegion      = var.GCP_REGION
+    maxNumWorkers = 2
+    usePublicIps  = false
+    #update            = true
+  }
+  labels = local.labels_common
+  depends_on = [
+    terraform_data.script_build_flex_template
+  ]
+}

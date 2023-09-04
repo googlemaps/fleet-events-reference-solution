@@ -64,7 +64,9 @@ resource "google_project_service" "gcp_services" {
     "cloudresourcemanager.googleapis.com",
     "logging.googleapis.com",
     "pubsub.googleapis.com",
-    "storage-api.googleapis.com"
+    "storage-api.googleapis.com",
+    "autoscaling.googleapis.com",
+    "firestore.googleapis.com"
   ])
   service = each.key
   # timeouts {
@@ -82,7 +84,7 @@ resource "google_service_account" "sa_app" {
   project      = var.PROJECT_APP
   account_id   = format("sa-%s", var.PIPELINE_NAME)
   display_name = format("'%s' SA - Runtime", var.PIPELINE_NAME)
-  description  = format("Service Account used by FleetEvents pipline %s's Runtime", var.PIPELINE_NAME)
+  description  = format("Service Account used by FleetEvents pipline \"%s\" runtime", var.PIPELINE_NAME)
   #  display_name = "Functions Service Account"
 }
 
@@ -107,9 +109,23 @@ resource "google_project_iam_member" "project_iam_sa_app" {
     "roles/storage.objectAdmin",
     "roles/viewer",
     "roles/dataflow.worker",
-    "roles/dataflow.serviceAgent"
+    "roles/dataflow.serviceAgent",
+    "roles/datastore.user"
   ])
   role   = each.key
   member = format("serviceAccount:%s", google_service_account.sa_app.email)
 }
 
+
+
+resource "google_firestore_database" "database" {
+  project                     = data.google_project.project_fleetevents.project_id
+  name                        = format("%s-%s", var.PIPELINE_NAME, "db")
+  location_id                 = var.GCP_REGION
+  type                        = "FIRESTORE_NATIVE"
+  concurrency_mode            = "PESSIMISTIC"
+  app_engine_integration_mode = "DISABLED"
+  depends_on = [
+    google_project_service.gcp_services["firestore.googleapis.com"]
+  ]
+}
