@@ -16,6 +16,8 @@
 
 resource "random_id" "jobname_suffix" {
   byte_length = 4
+
+  # change of any of the KVs here will trigger a new jobname to be generated
   keepers = {
     region             = var.GCP_REGION
     topic_id           = data.google_pubsub_topic.topic-fleetevents-input.id

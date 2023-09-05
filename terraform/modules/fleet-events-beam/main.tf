@@ -21,13 +21,10 @@ locals {
     "project_fleetengine"      = var.PROJECT_FLEETENGINE
     "project_fleetengine_logs" = var.PROJECT_FLEETENGINE_LOG
   }
-}
-
-locals {
   TEMPLATE_NAME          = "fleetevents-beam"
   BUCKET                 = format("%s-%s", data.google_project.project_fleetevents.project_id, var.PIPELINE_NAME)
   TEMPLATE_FILE_GCS_PATH = format("gs://%s/templates/%s.json", local.BUCKET, local.TEMPLATE_NAME)
-  REPOSITORY_NAME        = "fleetevents-docker"
+  REPOSITORY_NAME        = local.TEMPLATE_NAME
   PATH_JAR               = format("%s/../../../beam/target/fleetevents-beam-bundled-1.0-SNAPSHOT.jar", path.module)
   IMAGE_GCR_PATH = format(
     "%s-docker.pkg.dev/%s/%s/fleetevents/%s:latest",
@@ -105,13 +102,16 @@ resource "google_service_account_iam_binding" "sa_app_iam" {
 
 resource "google_project_iam_member" "project_iam_sa_app" {
   project = var.PROJECT_APP
-  for_each = toset([
-    "roles/storage.objectAdmin",
-    "roles/viewer",
-    "roles/dataflow.worker",
-    "roles/dataflow.serviceAgent",
-    "roles/datastore.user"
-  ])
+  for_each = toset(
+    concat(
+      [
+        "roles/storage.objectAdmin",
+        "roles/viewer",
+        "roles/dataflow.worker",
+        "roles/dataflow.serviceAgent"
+      ],
+    var.SA_APP_ROLES)
+  )
   role   = each.key
   member = format("serviceAccount:%s", google_service_account.sa_app.email)
 }

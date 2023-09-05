@@ -7,6 +7,7 @@ locals {
   PIPELINE_NAME       = "fleetevents-beam"
   TOPIC_LOGGING       = format("%s-input", local.PIPELINE_NAME)
   ME                  = "moritani@google.com"
+  SETUP_PUBSUB_SUB_BQ = true
 }
 
 module "logging_config" {
@@ -18,7 +19,7 @@ module "logging_config" {
   FLAG_SETUP_LOGGING_EXCLUSION          = false
   FLAG_SETUP_LOGGING_PUBSUB             = true
   PUBSUB_TOPIC_NAME                     = local.TOPIC_LOGGING
-  FLAG_SETUP_LOGGING_PUBSUB_SUB_BQ      = true
+  FLAG_SETUP_LOGGING_PUBSUB_SUB_BQ      = local.SETUP_PUBSUB_SUB_BQ
   FLAG_SETUP_LOGGING_PUBSUB_SUB_DEFAULT = false
   FLAG_SETUP_LOGGING_CLOUDSTORAGE       = false
   FLAG_SETUP_LOGGING_BIGQUERY           = false
@@ -32,16 +33,19 @@ output "logging_config" {
 }
 
 module "fleetevents-beam" {
-  source                  = "../../"
-  PROJECT_APP             = local.PROJECT_FLEETEVENTS
-  PROJECT_FLEETENGINE     = local.PROJECT_FLEETENGINE
-  PROJECT_FLEETENGINE_LOG = local.PROJECT_FLEETEVENTS
-  PIPELINE_NAME           = local.PIPELINE_NAME
-  GCP_REGION              = local.GCP_REGION
-  TOPIC_FLEETENGINE_LOG   = local.TOPIC_LOGGING
-  ME                      = local.ME
-  SA_APP_ROLES            = []
-  depends_on              = [module.logging_config]
+  source                           = "../../"
+  PROJECT_APP                      = local.PROJECT_FLEETEVENTS
+  PROJECT_FLEETENGINE              = local.PROJECT_FLEETENGINE
+  PROJECT_FLEETENGINE_LOG          = local.PROJECT_FLEETEVENTS
+  PIPELINE_NAME                    = local.PIPELINE_NAME
+  GCP_REGION                       = local.GCP_REGION
+  TOPIC_FLEETENGINE_LOG            = local.TOPIC_LOGGING
+  FLAG_SETUP_LOGGING_PUBSUB_SUB_BQ = local.SETUP_PUBSUB_SUB_BQ
+  ME                               = local.ME
+  SA_APP_ROLES = [
+    "roles/datastore.user"
+  ]
+  depends_on = [module.logging_config]
 }
 
 output "fleetevents-beam" {

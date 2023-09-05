@@ -22,6 +22,7 @@ resource "google_storage_bucket" "bucket" {
   location                    = var.GCP_REGION
   uniform_bucket_level_access = true
   public_access_prevention    = "enforced"
+  force_destroy               = true
 }
 
 data "google_storage_bucket_object" "template_spec" {

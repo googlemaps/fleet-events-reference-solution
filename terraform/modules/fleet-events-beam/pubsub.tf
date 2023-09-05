@@ -50,9 +50,6 @@ resource "google_pubsub_topic_iam_member" "output-publisher-sa" {
   member = format("serviceAccount:%s", google_service_account.sa_app.email)
 }
 
-locals {
-  FLAG_SETUP_LOGGING_PUBSUB_SUB_BQ = true
-}
 
 
 ## pubsub subscription to bq

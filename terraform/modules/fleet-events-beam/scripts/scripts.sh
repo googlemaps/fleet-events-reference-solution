@@ -53,4 +53,12 @@ function tf_buildTemplate {
     
 }
 
+
+## Terraform does not support deletion of databases and nor does Cloud Console
+## The only way to cleanly delete a firestore database instance is by using this alpha command with Cloud CLI
+
+function deleteFirestoreDatabase {
+    local DATABASE=$1
+    gcloud --project ${PROJECT_ID} alpha firestore databases delete --database=${DATABASE}
+}
 "$@"
