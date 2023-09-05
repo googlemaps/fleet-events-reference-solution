@@ -1,14 +1,28 @@
 locals {
   # existing project
-  PROJECT_FLEETENGINE = "moritani-sandbox-mobility"
+  PROJECT_FLEETENGINE = "crystal-gcp-project"
   # existing project
-  PROJECT_FLEETEVENTS = "moritani-sandbox-fleetevents"
-  GCP_REGION          = "asia-southeast1"
-  PIPELINE_NAME       = "fleetevents-beam"
-  TOPIC_LOGGING       = format("%s-input", local.PIPELINE_NAME)
-  ME                  = "moritani@google.com"
-  SETUP_PUBSUB_SUB_BQ = true
+  PROJECT_FLEETEVENTS  = "crystal-gcp-project"
+  GCP_REGION           = "us-central1"
+  GCP_REGION_FIRESTORE = "nam5"
+  PIPELINE_NAME        = "fleetevents-beam-moritani01"
+  DATABASE_NAME        = "fleetevents-beam-moritani01"
+  TOPIC_LOGGING        = format("%s-input", local.PIPELINE_NAME)
+  ME                   = "moritani@google.com"
+  SETUP_PUBSUB_SUB_BQ  = true
 }
+# locals {
+#   # existing project
+#   PROJECT_FLEETENGINE = "moritani-sandbox-mobility"
+#   # existing project
+#   PROJECT_FLEETEVENTS = "moritani-sandbox-fleetevents"
+#   GCP_REGION          = "asia-southeast1"
+#   PIPELINE_NAME       = "fleetevents-beam"
+#   DATABASE_NAME       = "fleetevents-db-2"
+#   TOPIC_LOGGING       = format("%s-input", local.PIPELINE_NAME)
+#   ME                  = "moritani@google.com"
+#   SETUP_PUBSUB_SUB_BQ = true
+# }
 
 module "logging_config" {
   #TODO: replace source with link to git repo so that there is no dependency on this module being locally avail
@@ -38,7 +52,9 @@ module "fleetevents-beam" {
   PROJECT_FLEETENGINE              = local.PROJECT_FLEETENGINE
   PROJECT_FLEETENGINE_LOG          = local.PROJECT_FLEETEVENTS
   PIPELINE_NAME                    = local.PIPELINE_NAME
+  DATABASE_NAME                    = local.DATABASE_NAME
   GCP_REGION                       = local.GCP_REGION
+  GCP_REGION_FIRESTORE             = local.GCP_REGION_FIRESTORE
   TOPIC_FLEETENGINE_LOG            = local.TOPIC_LOGGING
   FLAG_SETUP_LOGGING_PUBSUB_SUB_BQ = local.SETUP_PUBSUB_SUB_BQ
   ME                               = local.ME

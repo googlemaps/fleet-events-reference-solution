@@ -38,6 +38,12 @@ variable "GCP_REGION" {
   nullable    = false
   default     = "us-central1"
 }
+variable "GCP_REGION_FIRESTORE" {
+  type        = string
+  description = "Refer to https://cloud.google.com/firestore/docs/locations to choose GCP Region for Firestore. If not set, will use value of GCP_REGION."
+  #default     = "nam5"
+  nullable = true
+}
 variable "SA_APP_ROLES" {
   type        = list(string)
   description = "Project level IAM Roles the Function's runtime Service Account requires. For example, it might require roles/datastore.user to use Datastore."
@@ -64,6 +70,13 @@ variable "PIPELINE_CLASS" {
   nullable = false
   default  = "com.google.fleetevents.beam.FleetEventRunner"
 
+}
+
+variable "DATABASE_NAME" {
+  type        = string
+  description = "Firestore database instance name"
+  nullable    = false
+  default     = "fleetevents-db"
 }
 
 variable "ME" {

@@ -25,12 +25,6 @@ resource "google_storage_bucket" "bucket" {
   force_destroy               = true
 }
 
-data "google_storage_bucket_object" "template_spec" {
-  name   = format("samples/dataflow/templates/%s.json", local.TEMPLATE_NAME)
-  bucket = google_storage_bucket.bucket.id
-  #source = "../../../../../beam/fleetevents-beam.json"
-}
-
 resource "google_storage_bucket_iam_member" "bucket_iam_me" {
   bucket = google_storage_bucket.bucket.name
   for_each = toset([
@@ -47,7 +41,14 @@ resource "google_storage_bucket_iam_member" "bucket_iam_sa" {
   role   = each.key
   member = format("serviceAccount:%s", google_service_account.sa_app.email)
 }
-
+resource "google_storage_bucket_iam_member" "bucket_iam_sa_build" {
+  bucket = google_storage_bucket.bucket.name
+  for_each = toset([
+    "roles/storage.admin"
+  ])
+  role   = each.key
+  member = format("serviceAccount:%s@cloudbuild.gserviceaccount.com", data.google_project.project_fleetevents.number)
+}
 
 
 ## setup the VPC network and subnetwork dedicated for dataflow worker nodes

@@ -13,27 +13,7 @@
 # limitations under the License.
 
 
-locals {
-  labels_common = {
-    "created_by"               = "terraform"
-    "fleetevents_pipeline"     = lower(var.PIPELINE_NAME)
-    "project_fleetevents"      = var.PROJECT_APP
-    "project_fleetengine"      = var.PROJECT_FLEETENGINE
-    "project_fleetengine_logs" = var.PROJECT_FLEETENGINE_LOG
-  }
-  TEMPLATE_NAME          = "fleetevents-beam"
-  BUCKET                 = format("%s-%s", data.google_project.project_fleetevents.project_id, var.PIPELINE_NAME)
-  TEMPLATE_FILE_GCS_PATH = format("gs://%s/templates/%s.json", local.BUCKET, local.TEMPLATE_NAME)
-  REPOSITORY_NAME        = local.TEMPLATE_NAME
-  PATH_JAR               = format("%s/../../../beam/target/fleetevents-beam-bundled-1.0-SNAPSHOT.jar", path.module)
-  IMAGE_GCR_PATH = format(
-    "%s-docker.pkg.dev/%s/%s/fleetevents/%s:latest",
-    var.GCP_REGION,
-    data.google_project.project_fleetevents.project_id,
-    local.REPOSITORY_NAME,
-    local.TEMPLATE_NAME
-  )
-}
+
 
 # Reference existing projects
 data "google_project" "project" {
@@ -118,14 +98,3 @@ resource "google_project_iam_member" "project_iam_sa_app" {
 
 
 
-resource "google_firestore_database" "database" {
-  project                     = data.google_project.project_fleetevents.project_id
-  name                        = format("%s-%s", var.PIPELINE_NAME, "db")
-  location_id                 = var.GCP_REGION
-  type                        = "FIRESTORE_NATIVE"
-  concurrency_mode            = "PESSIMISTIC"
-  app_engine_integration_mode = "DISABLED"
-  depends_on = [
-    google_project_service.gcp_services["firestore.googleapis.com"]
-  ]
-}

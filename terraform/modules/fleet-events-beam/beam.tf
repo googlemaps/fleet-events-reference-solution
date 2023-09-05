@@ -72,6 +72,14 @@ output "script_build_jar" {
   value = terraform_data.script_build_jar
 }
 
+
+data "google_storage_bucket_object" "template_spec" {
+  name   = format("templates/%s.json", local.TEMPLATE_NAME)
+  bucket = google_storage_bucket.bucket.id
+  #source = "../../../../../beam/fleetevents-beam.json"
+  depends_on = [ terraform_data.script_build_flex_template ]
+}
+
 resource "terraform_data" "script_build_flex_template" {
   triggers_replace = [
     "aaa",
@@ -82,14 +90,15 @@ resource "terraform_data" "script_build_flex_template" {
   provisioner "local-exec" {
     #    command     = format("pwd ; echo %s/scripts/scripts.sh tf_buildJar | tee /tmp/out.txt", path.module)
     command = format(
-      "pwd; echo ${path.module};  %s/scripts/scripts.sh tf_buildTemplate %s %s %s %s %s %s",
+      "pwd; echo ${path.module};  %s/scripts/scripts.sh tf_buildTemplate %s %s %s %s %s %s %s",
       path.module,                                        # prepend the script path
       data.google_project.project_fleetevents.project_id, # project_id
       local.TEMPLATE_NAME,                                #template 
       local.TEMPLATE_FILE_GCS_PATH,
       abspath("../../../../../beam/fleetevents-beam.json"),
       abspath(local.PATH_JAR),
-      google_artifact_registry_repository.repo.name
+      google_artifact_registry_repository.repo.name,
+      var.GCP_REGION
     )
     interpreter = ["bash", "-c"]
   }
@@ -107,10 +116,8 @@ resource "google_dataflow_flex_template_job" "beam_job" {
   service_account_email   = google_service_account.sa_app.email
   temp_location           = format("%s/temp", google_storage_bucket.bucket.url)
   staging_location        = format("%s/staging", google_storage_bucket.bucket.url)
-  #skip_wait_on_job_termination = true
-  on_delete = "cancel"
-  # max_workers = 2
-  subnetwork = format("regions/%s/subnetworks/%s", var.GCP_REGION, google_compute_subnetwork.vpc-subnetwork.name)
+  on_delete               = "cancel"
+  subnetwork              = format("regions/%s/subnetworks/%s", var.GCP_REGION, google_compute_subnetwork.vpc-subnetwork.name)
   # no longer specifying machine spec as it cannot co-exist with Dataflow prime (autoscaling)
   # machine_type = "e2-standard-2"
   parameters = {
@@ -136,6 +143,7 @@ resource "google_dataflow_flex_template_job" "beam_job" {
   }
   labels = local.labels_common
   depends_on = [
-    terraform_data.script_build_flex_template
+    terraform_data.script_build_flex_template,
+    google_firestore_database.database
   ]
 }

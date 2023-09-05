@@ -18,9 +18,7 @@ data "google_pubsub_topic" "topic-fleetevents-input" {
   project = data.google_project.project_fleetengine_logs.project_id
   name    = var.TOPIC_FLEETENGINE_LOG
 }
-output "var_TOPIC_FLEETENGINE_LOG" {
-  value = var.TOPIC_FLEETENGINE_LOG
-}
+
 
 # allow SA for Pub/Sub Trigger to subscribe to the FleetEngine logs topic
 resource "google_pubsub_topic_iam_member" "input-subscriber-sa" {
