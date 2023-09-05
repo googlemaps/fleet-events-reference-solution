@@ -67,10 +67,6 @@
             </snapshots>
         </repository>
         <repository>
-            <id>confluent</id>
-            <url>https://packages.confluent.io/maven/</url>
-        </repository>
-        <repository>
             <id>artifact-registry</id>
             <releases>
                 <enabled>true</enabled>
@@ -115,7 +111,6 @@
                     </archive>
                 </configuration>
             </plugin>
-
             <!--
               Configures `mvn package` to produce a bundled jar ("fat jar") for runners
               that require this for job submission to a cluster.
@@ -172,9 +167,8 @@
             <artifactId>beam-sdks-java-core</artifactId>
             <version>${beam.version}</version>
         </dependency>
-
         <!--
-          By default, the starter project has a dependency on the Beam DirectRunner
+          By default, the project has a dependency on the Beam DirectRunner
           to enable development and testing of pipelines. To run on another of the
           Beam runners, add its module to this pom.xml according to the
           runner-specific setup instructions on the Beam website:
@@ -186,24 +180,26 @@
             <version>${beam.version}</version>
             <scope>runtime</scope>
         </dependency>
-
         <dependency>
             <groupId>org.apache.beam</groupId>
             <artifactId>beam-runners-google-cloud-dataflow-java</artifactId>
             <version>${beam.version}</version>
             <scope>runtime</scope>
         </dependency>
-
         <dependency>
             <groupId>org.apache.beam</groupId>
             <artifactId>beam-sdks-java-io-google-cloud-platform</artifactId>
             <version>${beam.version}</version>
         </dependency>
-
         <dependency>
-            <groupId>org.apache.beam</groupId>
-            <artifactId>beam-examples-java</artifactId>
-            <version>${beam.version}</version>
+            <groupId>com.google.protobuf</groupId>
+            <artifactId>protobuf-java</artifactId>
+            <version>3.23.2</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.protobuf</groupId>
+            <artifactId>protobuf-java-util</artifactId>
+            <version>3.23.2</version>
         </dependency>
         <dependency>
             <groupId>com.google.firebase</groupId>
@@ -216,13 +212,11 @@
             <artifactId>slf4j-api</artifactId>
             <version>${slf4j.version}</version>
         </dependency>
-
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-jdk14</artifactId>
             <version>${slf4j.version}</version>
         </dependency>
-
         <!-- fleet engine dependencies -->
         <dependency>
             <groupId>com.google.api.grpc</groupId>
@@ -234,7 +228,6 @@
             <groupId>com.google.maps</groupId>
             <version>0.0.1961</version>
         </dependency>
-
         <!-- testing -->
         <dependency>
             <groupId>junit</groupId>
