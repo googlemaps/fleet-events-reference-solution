@@ -108,7 +108,7 @@ resource "google_dataflow_flex_template_job" "beam_job" {
   #skip_wait_on_job_termination = true
   on_delete = "cancel"
   # max_workers = 2
-  subnetwork   = format("regions/%s/subnetworks/%s", var.GCP_REGION, google_compute_subnetwork.vpc-subnetwork.name)
+  subnetwork = format("regions/%s/subnetworks/%s", var.GCP_REGION, google_compute_subnetwork.vpc-subnetwork.name)
   # no longer specifying machine spec as it cannot co-exist with Dataflow prime (autoscaling)
   # machine_type = "e2-standard-2"
   parameters = {
@@ -118,6 +118,7 @@ resource "google_dataflow_flex_template_job" "beam_job" {
     gapSize            = 3
     windowSize         = 3
     datastoreProjectId = var.PROJECT_APP
+    databaseId         = google_firestore_database.database.name
     inputTopic         = data.google_pubsub_topic.topic-fleetevents-input.id
     outputTopic        = google_pubsub_topic.topic-fleetevents-output.id
 

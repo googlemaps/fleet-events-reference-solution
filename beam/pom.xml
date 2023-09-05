@@ -39,6 +39,7 @@
         <maven-jar-plugin.version>3.3.0</maven-jar-plugin.version>
         <maven-shade-plugin.version>3.5.0</maven-shade-plugin.version>
         <slf4j.version>2.0.7</slf4j.version>
+        <firestore-bom.version>3.14.1</firestore-bom.version>
     </properties>
 
     <distributionManagement>
@@ -94,8 +95,9 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>${maven-compiler-plugin.version}</version>
                 <configuration>
-                    <source>11</source>
-                    <target>11</target>
+                    <!-- <source>11</source>
+                    <target>11</target> -->
+                    <release>11</release>
                 </configuration>
             </plugin>
 
@@ -163,7 +165,18 @@
             </plugins>
         </pluginManagement>
     </build>
-
+    <dependencyManagement>
+        <dependencies>
+            <!-- https://mvnrepository.com/artifact/com.google.cloud/google-cloud-firestore-bom -->
+            <dependency>
+                <groupId>com.google.cloud</groupId>
+                <artifactId>google-cloud-firestore-bom</artifactId>
+                <version>${firestore-bom.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
     <dependencies>
         <dependency>
             <groupId>org.apache.beam</groupId>
@@ -198,16 +211,16 @@
             <version>${beam.version}</version>
         </dependency>
 
-        <dependency>
+        <!-- <dependency>
             <groupId>org.apache.beam</groupId>
             <artifactId>beam-examples-java</artifactId>
             <version>${beam.version}</version>
-        </dependency>
-        <dependency>
+        </dependency> -->
+        <!-- <dependency>
             <groupId>com.google.firebase</groupId>
             <artifactId>firebase-admin</artifactId>
             <version>9.1.1</version>
-        </dependency>
+        </dependency> -->
         <!-- slf4j API frontend binding with JUL backend -->
         <dependency>
             <groupId>org.slf4j</groupId>

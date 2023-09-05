@@ -5,11 +5,13 @@ import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.firestore.DocumentReference;
 import com.google.cloud.firestore.DocumentSnapshot;
 import com.google.cloud.firestore.Firestore;
+import com.google.cloud.firestore.FirestoreOptions;
 import com.google.cloud.firestore.Transaction;
 import com.google.cloud.firestore.WriteResult;
-import com.google.firebase.FirebaseApp;
-import com.google.firebase.FirebaseOptions;
-import com.google.firebase.cloud.FirestoreClient;
+// import com.google.firebase.FirebaseApp;
+// import com.google.firebase.FirebaseOptions;
+// import com.google.firebase.cloud.FirestoreClient;
+
 import com.google.fleetevents.beam.model.TaskMetadata;
 import java.io.IOException;
 import java.io.Serializable;
@@ -21,7 +23,8 @@ import java.util.logging.Logger;
 import org.apache.beam.vendor.guava.v26_0_jre.com.google.common.base.Preconditions;
 
 /**
- * Client for firestore with convenience methods for accessing a vehicle or task object through the
+ * Client for firestore with convenience methods for accessing a vehicle or task
+ * object through the
  * Firestore connection.
  */
 public class FirestoreDatabaseClient implements Serializable {
@@ -30,18 +33,31 @@ public class FirestoreDatabaseClient implements Serializable {
   protected final String TASK_COLLECTION_NAME = "dataflowTaskMetadata";
   protected Firestore firestore;
 
-  public FirestoreDatabaseClient() throws IOException {}
+  public FirestoreDatabaseClient() throws IOException {
+  }
 
-  public Firestore initFirestore(String projectId, String appName) throws IOException {
+  public Firestore initFirestore(String projectId, String databaseId, String appName) throws IOException {
 
     try {
-      if (this.firestore != null) return firestore;
+      if (this.firestore != null)
+        return firestore;
       GoogleCredentials credentials = GoogleCredentials.getApplicationDefault();
-      FirebaseOptions options =
-          new FirebaseOptions.Builder().setCredentials(credentials).setProjectId(projectId).build();
-      logger.log(Level.INFO, "firestore initialized");
-      FirebaseApp app = FirebaseApp.initializeApp(options, appName);
-      this.firestore = FirestoreClient.getFirestore(app);
+      // FirebaseOptions options =
+      // new
+      // FirebaseOptions.Builder().setCredentials(credentials).setProjectId(projectId).build();
+      // logger.log(Level.INFO, "firestore initialized");
+      // FirebaseApp app = FirebaseApp.initializeApp(options, appName);
+      // this.firestore = FirestoreClient.getFirestore(app);
+
+      FirestoreOptions firestoreOptions = //FirestoreOptions.getDefaultInstance().toBuilder()
+      FirestoreOptions.newBuilder()
+          .setCredentials(credentials)
+          .setProjectId(projectId)
+          .setDatabaseId(databaseId)
+          .build();
+      firestore = firestoreOptions.getService();
+       logger.log(Level.INFO, "firestore initialized");
+
       return firestore;
     } catch (Exception e) {
       logger.log(Level.WARNING, e.getMessage());
@@ -58,7 +74,8 @@ public class FirestoreDatabaseClient implements Serializable {
   public TaskMetadata getTask(DocumentReference documentReference)
       throws ExecutionException, InterruptedException {
     ApiFuture<DocumentSnapshot> doc = documentReference.get();
-    if (!doc.get().exists()) return null;
+    if (!doc.get().exists())
+      return null;
     TaskMetadata result = doc.get().get(TASK_COLLECTION_NAME, TaskMetadata.class);
     return result;
   }

@@ -71,3 +71,10 @@ variable "ME" {
   description = "Account ID (in the form of email address) of the developer running terraform."
   nullable    = false
 }
+
+variable "FLAG_SETUP_LOGGING_PUBSUB_SUB_BQ" {
+  type        = bool
+  description = "whether to setup a subscription for the Pub/Sub topic"
+  nullable    = false
+  default     = true
+}

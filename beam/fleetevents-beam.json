@@ -18,6 +18,12 @@
             "isOptional": false
         },
         {
+            "name": "databaseId",
+            "label": "Firestore Database",
+            "helpText": "Choose the database.",
+            "isOptional": false
+        },
+        {
             "name": "inputTopic",
             "label": "Input Pub/Sub Topic",
             "helpText": "The Cloud Pub/Sub topic to read from.",
