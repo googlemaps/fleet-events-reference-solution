@@ -102,6 +102,7 @@ public class DistanceRemainingHandler implements FleetEventHandler {
     if (!hasOriginalDistanceRemaining) {
       return (long) distanceChange.newValue < threshold;
     }
-    return (long) distanceChange.oldValue > threshold && (long) distanceChange.newValue < threshold;
+    return (long) distanceChange.oldValue >= threshold
+        && (long) distanceChange.newValue < threshold;
   }
 }

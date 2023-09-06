@@ -1,0 +1,121 @@
+package com.google.fleetevents.odrd.handlers;
+
+import com.google.cloud.Timestamp;
+import com.google.cloud.firestore.Transaction;
+import com.google.fleetevents.FleetEventHandler;
+import com.google.fleetevents.common.database.FirestoreDatabaseClient;
+import com.google.fleetevents.common.models.Change;
+import com.google.fleetevents.common.models.FleetEvent;
+import com.google.fleetevents.common.models.OutputEvent;
+import com.google.fleetevents.common.util.TimeUtil;
+import com.google.fleetevents.odrd.models.TripFleetEvent;
+import com.google.fleetevents.odrd.models.outputs.EtaAbsoluteChangeOuputEvent;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+
+public class EtaAbsoluteChangeHandler implements FleetEventHandler {
+  private static final String ORIGINAL_ETA_KEY = "originalEta";
+  private static final long DEFAULT_THRESHOLD_MILISECONDS = 5 * 60 * 1000;
+  private long thresholdMilliseconds;
+
+  public EtaAbsoluteChangeHandler() {
+    this.thresholdMilliseconds = DEFAULT_THRESHOLD_MILISECONDS;
+  }
+
+  @Override
+  public List<OutputEvent> handleEvent(FleetEvent fleetEvent, Transaction transaction) {
+    var tripFleetEvent = (TripFleetEvent) fleetEvent;
+    var outputEvents = new ArrayList<OutputEvent>();
+    var eventTimestamp = Objects.requireNonNull(tripFleetEvent.newTrip()).getEventTimestamp();
+    for (var i = 0; i < Objects.requireNonNull(tripFleetEvent.newTripWaypoints()).size(); i++) {
+      var waypointDiff = tripFleetEvent.tripWaypointDifferences().get(i);
+      var waypoint = tripFleetEvent.newTripWaypoints().get(i);
+      var etaOutputEvent =
+          tryGetEtaOutputEvent(
+              waypoint.getWaypointId(),
+              waypoint.getEventMetadata(),
+              waypointDiff,
+              waypoint.getEta(),
+              eventTimestamp,
+              fleetEvent,
+              false);
+      etaOutputEvent.ifPresent(outputEvents::add);
+    }
+    var newTrip = tripFleetEvent.newTrip();
+    var etaOutputEvent =
+        tryGetEtaOutputEvent(
+            newTrip.getTripId(),
+            newTrip.getEventMetadata(),
+            tripFleetEvent.tripDifferences(),
+            newTrip.getEta(),
+            eventTimestamp,
+            fleetEvent,
+            true);
+    etaOutputEvent.ifPresent(outputEvents::add);
+    return outputEvents;
+  }
+
+  @Override
+  public boolean respondsTo(
+      FleetEvent fleetEvent,
+      Transaction transaction,
+      FirestoreDatabaseClient firestoreDatabaseClient) {
+    if (fleetEvent instanceof TripFleetEvent tripFleetEvent) {
+      return tripFleetEvent.tripDifferences().containsKey("eta")
+          || tripFleetEvent.tripWaypointDifferences().stream()
+              .map(differences -> differences.containsKey("eta"))
+              .reduce(false, Boolean::logicalOr);
+    }
+    return false;
+  }
+
+  @Override
+  public boolean verifyOutput(OutputEvent outputEvent) {
+    return outputEvent instanceof EtaAbsoluteChangeOuputEvent;
+  }
+
+  public Optional<OutputEvent> tryGetEtaOutputEvent(
+      String identifier,
+      Map<String, Object> eventMetadata,
+      Map<String, Change> differences,
+      Timestamp newEta,
+      Timestamp eventTimestamp,
+      FleetEvent fleetEvent,
+      boolean isTripOutputEvent) {
+    Optional<OutputEvent> optionalEtaOutputEvent = Optional.empty();
+    if (differences.containsKey("eta")) {
+      var hasOriginalEta = eventMetadata.containsKey(ORIGINAL_ETA_KEY);
+      /* In case the original eta wasn't populated due to the trip having already started before
+       * the function was deployed use the previous eta as an estimate of the original eta given. */
+      var prevEtaNull = differences.get("eta").oldValue == null;
+      if (hasOriginalEta || !prevEtaNull) {
+        var originalEta =
+            hasOriginalEta
+                ? (Timestamp) eventMetadata.get(ORIGINAL_ETA_KEY)
+                : (Timestamp) differences.get("eta").oldValue;
+        if (TimeUtil.timestampDifferenceMillis(
+                newEta.toSqlTimestamp(), originalEta.toSqlTimestamp())
+            >= thresholdMilliseconds) {
+          var etaOutputEvent = new EtaAbsoluteChangeOuputEvent();
+          etaOutputEvent.setIdentifier(identifier);
+          etaOutputEvent.setOriginalEta(originalEta);
+          etaOutputEvent.setNewEta(newEta);
+          etaOutputEvent.setThresholdMilliseconds(thresholdMilliseconds);
+          etaOutputEvent.setEventTimestamp(eventTimestamp);
+          etaOutputEvent.setIsTripOutputEvent(isTripOutputEvent);
+          etaOutputEvent.setFleetEvent(fleetEvent);
+          optionalEtaOutputEvent = Optional.of(etaOutputEvent);
+        }
+      }
+      if (!hasOriginalEta) {
+        var originalEta =
+            !prevEtaNull ? differences.get("eta").oldValue : differences.get("eta").newValue;
+        eventMetadata.put(ORIGINAL_ETA_KEY, originalEta);
+      }
+    }
+    return optionalEtaOutputEvent;
+  }
+}

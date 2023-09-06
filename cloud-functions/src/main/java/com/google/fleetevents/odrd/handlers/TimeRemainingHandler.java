@@ -104,6 +104,7 @@ public class TimeRemainingHandler implements FleetEventHandler {
     if (!hasOriginalTimeRemaining) {
       return (long) durationChange.newValue < threshold;
     }
-    return (long) durationChange.oldValue > threshold && (long) durationChange.newValue < threshold;
+    return (long) durationChange.oldValue >= threshold
+        && (long) durationChange.newValue < threshold;
   }
 }
