@@ -29,7 +29,6 @@ import com.google.cloud.firestore.Transaction;
 import com.google.fleetevents.common.database.FirestoreDatabaseClient;
 import java.util.HashMap;
 import java.util.Map;
-
 import org.mockito.Mockito;
 
 /** Helper for creating a fake firestore used in testing transactions. */

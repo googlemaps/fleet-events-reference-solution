@@ -34,7 +34,7 @@ public class TimeRemainingOutputEvent extends OutputEvent {
   private Long thresholdMilliseconds;
 
   public TimeRemainingOutputEvent() {
-    this.type = Type.DISTANCE_REMAINING;
+    this.type = Type.TIME_REMAINING;
   }
 
   public Timestamp getEventTimestamp() {
@@ -95,7 +95,7 @@ public class TimeRemainingOutputEvent extends OutputEvent {
 
   @Override
   public String toString() {
-    return "DistanceRemainingOutputEvent{"
+    return "TimeRemainingOutputEvent{"
         + "oldDurationRemainingMiliseconds="
         + oldDurationRemainingMiliseconds
         + ", tripId=\n"

@@ -158,7 +158,7 @@ public class TaskOutcomeChange implements Serializable {
   private class ConvertToString extends DoFn<TaskOutcomeChangeOutputEvent, String> {
     @DoFn.ProcessElement
     public void processElement(
-            @Element TaskOutcomeChangeOutputEvent element, OutputReceiver<String> receiver) {
+        @Element TaskOutcomeChangeOutputEvent element, OutputReceiver<String> receiver) {
       logger.log(Level.INFO, String.format("Outputting element %s", element.toString()));
       receiver.output(element.toString());
     }
