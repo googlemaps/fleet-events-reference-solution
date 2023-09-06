@@ -16,9 +16,8 @@
 # reference Pub/Sub topic where FleetEngine logs will be published
 data "google_pubsub_topic" "topic-fleetevents-input" {
   project = data.google_project.project_fleetengine_logs.project_id
-  name    = var.TOPIC_FLEETENGINE_LOG
+  name    = var.TOPIC_INPUT
 }
-
 
 # allow SA for Pub/Sub Trigger to subscribe to the FleetEngine logs topic
 resource "google_pubsub_topic_iam_member" "input-subscriber-sa" {
@@ -31,10 +30,11 @@ resource "google_pubsub_topic_iam_member" "input-subscriber-sa" {
   member = format("serviceAccount:%s", google_service_account.sa_app.email)
 }
 
+
 resource "google_pubsub_topic" "topic-fleetevents-output" {
   project = data.google_project.project_fleetevents.project_id
 
-  name   = format("%s-output", var.PIPELINE_NAME)
+  name   = var.TOPIC_OUTPUT
   labels = local.labels_common
 }
 
@@ -70,7 +70,7 @@ resource "google_pubsub_subscription" "topic-output-subscription-bigquery" {
     write_metadata = true
 
   }
-  count = var.FLAG_SETUP_LOGGING_PUBSUB_SUB_BQ ? 1 : 0
+  count = var.FLAG_SETUP_PUBSUB_SUB_BQ ? 1 : 0
 
   depends_on = [
     google_project_iam_member.bq_metadata_viewer,
@@ -95,14 +95,14 @@ resource "google_bigquery_dataset" "topic-output-bq-subscription-dataset" {
   dataset_id            = format("%s_pubsub", replace(google_pubsub_topic.topic-fleetevents-output.name, "-", "_"))
   description           = format("BigQuery subscription to FleetEvents output Pub/Sub topic")
   max_time_travel_hours = "168"
-  count                 = var.FLAG_SETUP_LOGGING_PUBSUB_SUB_BQ ? 1 : 0
+  count                 = var.FLAG_SETUP_PUBSUB_SUB_BQ ? 1 : 0
   labels                = local.labels_common
 }
 
 resource "google_bigquery_table" "topic-output-bq-subscription-table" {
   deletion_protection = false
   project             = data.google_project.project_fleetevents.project_id
-  count               = var.FLAG_SETUP_LOGGING_PUBSUB_SUB_BQ ? 1 : 0
+  count               = var.FLAG_SETUP_PUBSUB_SUB_BQ ? 1 : 0
   labels              = local.labels_common
   table_id            = "pubsub_subscription"
   dataset_id          = google_bigquery_dataset.topic-output-bq-subscription-dataset[0].dataset_id

@@ -13,7 +13,6 @@
 # limitations under the License.
 
 
-
 # firestore database instance cannot be easily deleted
 # and even if deleted, the database name is not immediately reusable
 # therefore, it is recommended to use a more dynamic name
@@ -21,11 +20,11 @@
 
 locals {
   REGION_FIRESTORE = (var.GCP_REGION_FIRESTORE != "" && var.GCP_REGION_FIRESTORE != null) ? var.GCP_REGION_FIRESTORE : var.GCP_REGION
-
 }
+
 resource "google_firestore_database" "database" {
   project                     = data.google_project.project_fleetevents.project_id
-  name                        = var.DATABASE_NAME #("%s-%s", var.PIPELINE_NAME, "db")
+  name                        = var.DATABASE_NAME
   location_id                 = local.REGION_FIRESTORE
   type                        = "FIRESTORE_NATIVE"
   concurrency_mode            = "PESSIMISTIC"

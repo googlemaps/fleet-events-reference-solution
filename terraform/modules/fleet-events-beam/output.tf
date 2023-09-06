@@ -28,9 +28,15 @@ output "vpc-subnetwork"{
     value=google_compute_subnetwork.vpc-subnetwork
 }
 
-output "bucket" {
+output "bucket_jobs" {
     value=google_storage_bucket.bucket
+}
+output "bucket_template" {
+    value=google_storage_bucket.bucket_template
 }
 output "container_spec" {
     value=data.google_storage_bucket_object.template_spec
+}
+output "script_build_jar" {
+  value = terraform_data.script_build_jar
 }

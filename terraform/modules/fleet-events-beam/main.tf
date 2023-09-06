@@ -14,11 +14,8 @@
 
 
 
-
 # Reference existing projects
-data "google_project" "project" {
-  project_id = var.PROJECT_APP
-}
+
 data "google_project" "project_fleetengine" {
   project_id = var.PROJECT_FLEETENGINE
 }
@@ -32,7 +29,7 @@ data "google_project" "project_fleetevents" {
 
 # enable prereq gcp services
 resource "google_project_service" "gcp_services" {
-  project = data.google_project.project.project_id
+  project = data.google_project.project_fleetevents.project_id
   for_each = toset([
     "dataflow.googleapis.com",
     "artifactregistry.googleapis.com",
@@ -57,12 +54,12 @@ resource "google_project_service" "gcp_services" {
 }
 
 
+# service account under which the pipeline will run
 resource "google_service_account" "sa_app" {
   project      = var.PROJECT_APP
   account_id   = format("sa-%s", var.PIPELINE_NAME)
-  display_name = format("'%s' SA - Runtime", var.PIPELINE_NAME)
-  description  = format("Service Account used by FleetEvents pipline \"%s\" runtime", var.PIPELINE_NAME)
-  #  display_name = "Functions Service Account"
+  display_name = format("FleetEvents '%s' runtime SA", var.PIPELINE_NAME)
+  description  = format("Service Account under which FleetEvents pipline \"%s\" runs", var.PIPELINE_NAME)
 }
 
 resource "google_service_account_iam_binding" "sa_app_iam" {
@@ -80,17 +77,22 @@ resource "google_service_account_iam_binding" "sa_app_iam" {
   ]
 }
 
+# project level roles applied to pipeline SA
 resource "google_project_iam_member" "project_iam_sa_app" {
   project = var.PROJECT_APP
+
   for_each = toset(
     concat(
+      # default roles that is required for dataflow pipline to run
       [
         "roles/storage.objectAdmin",
         "roles/viewer",
         "roles/dataflow.worker",
         "roles/dataflow.serviceAgent"
       ],
-    var.SA_APP_ROLES)
+      # combined with addtional roles that can be specified to reflect any other requirements for pipleine implementation
+      var.SA_APP_ROLES
+    )
   )
   role   = each.key
   member = format("serviceAccount:%s", google_service_account.sa_app.email)

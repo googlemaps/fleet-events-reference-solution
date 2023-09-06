@@ -7,7 +7,8 @@ locals {
   GCP_REGION_FIRESTORE = "nam5"
   PIPELINE_NAME        = "fleetevents-beam-moritani01"
   DATABASE_NAME        = "fleetevents-beam-moritani01"
-  TOPIC_LOGGING        = format("%s-input", local.PIPELINE_NAME)
+  TOPIC_INPUT          = format("%s-input", local.PIPELINE_NAME)
+  TOPIC_OUTPUT         = format("%s-output", local.PIPELINE_NAME)
   ME                   = "moritani@google.com"
   SETUP_PUBSUB_SUB_BQ  = true
 }
@@ -32,7 +33,7 @@ module "logging_config" {
   FLAG_SETUP_LOGGING_LOGGING            = false
   FLAG_SETUP_LOGGING_EXCLUSION          = false
   FLAG_SETUP_LOGGING_PUBSUB             = true
-  PUBSUB_TOPIC_NAME                     = local.TOPIC_LOGGING
+  PUBSUB_TOPIC_NAME                     = local.TOPIC_INPUT
   FLAG_SETUP_LOGGING_PUBSUB_SUB_BQ      = local.SETUP_PUBSUB_SUB_BQ
   FLAG_SETUP_LOGGING_PUBSUB_SUB_DEFAULT = false
   FLAG_SETUP_LOGGING_CLOUDSTORAGE       = false
@@ -47,17 +48,18 @@ output "logging_config" {
 }
 
 module "fleetevents-beam" {
-  source                           = "../../"
-  PROJECT_APP                      = local.PROJECT_FLEETEVENTS
-  PROJECT_FLEETENGINE              = local.PROJECT_FLEETENGINE
-  PROJECT_FLEETENGINE_LOG          = local.PROJECT_FLEETEVENTS
-  PIPELINE_NAME                    = local.PIPELINE_NAME
-  DATABASE_NAME                    = local.DATABASE_NAME
-  GCP_REGION                       = local.GCP_REGION
-  GCP_REGION_FIRESTORE             = local.GCP_REGION_FIRESTORE
-  TOPIC_FLEETENGINE_LOG            = local.TOPIC_LOGGING
-  FLAG_SETUP_LOGGING_PUBSUB_SUB_BQ = local.SETUP_PUBSUB_SUB_BQ
-  ME                               = local.ME
+  source                   = "../../"
+  PROJECT_APP              = local.PROJECT_FLEETEVENTS
+  PROJECT_FLEETENGINE      = local.PROJECT_FLEETENGINE
+  PROJECT_FLEETENGINE_LOG  = local.PROJECT_FLEETEVENTS
+  PIPELINE_NAME            = local.PIPELINE_NAME
+  DATABASE_NAME            = local.DATABASE_NAME
+  GCP_REGION               = local.GCP_REGION
+  GCP_REGION_FIRESTORE     = local.GCP_REGION_FIRESTORE
+  TOPIC_INPUT              = local.TOPIC_INPUT
+  TOPIC_OUTPUT             = local.TOPIC_OUTPUT
+  FLAG_SETUP_PUBSUB_SUB_BQ = local.SETUP_PUBSUB_SUB_BQ
+  ME                       = local.ME
   SA_APP_ROLES = [
     "roles/datastore.user"
   ]

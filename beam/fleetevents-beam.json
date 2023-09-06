@@ -30,6 +30,12 @@
             "isOptional": false
         },
         {
+            "name": "outputTopic",
+            "label": "Output Pub/Sub Topic",
+            "helpText": "Path of the output Pub/Sub topic.",
+            "isOptional": false
+        },
+        {
             "name": "gapSize",
             "label": "Gap size",
             "helpText": "How long to wait (in minutes) before considering a Vehicle to be offline.",
@@ -46,12 +52,6 @@
             "regexes": [
                 "^[0-9]+"
             ]
-        },
-        {
-            "name": "outputTopic",
-            "label": "Output Pub/Sub Topic",
-            "helpText": "Path of the output Pub/Sub topic.",
-            "isOptional": false
         }
     ]
 }

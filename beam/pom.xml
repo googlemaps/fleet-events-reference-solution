@@ -32,13 +32,13 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <beam.version>2.49.0</beam.version>
+        <beam.version>2.50.0</beam.version>
 
         <maven-compiler-plugin.version>3.11.0</maven-compiler-plugin.version>
         <maven-exec-plugin.version>3.1.0</maven-exec-plugin.version>
         <maven-jar-plugin.version>3.3.0</maven-jar-plugin.version>
         <maven-shade-plugin.version>3.5.0</maven-shade-plugin.version>
-        <slf4j.version>2.0.7</slf4j.version>
+        <slf4j.version>2.0.9</slf4j.version>
         <firestore-bom.version>3.14.1</firestore-bom.version>
     </properties>
 
@@ -238,12 +238,12 @@
         <dependency>
             <groupId>com.google.api.grpc</groupId>
             <artifactId>proto-google-cloud-logging-v2</artifactId>
-            <version>0.104.1</version>
+            <version>0.104.8</version>
         </dependency>
         <dependency>
             <artifactId>grpc-google-maps-fleetengine-delivery-v1-java</artifactId>
             <groupId>com.google.maps</groupId>
-            <version>0.0.1961</version>
+            <version>0.0.2357</version>
         </dependency>
 
         <!-- testing -->

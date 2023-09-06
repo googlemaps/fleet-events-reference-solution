@@ -1,5 +1,13 @@
 package com.google.fleetevents.beam.client;
 
+import java.io.IOException;
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import com.google.api.core.ApiFuture;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.firestore.DocumentReference;
@@ -8,19 +16,11 @@ import com.google.cloud.firestore.Firestore;
 import com.google.cloud.firestore.FirestoreOptions;
 import com.google.cloud.firestore.Transaction;
 import com.google.cloud.firestore.WriteResult;
+import com.google.common.base.Preconditions;
 // import com.google.firebase.FirebaseApp;
 // import com.google.firebase.FirebaseOptions;
 // import com.google.firebase.cloud.FirestoreClient;
-
 import com.google.fleetevents.beam.model.TaskMetadata;
-import java.io.IOException;
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.ExecutionException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.apache.beam.vendor.guava.v26_0_jre.com.google.common.base.Preconditions;
 
 /**
  * Client for firestore with convenience methods for accessing a vehicle or task
@@ -49,14 +49,13 @@ public class FirestoreDatabaseClient implements Serializable {
       // FirebaseApp app = FirebaseApp.initializeApp(options, appName);
       // this.firestore = FirestoreClient.getFirestore(app);
 
-      FirestoreOptions firestoreOptions = //FirestoreOptions.getDefaultInstance().toBuilder()
-      FirestoreOptions.newBuilder()
+      FirestoreOptions firestoreOptions = FirestoreOptions.newBuilder()
           .setCredentials(credentials)
           .setProjectId(projectId)
           .setDatabaseId(databaseId)
           .build();
       firestore = firestoreOptions.getService();
-       logger.log(Level.INFO, "firestore initialized");
+      logger.log(Level.INFO, "firestore initialized");
 
       return firestore;
     } catch (Exception e) {

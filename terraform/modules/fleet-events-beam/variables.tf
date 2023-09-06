@@ -27,9 +27,14 @@ variable "PROJECT_FLEETENGINE_LOG" {
   description = "Project ID of the project where Fleet Engine logs are persisted. (LogSink of Cloud Logging settings.)"
   nullable    = false
 }
-variable "TOPIC_FLEETENGINE_LOG" {
+variable "TOPIC_INPUT" {
   type        = string
   description = "Pub/Sub Topic to which Fleet Engine logs are published following Cloud Logging setup."
+  nullable    = false
+}
+variable "TOPIC_OUTPUT" {
+  type        = string
+  description = "Pub/Sub Topic to which FleetEvents pipeline will publish events."
   nullable    = false
 }
 variable "GCP_REGION" {
@@ -69,7 +74,12 @@ variable "PIPELINE_CLASS" {
   type     = string
   nullable = false
   default  = "com.google.fleetevents.beam.FleetEventRunner"
-
+}
+variable "TEMPLATE_NAME" {
+  type        = string
+  description = "Dataflow Flex template name"
+  nullable    = false
+  default     = "fleetevents-beam"
 }
 
 variable "DATABASE_NAME" {
@@ -85,7 +95,7 @@ variable "ME" {
   nullable    = false
 }
 
-variable "FLAG_SETUP_LOGGING_PUBSUB_SUB_BQ" {
+variable "FLAG_SETUP_PUBSUB_SUB_BQ" {
   type        = bool
   description = "whether to setup a subscription for the Pub/Sub topic"
   nullable    = false

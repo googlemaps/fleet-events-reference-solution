@@ -8,6 +8,7 @@ function tf_buildJar {
 }
 
 function tf_buildTemplate {
+
     local PROJECT_ID=$1
     local TEMPLATE_NAME=$2
     local TEMPLATE_FILE_GCS_PATH=$3
@@ -15,9 +16,10 @@ function tf_buildTemplate {
     local PATH_JAR=$5
     local REPOSITORY=$6
     local REGION=$7
+    local BUCKET=$8
     
 
-    local BUCKET=${PROJECT_ID}-${TEMPLATE_NAME}
+    #local BUCKET=${PROJECT_ID}-flextemplate-${TEMPLATE_NAME}
     local MAINCLASS=com.google.fleetevents.beam.FleetEventRunner
     local DIR_SRC=../../../../../beam
     local PATH_JAR=${DIR_SRC}/target/${TEMPLATE_NAME}-bundled-1.0-SNAPSHOT.jar
