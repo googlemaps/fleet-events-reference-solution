@@ -4,10 +4,8 @@ import com.google.cloud.firestore.CollectionReference;
 import com.google.cloud.firestore.DocumentReference;
 import com.google.cloud.firestore.Firestore;
 import com.google.cloud.firestore.FirestoreOptions;
-import com.google.firebase.FirebaseApp;
-import com.google.firebase.FirebaseOptions;
-import com.google.firebase.cloud.FirestoreClient;
-import com.google.firebase.internal.EmulatorCredentials;
+import com.google.cloud.firestore.FirestoreOptions.EmulatorCredentials;
+
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.UUID;
@@ -22,21 +20,32 @@ public class FirestoreEmulatorDatabaseClient extends FirestoreDatabaseClient
   public FirestoreEmulatorDatabaseClient() throws IOException {}
 
   @Override
-  public Firestore initFirestore(String projectId, String appName) throws IOException {
+  public Firestore initFirestore(String projectId, String databaseId, String appName)
+      throws IOException {
     try {
       logger.log(Level.INFO, "Using a firestore emulator");
       if (this.firestore != null) return firestore;
+      // FirestoreOptions firestoreOptions =
+      // FirestoreOptions.newBuilder().setEmulatorHost("localhost:8080").build();
       FirestoreOptions firestoreOptions =
-          FirestoreOptions.newBuilder().setEmulatorHost("localhost:8080").build();
-      FirebaseOptions options =
-          new FirebaseOptions.Builder()
+          FirestoreOptions.newBuilder()
+              .setEmulatorHost("localhost:8080")
               .setCredentials(new EmulatorCredentials())
               .setProjectId(projectId)
-              .setFirestoreOptions(firestoreOptions)
+              .setDatabaseId(databaseId)
               .build();
+      // FirebaseOptions options =
+      // new FirebaseOptions.Builder()
+      // .setCredentials(new EmulatorCredentials())
+      // .setProjectId(projectId)
+      // .setFirestoreOptions(firestoreOptions)
+      // .build();
+
       logger.log(Level.INFO, "Test firestore initialized");
-      FirebaseApp app = FirebaseApp.initializeApp(options, appName);
-      this.firestore = FirestoreClient.getFirestore(app);
+      // FirebaseApp app = FirebaseApp.initializeApp(options, appName);
+      // this.firestore = FirestoreClient.getFirestore(app);
+      firestore = firestoreOptions.getService();
+
       return this.firestore;
     } catch (Exception e) {
       System.out.println(e.getMessage());
@@ -47,7 +56,7 @@ public class FirestoreEmulatorDatabaseClient extends FirestoreDatabaseClient
 
   // test method only
   public void cleanupTest(String projectId) throws IOException {
-    Firestore testFirestore = initFirestore(projectId, "test" + UUID.randomUUID());
+    Firestore testFirestore = initFirestore(projectId, "(default)", "test" + UUID.randomUUID());
 
     CollectionReference collection = testFirestore.collection(this.TASK_COLLECTION_NAME);
     for (DocumentReference ref : collection.listDocuments()) {

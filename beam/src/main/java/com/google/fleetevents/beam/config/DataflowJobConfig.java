@@ -8,8 +8,7 @@ public class DataflowJobConfig implements Serializable {
   private Integer windowSize;
   private Integer gapSize;
 
-  public DataflowJobConfig() {
-  }
+  public DataflowJobConfig() {}
 
   public String getDatastoreProjectId() {
     return datastoreProjectId;
@@ -33,8 +32,7 @@ public class DataflowJobConfig implements Serializable {
     private Integer windowSize;
     private Integer gapSize;
 
-    private Builder() {
-    }
+    private Builder() {}
 
     public static Builder newBuilder() {
       return new Builder();
@@ -65,7 +63,7 @@ public class DataflowJobConfig implements Serializable {
       dataflowJobConfig.windowSize = this.windowSize;
       dataflowJobConfig.gapSize = this.gapSize;
       dataflowJobConfig.datastoreProjectId = this.datastoreProjectId;
-      dataflowJobConfig.databaseId=this.databaseId;
+      dataflowJobConfig.databaseId = this.databaseId;
       return dataflowJobConfig;
     }
   }

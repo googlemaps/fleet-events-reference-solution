@@ -58,7 +58,8 @@ public class TaskOutcomeTest {
   public void testTaskOutcome_newOutcomeTriggers() throws IOException {
     Task createTask = SampleLogs.getCreateTask1();
     createTask =
-        createTask.toBuilder()
+        createTask
+            .toBuilder()
             .setName("providers/fake-gcp-project/deliveryTasks/testTask1")
             .build();
     PCollection<Task> input = pipeline.apply(Create.of(Arrays.asList(createTask)));
@@ -76,11 +77,13 @@ public class TaskOutcomeTest {
   public void testTaskOutcome_outcomeChanges() throws IOException {
     // Task is just created, should trigger an UNSPECIFIED update
     Task createTask =
-        SampleLogs.getCreateTask1().toBuilder()
+        SampleLogs.getCreateTask1()
+            .toBuilder()
             .setName("providers/fake-gcp-project/deliveryTasks/testTask1")
             .build();
     Task updateTask =
-        SampleLogs.getUpdateTask1().toBuilder()
+        SampleLogs.getUpdateTask1()
+            .toBuilder()
             .setName("providers/fake-gcp-project/deliveryTasks/testTask1")
             .setTaskOutcome(Task.TaskOutcome.valueOf("SUCCEEDED"))
             .build();
@@ -109,12 +112,14 @@ public class TaskOutcomeTest {
   @Test
   public void testTaskOutcome_noChange() throws IOException {
     Task updateTask1 =
-        SampleLogs.getUpdateTask1().toBuilder()
+        SampleLogs.getUpdateTask1()
+            .toBuilder()
             .setName("providers/fake-gcp-project/deliveryTasks/testTask1")
             .setTaskOutcome(Task.TaskOutcome.valueOf("SUCCEEDED"))
             .build();
     Task updateTask2 =
-        SampleLogs.getUpdateTask1().toBuilder()
+        SampleLogs.getUpdateTask1()
+            .toBuilder()
             .setName("providers/fake-gcp-project/deliveryTasks/testTask1")
             .setTaskOutcome(Task.TaskOutcome.valueOf("SUCCEEDED"))
             .build();

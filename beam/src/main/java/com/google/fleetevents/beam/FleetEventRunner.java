@@ -80,8 +80,9 @@ public class FleetEventRunner {
 
     void setGapSize(Integer value);
 
-    @Description("Window size to use to process events, in minutes. This parameter does not apply to"
-        + " VEHICLE_OFFLINE jobs.")
+    @Description(
+        "Window size to use to process events, in minutes. This parameter does not apply to"
+            + " VEHICLE_OFFLINE jobs.")
     @Default.Integer(3)
     Integer getWindowSize();
 
@@ -99,28 +100,33 @@ public class FleetEventRunner {
     // The maximum number of shards when writing output.
     int numShards = 1;
 
-    PubSubToGcsOptions options = PipelineOptionsFactory.fromArgs(args).withValidation().as(PubSubToGcsOptions.class);
+    PubSubToGcsOptions options =
+        PipelineOptionsFactory.fromArgs(args).withValidation().as(PubSubToGcsOptions.class);
     options.setStreaming(true);
 
     Pipeline pipeline = Pipeline.create(options);
-    PCollection<String> messages = pipeline.apply(
-        "Read PubSub Messages", PubsubIO.readStrings().fromTopic(options.getInputTopic()));
+    PCollection<String> messages =
+        pipeline.apply(
+            "Read PubSub Messages", PubsubIO.readStrings().fromTopic(options.getInputTopic()));
     PCollection<String> processedMessages;
-    DataflowJobConfig config = DataflowJobConfig.Builder.newBuilder()
-        .setWindowSize(options.getWindowSize())
-        .setGapSize(options.getGapSize())
-        .setDatastoreProjectId(options.getDatastoreProjectId())
-        .setDatabaseId(options.getDatabaseId())
-        .build();
+    DataflowJobConfig config =
+        DataflowJobConfig.Builder.newBuilder()
+            .setWindowSize(options.getWindowSize())
+            .setGapSize(options.getGapSize())
+            .setDatastoreProjectId(options.getDatastoreProjectId())
+            .setDatabaseId(options.getDatabaseId())
+            .build();
     switch (options.getFunctionName()) {
-      case TASK_OUTCOME: {
-        processedMessages = new TaskOutcome().run(messages, config);
-        break;
-      }
-      case VEHICLE_OFFLINE: {
-        processedMessages = VehicleOffline.run(messages, config);
-        break;
-      }
+      case TASK_OUTCOME:
+        {
+          processedMessages = new TaskOutcome().run(messages, config);
+          break;
+        }
+      case VEHICLE_OFFLINE:
+        {
+          processedMessages = VehicleOffline.run(messages, config);
+          break;
+        }
       default:
         logger.log(
             Level.WARNING,

@@ -81,7 +81,9 @@ public class TaskOutcome implements Serializable {
     @DoFn.Setup
     public void setup() throws IOException {
       firestoreClient.initFirestore(
-          config.getDatastoreProjectId(), config.getDatabaseId(), TaskOutcome.class.getName() + "_" + UUID.randomUUID());
+          config.getDatastoreProjectId(),
+          config.getDatabaseId(),
+          TaskOutcome.class.getName() + "_" + UUID.randomUUID());
     }
 
     @DoFn.Teardown
