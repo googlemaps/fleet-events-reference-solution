@@ -140,6 +140,5 @@ public class FleetEventRunner {
         "Write messages to topic", PubsubIO.writeStrings().to(options.getOutputTopic()));
 
     pipeline.run();
-    // .waitUntilFinish();
   }
 }

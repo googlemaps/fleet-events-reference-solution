@@ -12,31 +12,22 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-output "topic-fleetevents-input" {
-  value = data.google_pubsub_topic.topic-fleetevents-input
+output "network" {
+  value = {
+    network    = google_compute_network.vpc-network
+    subnetwork = google_compute_subnetwork.vpc-subnetwork
+    # ingress    = google_compute_firewall.firewall_rule_ingress
+    # egress     = google_compute_firewall.firewall_rule_egress
+  
+  }
 }
-output "topic-fleetevents-output" {
-  value = google_pubsub_topic.topic-fleetevents-output
-}
-# output "subscription_fleetenginelogs" {
-#   value = google_pubsub_subscription.subscription-fleetenginelogs
-# }
-output "vpc_network" {
-    value=google_compute_network.vpc-network
-}
-output "vpc-subnetwork"{
-    value=google_compute_subnetwork.vpc-subnetwork
-}
-
-output "bucket_jobs" {
-    value=google_storage_bucket.bucket
-}
-output "bucket_template" {
-    value=google_storage_bucket.bucket_template
-}
-output "container_spec" {
-    value=data.google_storage_bucket_object.template_spec
-}
-output "script_build_jar" {
-  value = terraform_data.script_build_jar
+output "pipeline" {
+  value = {
+    bucket_jobs      = google_storage_bucket.bucket
+    bucket_template  = google_storage_bucket.bucket_template
+    container_spec   = data.google_storage_bucket_object.template_spec
+    script_build_jar = terraform_data.script_build_jar
+    topic_input      = data.google_pubsub_topic.topic-fleetevents-input
+    topic_output     = google_pubsub_topic.topic-fleetevents-output
+  }
 }

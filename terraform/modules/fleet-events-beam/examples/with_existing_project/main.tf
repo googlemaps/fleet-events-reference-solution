@@ -1,29 +1,15 @@
 locals {
-  # existing project
-  PROJECT_FLEETENGINE = "crystal-gcp-project"
-  # existing project
-  PROJECT_FLEETEVENTS  = "crystal-gcp-project"
-  GCP_REGION           = "us-central1"
-  GCP_REGION_FIRESTORE = "nam5"
-  PIPELINE_NAME        = "fleetevents-beam-moritani01"
-  DATABASE_NAME        = "fleetevents-beam-moritani01"
-  TOPIC_INPUT          = format("%s-input", local.PIPELINE_NAME)
-  TOPIC_OUTPUT         = format("%s-output", local.PIPELINE_NAME)
-  ME                   = "moritani@google.com"
+  PROJECT_FLEETENGINE  = var.PROJECT_FLEETENGINE
+  PROJECT_FLEETEVENTS  = var.PROJECT_FLEETEVENTS
+  GCP_REGION           = var.GCP_REGION
+  GCP_REGION_FIRESTORE = var.GCP_REGION_FIRESTORE
+  PIPELINE_NAME        = var.PIPELINE_NAME
+  DATABASE_NAME        = format("%s-db", var.PIPELINE_NAME)
+  TOPIC_INPUT          = format("%s-input", var.PIPELINE_NAME)
+  TOPIC_OUTPUT         = format("%s-output", var.PIPELINE_NAME)
+  ME                   = var.ME
   SETUP_PUBSUB_SUB_BQ  = true
 }
-# locals {
-#   # existing project
-#   PROJECT_FLEETENGINE = "moritani-sandbox-mobility"
-#   # existing project
-#   PROJECT_FLEETEVENTS = "moritani-sandbox-fleetevents"
-#   GCP_REGION          = "asia-southeast1"
-#   PIPELINE_NAME       = "fleetevents-beam"
-#   DATABASE_NAME       = "fleetevents-db-2"
-#   TOPIC_LOGGING       = format("%s-input", local.PIPELINE_NAME)
-#   ME                  = "moritani@google.com"
-#   SETUP_PUBSUB_SUB_BQ = true
-# }
 
 module "logging_config" {
   #TODO: replace source with link to git repo so that there is no dependency on this module being locally avail
@@ -48,18 +34,21 @@ output "logging_config" {
 }
 
 module "fleetevents-beam" {
-  source                   = "../../"
-  PROJECT_APP              = local.PROJECT_FLEETEVENTS
-  PROJECT_FLEETENGINE      = local.PROJECT_FLEETENGINE
-  PROJECT_FLEETENGINE_LOG  = local.PROJECT_FLEETEVENTS
-  PIPELINE_NAME            = local.PIPELINE_NAME
-  DATABASE_NAME            = local.DATABASE_NAME
-  GCP_REGION               = local.GCP_REGION
-  GCP_REGION_FIRESTORE     = local.GCP_REGION_FIRESTORE
-  TOPIC_INPUT              = local.TOPIC_INPUT
-  TOPIC_OUTPUT             = local.TOPIC_OUTPUT
-  FLAG_SETUP_PUBSUB_SUB_BQ = local.SETUP_PUBSUB_SUB_BQ
-  ME                       = local.ME
+  source                    = "../../"
+  PROJECT_APP               = local.PROJECT_FLEETEVENTS
+  PROJECT_FLEETENGINE       = local.PROJECT_FLEETENGINE
+  PROJECT_FLEETENGINE_LOG   = local.PROJECT_FLEETEVENTS
+  PIPELINE_NAME             = local.PIPELINE_NAME
+  DATABASE_NAME             = local.DATABASE_NAME
+  GCP_REGION                = local.GCP_REGION
+  GCP_REGION_FIRESTORE      = local.GCP_REGION_FIRESTORE
+  TOPIC_INPUT               = local.TOPIC_INPUT
+  TOPIC_OUTPUT              = local.TOPIC_OUTPUT
+  FLAG_SETUP_PUBSUB_SUB_BQ  = local.SETUP_PUBSUB_SUB_BQ
+  ME                        = local.ME
+  FLEETEVENTS_FUNCTION_NAME = "TASK_OUTCOME"
+  FLEETEVENTS_GAP_SIZE      = 3
+  FLEETEVENTS_WINDOW_SIZE   = 3
   SA_APP_ROLES = [
     "roles/datastore.user"
   ]
@@ -68,5 +57,5 @@ module "fleetevents-beam" {
 
 output "fleetevents-beam" {
   value     = module.fleetevents-beam
-  sensitive = true
+  sensitive = false
 }

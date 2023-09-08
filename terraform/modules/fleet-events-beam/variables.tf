@@ -51,29 +51,28 @@ variable "GCP_REGION_FIRESTORE" {
 }
 variable "SA_APP_ROLES" {
   type        = list(string)
-  description = "Project level IAM Roles the Function's runtime Service Account requires. For example, it might require roles/datastore.user to use Datastore."
+  description = "Project level IAM Roles the pipeline runtime Service Account requires. For example, it might require roles/datastore.user to use Datastore."
+  default     = []
+}
+variable "SA_FLEETENGINE_ROLES" {
+  type        = list(string)
+  description = "Project level IAM Roles the pipeline's FleetEngine Service Account requires. If read only, roles such as roles/fleetengine.deliveryFleetReader can be sufficient"
   default = [
-
+    "roles/fleetengine.deliveryFleetReader"
   ]
 }
-# variable "SA_FLEETENGINE_ROLES" {
-#   type        = list(string)
-#   description = "Project level IAM Roles the Function's FleetEngine Service Account requires. If read only, roles such as roles/fleetengine.deliveryFleetReader can be sufficient"
-#   default = [
-#     "roles/fleetengine.serviceSuperUser"
-#   ]
-# }
 
 variable "PIPELINE_NAME" {
   type        = string
-  description = "Name of the Beam Pipeline."
+  description = "Name of the Beam Pipeline. This will become the prefix of the Dataflow/Beam pipeline Job."
   nullable    = false
+  default     = "fleetevents-pipeline"
 }
-
 variable "PIPELINE_CLASS" {
-  type     = string
-  nullable = false
-  default  = "com.google.fleetevents.beam.FleetEventRunner"
+  type        = string
+  nullable    = false
+  description = "The Java class of the Beam pipeline"
+  default     = "com.google.fleetevents.beam.FleetEventRunner"
 }
 variable "TEMPLATE_NAME" {
   type        = string
@@ -100,4 +99,52 @@ variable "FLAG_SETUP_PUBSUB_SUB_BQ" {
   description = "whether to setup a subscription for the Pub/Sub topic"
   nullable    = false
   default     = true
+}
+
+# details about various dataflow level pipeline options can be referenced here
+# https://cloud.google.com/dataflow/docs/reference/pipeline-options
+
+variable "DATAFLOW_MACHINE_TYPE" {
+  type        = string
+  description = "The Compute Engine machine type that Dataflow uses when starting worker VMs. You can use any available Compute Engine machine type families or custom machine types."
+  default     = "n1-standard-4"
+}
+
+variable "DATAFLOW_USE_PUBLIC_IPS" {
+  type        = bool
+  description = "Specifies whether Dataflow workers use external IP addresses. If the value is set to false, Dataflow workers use internal IP addresses for all communication."
+  default     = false
+}
+
+variable "DATAFLOW_NUM_WORKERS" {
+  type        = number
+  description = "The initial number of Compute Engine instances to use when executing your pipeline. This option determines how many workers the Dataflow service starts up when your job begins."
+  default     = 1
+}
+
+variable "DATAFLOW_MAX_NUM_WORKERS" {
+  type        = number
+  description = "The maximum number of Compute Engine instances to be made available to your pipeline during execution. This value can be higher than the initial number of workers (specified by numWorkers) to allow your job to scale up, automatically or otherwise."
+  default     = 3
+}
+
+
+## Fleetevents pipeline specific options
+
+variable "FLEETEVENTS_FUNCTION_NAME" {
+  type        = string
+  description = "sample function to run."
+  default     = "TASK_OUTCOME"
+}
+
+variable "FLEETEVENTS_GAP_SIZE" {
+  type        = number
+  description = "How long to wait (in minutes) before considering a Vehicle to be offline."
+  default     = 3
+}
+
+variable "FLEETEVENTS_WINDOW_SIZE" {
+  type        = number
+  description = "Window size to use to process events, in minutes. This parameter does not apply to VEHICLE_OFFLINE jobs."
+  default     = 3
 }

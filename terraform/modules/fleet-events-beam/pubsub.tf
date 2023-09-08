@@ -91,12 +91,14 @@ resource "google_project_iam_member" "bq_data_editor" {
 }
 
 resource "google_bigquery_dataset" "topic-output-bq-subscription-dataset" {
-  project               = data.google_project.project_fleetevents.project_id
-  dataset_id            = format("%s_pubsub", replace(google_pubsub_topic.topic-fleetevents-output.name, "-", "_"))
-  description           = format("BigQuery subscription to FleetEvents output Pub/Sub topic")
-  max_time_travel_hours = "168"
-  count                 = var.FLAG_SETUP_PUBSUB_SUB_BQ ? 1 : 0
-  labels                = local.labels_common
+  project     = data.google_project.project_fleetevents.project_id
+  dataset_id  = format("%s_pubsub", replace(google_pubsub_topic.topic-fleetevents-output.name, "-", "_"))
+  description = format("BigQuery subscription to FleetEvents output Pub/Sub topic")
+  #max_time_travel_hours = "168"
+  count                      = var.FLAG_SETUP_PUBSUB_SUB_BQ ? 1 : 0
+  labels                     = local.labels_common
+  location                   = var.GCP_REGION
+  delete_contents_on_destroy = true
 }
 
 resource "google_bigquery_table" "topic-output-bq-subscription-table" {

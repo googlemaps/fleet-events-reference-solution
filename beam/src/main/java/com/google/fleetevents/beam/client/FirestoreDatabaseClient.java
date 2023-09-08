@@ -17,9 +17,6 @@ import com.google.cloud.firestore.FirestoreOptions;
 import com.google.cloud.firestore.Transaction;
 import com.google.cloud.firestore.WriteResult;
 import com.google.common.base.Preconditions;
-// import com.google.firebase.FirebaseApp;
-// import com.google.firebase.FirebaseOptions;
-// import com.google.firebase.cloud.FirestoreClient;
 import com.google.fleetevents.beam.model.TaskMetadata;
 
 /**
@@ -40,13 +37,6 @@ public class FirestoreDatabaseClient implements Serializable {
     try {
       if (this.firestore != null) return firestore;
       GoogleCredentials credentials = GoogleCredentials.getApplicationDefault();
-      // FirebaseOptions options =
-      // new
-      // FirebaseOptions.Builder().setCredentials(credentials).setProjectId(projectId).build();
-      // logger.log(Level.INFO, "firestore initialized");
-      // FirebaseApp app = FirebaseApp.initializeApp(options, appName);
-      // this.firestore = FirestoreClient.getFirestore(app);
-
       FirestoreOptions firestoreOptions =
           FirestoreOptions.newBuilder()
               .setCredentials(credentials)

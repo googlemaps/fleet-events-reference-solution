@@ -39,7 +39,7 @@
             "name": "gapSize",
             "label": "Gap size",
             "helpText": "How long to wait (in minutes) before considering a Vehicle to be offline.",
-            "isOptional": false,
+            "isOptional": true,
             "regexes": [
                 "^[0-9]+"
             ]
@@ -48,7 +48,7 @@
             "name": "windowSize",
             "label": "Window size",
             "helpText": "Window size to use to process events, in minutes. This parameter does not apply to VEHICLE_OFFLINE jobs.",
-            "isOptional": false,
+            "isOptional": true,
             "regexes": [
                 "^[0-9]+"
             ]

@@ -24,11 +24,12 @@ locals {
 
 resource "google_firestore_database" "database" {
   project                     = data.google_project.project_fleetevents.project_id
-  name                        = var.DATABASE_NAME
+  name                        = format("%s-%s", var.DATABASE_NAME, random_id.jobname_suffix.dec)
   location_id                 = local.REGION_FIRESTORE
   type                        = "FIRESTORE_NATIVE"
   concurrency_mode            = "PESSIMISTIC"
   app_engine_integration_mode = "DISABLED"
+
   depends_on = [
     google_project_service.gcp_services["firestore.googleapis.com"]
   ]

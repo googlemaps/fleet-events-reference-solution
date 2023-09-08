@@ -1,19 +1,18 @@
 package com.google.fleetevents.beam.client;
 
+import java.io.IOException;
+import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import com.google.cloud.firestore.CollectionReference;
 import com.google.cloud.firestore.DocumentReference;
 import com.google.cloud.firestore.Firestore;
 import com.google.cloud.firestore.FirestoreOptions;
 import com.google.cloud.firestore.FirestoreOptions.EmulatorCredentials;
 
-import java.io.IOException;
-import java.io.Serializable;
-import java.util.UUID;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+public class FirestoreEmulatorDatabaseClient extends FirestoreDatabaseClient {
 
-public class FirestoreEmulatorDatabaseClient extends FirestoreDatabaseClient
-    implements Serializable {
   private static final Logger logger =
       Logger.getLogger(FirestoreEmulatorDatabaseClient.class.getName());
 
@@ -25,8 +24,6 @@ public class FirestoreEmulatorDatabaseClient extends FirestoreDatabaseClient
     try {
       logger.log(Level.INFO, "Using a firestore emulator");
       if (this.firestore != null) return firestore;
-      // FirestoreOptions firestoreOptions =
-      // FirestoreOptions.newBuilder().setEmulatorHost("localhost:8080").build();
       FirestoreOptions firestoreOptions =
           FirestoreOptions.newBuilder()
               .setEmulatorHost("localhost:8080")
@@ -34,16 +31,9 @@ public class FirestoreEmulatorDatabaseClient extends FirestoreDatabaseClient
               .setProjectId(projectId)
               .setDatabaseId(databaseId)
               .build();
-      // FirebaseOptions options =
-      // new FirebaseOptions.Builder()
-      // .setCredentials(new EmulatorCredentials())
-      // .setProjectId(projectId)
-      // .setFirestoreOptions(firestoreOptions)
-      // .build();
 
       logger.log(Level.INFO, "Test firestore initialized");
-      // FirebaseApp app = FirebaseApp.initializeApp(options, appName);
-      // this.firestore = FirestoreClient.getFirestore(app);
+
       firestore = firestoreOptions.getService();
 
       return this.firestore;
