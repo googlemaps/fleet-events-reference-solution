@@ -19,6 +19,8 @@ package com.google.fleetevents.odrd;
 import com.google.fleetengine.auth.token.factory.signer.SignerInitializationException;
 import com.google.fleetevents.FleetEventsFunctionBase;
 import com.google.fleetevents.odrd.handlers.DistanceRemainingHandler;
+import com.google.fleetevents.odrd.handlers.EtaAbsoluteChangeHandler;
+import com.google.fleetevents.odrd.handlers.EtaRelativeChangeHandler;
 import com.google.fleetevents.odrd.handlers.TimeRemainingHandler;
 import com.google.fleetevents.odrd.handlers.TripStatusHandler;
 import java.io.IOException;
@@ -34,5 +36,7 @@ public class FleetEventsFunction extends FleetEventsFunctionBase {
     registerFleetEventHandler(new DistanceRemainingHandler());
     registerFleetEventHandler(new TimeRemainingHandler());
     registerFleetEventHandler(new TripStatusHandler());
+    registerFleetEventHandler(new EtaAbsoluteChangeHandler());
+    registerFleetEventHandler(new EtaRelativeChangeHandler());
   }
 }

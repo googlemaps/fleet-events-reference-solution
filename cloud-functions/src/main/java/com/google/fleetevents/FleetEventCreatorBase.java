@@ -111,6 +111,7 @@ public abstract class FleetEventCreatorBase {
           }
         } catch (Exception e) {
           logger.warning("Error encountered with handler in handleEvent: " + e);
+          e.printStackTrace();
         }
       }
     }

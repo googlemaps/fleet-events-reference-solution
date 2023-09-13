@@ -88,16 +88,11 @@ public class EtaAbsoluteChangeHandler implements FleetEventHandler {
     Optional<OutputEvent> optionalEtaOutputEvent = Optional.empty();
     if (differences.containsKey("eta")) {
       var hasOriginalEta = eventMetadata.containsKey(ORIGINAL_ETA_KEY);
-      /* In case the original eta wasn't populated due to the trip having already started before
-       * the function was deployed use the previous eta as an estimate of the original eta given. */
-      var prevEtaNull = differences.get("eta").oldValue == null;
-      if (hasOriginalEta || !prevEtaNull) {
-        var originalEta =
-            hasOriginalEta
-                ? (Timestamp) eventMetadata.get(ORIGINAL_ETA_KEY)
-                : (Timestamp) differences.get("eta").oldValue;
-        if (TimeUtil.timestampDifferenceMillis(
-                newEta.toSqlTimestamp(), originalEta.toSqlTimestamp())
+      if (hasOriginalEta) {
+        var originalEta = Timestamp.parseTimestamp(eventMetadata.get(ORIGINAL_ETA_KEY).toString());
+        if (Math.abs(
+                TimeUtil.timestampDifferenceMillis(
+                    newEta.toSqlTimestamp(), originalEta.toSqlTimestamp()))
             >= thresholdMilliseconds) {
           var etaOutputEvent = new EtaAbsoluteChangeOuputEvent();
           etaOutputEvent.setIdentifier(identifier);
@@ -109,10 +104,8 @@ public class EtaAbsoluteChangeHandler implements FleetEventHandler {
           etaOutputEvent.setFleetEvent(fleetEvent);
           optionalEtaOutputEvent = Optional.of(etaOutputEvent);
         }
-      }
-      if (!hasOriginalEta) {
-        var originalEta =
-            !prevEtaNull ? differences.get("eta").oldValue : differences.get("eta").newValue;
+      } else {
+        var originalEta = differences.get("eta").newValue;
         eventMetadata.put(ORIGINAL_ETA_KEY, originalEta);
       }
     }

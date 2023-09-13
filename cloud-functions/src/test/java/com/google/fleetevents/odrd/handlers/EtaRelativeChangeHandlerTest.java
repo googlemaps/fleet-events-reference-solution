@@ -12,7 +12,6 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import com.google.fleetevents.common.database.FirestoreDatabaseClient;
 import com.google.fleetevents.common.models.Change;
-import com.google.fleetevents.common.models.Pair;
 import com.google.fleetevents.odrd.models.TripData;
 import com.google.fleetevents.odrd.models.TripFleetEvent;
 import com.google.fleetevents.odrd.models.TripWaypointData;
@@ -108,7 +107,11 @@ public class EtaRelativeChangeHandlerTest {
     assertTrue(etaRelativeChangeHandler.respondsTo(tripfleetEvent, null, null));
     assertEquals(new ArrayList<>(), etaRelativeChangeHandler.handleEvent(tripfleetEvent, null));
     assertEquals(
-        new Pair(325791L, Timestamp.parseTimestamp("2023-08-02T20:56:00.412009Z")),
+        ImmutableMap.of(
+            EtaRelativeChangeHandler.ORIGINAL_DURATION_MILLISECONDS,
+            325791L,
+            EtaRelativeChangeHandler.ORIGINAL_ETA,
+            Timestamp.parseTimestamp("2023-08-02T20:56:00.412009Z")),
         newPickupWaypoint.getEventMetadata().get("relativeEtaPair"));
   }
 
@@ -125,7 +128,11 @@ public class EtaRelativeChangeHandlerTest {
         Maps.newHashMap(
             ImmutableMap.of(
                 "relativeEtaPair",
-                new Pair(4000000L, Timestamp.parseTimestamp("2023-08-02T21:06:00.412009Z"))));
+                ImmutableMap.of(
+                    EtaRelativeChangeHandler.ORIGINAL_DURATION_MILLISECONDS,
+                    4000000L,
+                    EtaRelativeChangeHandler.ORIGINAL_ETA,
+                    Timestamp.parseTimestamp("2023-08-02T21:06:00.412009Z"))));
     var oldPickupWaypoint =
         TripWaypointData.builder()
             .setTripId("testTripId1")
@@ -201,13 +208,25 @@ public class EtaRelativeChangeHandlerTest {
     assertTrue(etaRelativeChangeHandler.respondsTo(tripfleetEvent, null, null));
     assertEquals(new ArrayList<>(), etaRelativeChangeHandler.handleEvent(tripfleetEvent, null));
     assertEquals(
-        new Pair<>(1165791L, Timestamp.parseTimestamp("2023-08-02T21:10:00.412009000Z")),
+        ImmutableMap.of(
+            EtaRelativeChangeHandler.ORIGINAL_DURATION_MILLISECONDS,
+            1165791L,
+            EtaRelativeChangeHandler.ORIGINAL_ETA,
+            Timestamp.parseTimestamp("2023-08-02T21:10:00.412009000Z")),
         newTrip.getEventMetadata().get("relativeEtaPair"));
     assertEquals(
-        new Pair<>(1165791L, Timestamp.parseTimestamp("2023-08-02T21:10:00.412009000Z")),
+        ImmutableMap.of(
+            EtaRelativeChangeHandler.ORIGINAL_DURATION_MILLISECONDS,
+            1165791L,
+            EtaRelativeChangeHandler.ORIGINAL_ETA,
+            Timestamp.parseTimestamp("2023-08-02T21:10:00.412009000Z")),
         newDropoffWaypoint.getEventMetadata().get("relativeEtaPair"));
     assertEquals(
-        new Pair(4000000L, Timestamp.parseTimestamp("2023-08-02T21:06:00.412009Z")),
+        ImmutableMap.of(
+            EtaRelativeChangeHandler.ORIGINAL_DURATION_MILLISECONDS,
+            4000000L,
+            EtaRelativeChangeHandler.ORIGINAL_ETA,
+            Timestamp.parseTimestamp("2023-08-02T21:06:00.412009Z")),
         newPickupWaypoint.getEventMetadata().get("relativeEtaPair"));
   }
 
@@ -229,8 +248,11 @@ public class EtaRelativeChangeHandlerTest {
                 Maps.newHashMap(
                     ImmutableMap.of(
                         "relativeEtaPair",
-                        new Pair(
-                            1000000L, Timestamp.parseTimestamp("2023-08-02T20:56:00.412009Z")))))
+                        ImmutableMap.of(
+                            EtaRelativeChangeHandler.ORIGINAL_DURATION_MILLISECONDS,
+                            1000000L,
+                            EtaRelativeChangeHandler.ORIGINAL_ETA,
+                            Timestamp.parseTimestamp("2023-08-02T20:56:00.412009Z")))))
             .build();
     var newPickupWaypoint =
         TripWaypointData.builder()
@@ -241,8 +263,11 @@ public class EtaRelativeChangeHandlerTest {
                 Maps.newHashMap(
                     ImmutableMap.of(
                         "relativeEtaPair",
-                        new Pair(
-                            1000000L, Timestamp.parseTimestamp("2023-08-02T20:56:00.412009Z")))))
+                        ImmutableMap.of(
+                            EtaRelativeChangeHandler.ORIGINAL_DURATION_MILLISECONDS,
+                            1000000L,
+                            EtaRelativeChangeHandler.ORIGINAL_ETA,
+                            Timestamp.parseTimestamp("2023-08-02T20:56:00.412009Z")))))
             .build();
     var pickupWaypointDifferences =
         ImmutableMap.of(
@@ -260,8 +285,11 @@ public class EtaRelativeChangeHandlerTest {
                 Maps.newHashMap(
                     ImmutableMap.of(
                         "relativeEtaPair",
-                        new Pair(
-                            1000000L, Timestamp.parseTimestamp("2023-08-02T21:06:00.412009Z")))))
+                        ImmutableMap.of(
+                            EtaRelativeChangeHandler.ORIGINAL_DURATION_MILLISECONDS,
+                            1000000L,
+                            EtaRelativeChangeHandler.ORIGINAL_ETA,
+                            Timestamp.parseTimestamp("2023-08-02T21:06:00.412009Z")))))
             .build();
     var newDropoffWaypoint =
         TripWaypointData.builder()
@@ -322,13 +350,25 @@ public class EtaRelativeChangeHandlerTest {
         ImmutableList.of(pickupEtaChangeOutputEvent),
         etaRelativeChangeHandler.handleEvent(tripfleetEvent, null));
     assertEquals(
-        new Pair(1165791L, Timestamp.parseTimestamp("2023-08-02T21:10:00.412009000Z")),
+        ImmutableMap.of(
+            EtaRelativeChangeHandler.ORIGINAL_DURATION_MILLISECONDS,
+            1165791L,
+            EtaRelativeChangeHandler.ORIGINAL_ETA,
+            Timestamp.parseTimestamp("2023-08-02T21:10:00.412009000Z")),
         newTrip.getEventMetadata().get("relativeEtaPair"));
     assertEquals(
-        new Pair(1165791L, Timestamp.parseTimestamp("2023-08-02T21:10:00.412009000Z")),
+        ImmutableMap.of(
+            EtaRelativeChangeHandler.ORIGINAL_DURATION_MILLISECONDS,
+            1165791L,
+            EtaRelativeChangeHandler.ORIGINAL_ETA,
+            Timestamp.parseTimestamp("2023-08-02T21:10:00.412009000Z")),
         newDropoffWaypoint.getEventMetadata().get("relativeEtaPair"));
     assertEquals(
-        new Pair(1000000L, Timestamp.parseTimestamp("2023-08-02T20:56:00.412009Z")),
+        ImmutableMap.of(
+            EtaRelativeChangeHandler.ORIGINAL_DURATION_MILLISECONDS,
+            1000000L,
+            EtaRelativeChangeHandler.ORIGINAL_ETA,
+            Timestamp.parseTimestamp("2023-08-02T20:56:00.412009Z")),
         newPickupWaypoint.getEventMetadata().get("relativeEtaPair"));
   }
 
@@ -350,8 +390,11 @@ public class EtaRelativeChangeHandlerTest {
                 Maps.newHashMap(
                     ImmutableMap.of(
                         "relativeEtaPair",
-                        new Pair(
-                            1000000L, Timestamp.parseTimestamp("2023-08-02T20:56:00.412009Z")))))
+                        ImmutableMap.of(
+                            EtaRelativeChangeHandler.ORIGINAL_DURATION_MILLISECONDS,
+                            1000000L,
+                            EtaRelativeChangeHandler.ORIGINAL_ETA,
+                            Timestamp.parseTimestamp("2023-08-02T20:56:00.412009Z")))))
             .build();
     var newPickupWaypoint =
         TripWaypointData.builder()
@@ -362,8 +405,11 @@ public class EtaRelativeChangeHandlerTest {
                 Maps.newHashMap(
                     ImmutableMap.of(
                         "relativeEtaPair",
-                        new Pair(
-                            1000000L, Timestamp.parseTimestamp("2023-08-02T20:56:00.412009Z")))))
+                        ImmutableMap.of(
+                            EtaRelativeChangeHandler.ORIGINAL_DURATION_MILLISECONDS,
+                            1000000L,
+                            EtaRelativeChangeHandler.ORIGINAL_ETA,
+                            Timestamp.parseTimestamp("2023-08-02T20:56:00.412009Z")))))
             .build();
     var pickupWaypointDifferences =
         ImmutableMap.of(
@@ -381,14 +427,20 @@ public class EtaRelativeChangeHandlerTest {
                 Maps.newHashMap(
                     ImmutableMap.of(
                         "relativeEtaPair",
-                        new Pair(
-                            1000000L, Timestamp.parseTimestamp("2023-08-02T21:06:00.412009Z")))))
+                        ImmutableMap.of(
+                            EtaRelativeChangeHandler.ORIGINAL_DURATION_MILLISECONDS,
+                            1000000L,
+                            EtaRelativeChangeHandler.ORIGINAL_ETA,
+                            Timestamp.parseTimestamp("2023-08-02T21:06:00.412009Z")))))
             .setEventMetadata(
                 Maps.newHashMap(
                     ImmutableMap.of(
                         "relativeEtaPair",
-                        new Pair(
-                            1000000L, Timestamp.parseTimestamp("2023-08-02T21:06:00.412009Z")))))
+                        ImmutableMap.of(
+                            EtaRelativeChangeHandler.ORIGINAL_DURATION_MILLISECONDS,
+                            1000000L,
+                            EtaRelativeChangeHandler.ORIGINAL_ETA,
+                            Timestamp.parseTimestamp("2023-08-02T21:06:00.412009Z")))))
             .build();
     var newDropoffWaypoint =
         TripWaypointData.builder()
@@ -399,8 +451,11 @@ public class EtaRelativeChangeHandlerTest {
                 Maps.newHashMap(
                     ImmutableMap.of(
                         "relativeEtaPair",
-                        new Pair(
-                            1000000L, Timestamp.parseTimestamp("2023-08-02T21:06:00.412009Z")))))
+                        ImmutableMap.of(
+                            EtaRelativeChangeHandler.ORIGINAL_DURATION_MILLISECONDS,
+                            1000000L,
+                            EtaRelativeChangeHandler.ORIGINAL_ETA,
+                            Timestamp.parseTimestamp("2023-08-02T21:06:00.412009Z")))))
             .build();
     var dropoffWaypointDifferences =
         ImmutableMap.of(
@@ -419,8 +474,11 @@ public class EtaRelativeChangeHandlerTest {
                 Maps.newHashMap(
                     ImmutableMap.of(
                         "relativeEtaPair",
-                        new Pair(
-                            1000000L, Timestamp.parseTimestamp("2023-08-02T21:06:00.412009Z")))))
+                        ImmutableMap.of(
+                            EtaRelativeChangeHandler.ORIGINAL_DURATION_MILLISECONDS,
+                            1000000L,
+                            EtaRelativeChangeHandler.ORIGINAL_ETA,
+                            Timestamp.parseTimestamp("2023-08-02T21:06:00.412009Z")))))
             .build();
 
     var newTrip =
@@ -434,8 +492,11 @@ public class EtaRelativeChangeHandlerTest {
                 Maps.newHashMap(
                     ImmutableMap.of(
                         "relativeEtaPair",
-                        new Pair(
-                            1000000L, Timestamp.parseTimestamp("2023-08-02T21:06:00.412009Z")))))
+                        ImmutableMap.of(
+                            EtaRelativeChangeHandler.ORIGINAL_DURATION_MILLISECONDS,
+                            1000000L,
+                            EtaRelativeChangeHandler.ORIGINAL_ETA,
+                            Timestamp.parseTimestamp("2023-08-02T21:06:00.412009Z")))))
             .build();
 
     TripFleetEvent tripfleetEvent =
@@ -495,13 +556,25 @@ public class EtaRelativeChangeHandlerTest {
             pickupEtaChangeOutputEvent, dropoffEtaChangeOutputEvent, tripEtaChangeOutputEvent),
         etaRelativeChangeHandler.handleEvent(tripfleetEvent, null));
     assertEquals(
-        new Pair(1000000L, Timestamp.parseTimestamp("2023-08-02T21:06:00.412009Z")),
+        ImmutableMap.of(
+            EtaRelativeChangeHandler.ORIGINAL_DURATION_MILLISECONDS,
+            1000000L,
+            EtaRelativeChangeHandler.ORIGINAL_ETA,
+            Timestamp.parseTimestamp("2023-08-02T21:06:00.412009Z")),
         newTrip.getEventMetadata().get("relativeEtaPair"));
     assertEquals(
-        new Pair(1000000L, Timestamp.parseTimestamp("2023-08-02T21:06:00.412009Z")),
+        ImmutableMap.of(
+            EtaRelativeChangeHandler.ORIGINAL_DURATION_MILLISECONDS,
+            1000000L,
+            EtaRelativeChangeHandler.ORIGINAL_ETA,
+            Timestamp.parseTimestamp("2023-08-02T21:06:00.412009Z")),
         newDropoffWaypoint.getEventMetadata().get("relativeEtaPair"));
     assertEquals(
-        new Pair(1000000L, Timestamp.parseTimestamp("2023-08-02T20:56:00.412009Z")),
+        ImmutableMap.of(
+            EtaRelativeChangeHandler.ORIGINAL_DURATION_MILLISECONDS,
+            1000000L,
+            EtaRelativeChangeHandler.ORIGINAL_ETA,
+            Timestamp.parseTimestamp("2023-08-02T20:56:00.412009Z")),
         newPickupWaypoint.getEventMetadata().get("relativeEtaPair"));
   }
 
@@ -524,8 +597,11 @@ public class EtaRelativeChangeHandlerTest {
                 Maps.newHashMap(
                     ImmutableMap.of(
                         "relativeEtaPair",
-                        new Pair(
-                            1000000L, Timestamp.parseTimestamp("2023-08-02T20:56:00.412009Z")))))
+                        ImmutableMap.of(
+                            EtaRelativeChangeHandler.ORIGINAL_DURATION_MILLISECONDS,
+                            1000000L,
+                            EtaRelativeChangeHandler.ORIGINAL_ETA,
+                            Timestamp.parseTimestamp("2023-08-02T20:56:00.412009Z")))))
             .build();
     var newPickupWaypoint =
         TripWaypointData.builder()
@@ -536,8 +612,11 @@ public class EtaRelativeChangeHandlerTest {
                 Maps.newHashMap(
                     ImmutableMap.of(
                         "relativeEtaPair",
-                        new Pair(
-                            1000000L, Timestamp.parseTimestamp("2023-08-02T20:56:00.412009Z")))))
+                        ImmutableMap.of(
+                            EtaRelativeChangeHandler.ORIGINAL_DURATION_MILLISECONDS,
+                            1000000L,
+                            EtaRelativeChangeHandler.ORIGINAL_ETA,
+                            Timestamp.parseTimestamp("2023-08-02T20:56:00.412009Z")))))
             .build();
     var pickupWaypointDifferences =
         ImmutableMap.of(
@@ -555,8 +634,11 @@ public class EtaRelativeChangeHandlerTest {
                 Maps.newHashMap(
                     ImmutableMap.of(
                         "relativeEtaPair",
-                        new Pair(
-                            1000000L, Timestamp.parseTimestamp("2023-08-02T20:57:00.412009Z")))))
+                        ImmutableMap.of(
+                            EtaRelativeChangeHandler.ORIGINAL_DURATION_MILLISECONDS,
+                            1000000L,
+                            EtaRelativeChangeHandler.ORIGINAL_ETA,
+                            Timestamp.parseTimestamp("2023-08-02T20:57:00.412009Z")))))
             .build();
     var newIntermediateWaypoint =
         TripWaypointData.builder()
@@ -567,8 +649,11 @@ public class EtaRelativeChangeHandlerTest {
                 Maps.newHashMap(
                     ImmutableMap.of(
                         "relativeEtaPair",
-                        new Pair(
-                            1000000L, Timestamp.parseTimestamp("2023-08-02T20:57:00.412009Z")))))
+                        ImmutableMap.of(
+                            EtaRelativeChangeHandler.ORIGINAL_DURATION_MILLISECONDS,
+                            1000000L,
+                            EtaRelativeChangeHandler.ORIGINAL_ETA,
+                            Timestamp.parseTimestamp("2023-08-02T20:57:00.412009Z")))))
             .build();
     var intermediateWaypointDifferences =
         ImmutableMap.of(
@@ -586,8 +671,11 @@ public class EtaRelativeChangeHandlerTest {
                 Maps.newHashMap(
                     ImmutableMap.of(
                         "relativeEtaPair",
-                        new Pair(
-                            1000000L, Timestamp.parseTimestamp("2023-08-02T21:06:00.412009Z")))))
+                        ImmutableMap.of(
+                            EtaRelativeChangeHandler.ORIGINAL_DURATION_MILLISECONDS,
+                            1000000L,
+                            EtaRelativeChangeHandler.ORIGINAL_ETA,
+                            Timestamp.parseTimestamp("2023-08-02T21:06:00.412009Z")))))
             .build();
     var newDropoffWaypoint =
         TripWaypointData.builder()
@@ -598,8 +686,11 @@ public class EtaRelativeChangeHandlerTest {
                 Maps.newHashMap(
                     ImmutableMap.of(
                         "relativeEtaPair",
-                        new Pair(
-                            1000000L, Timestamp.parseTimestamp("2023-08-02T21:06:00.412009Z")))))
+                        ImmutableMap.of(
+                            EtaRelativeChangeHandler.ORIGINAL_DURATION_MILLISECONDS,
+                            1000000L,
+                            EtaRelativeChangeHandler.ORIGINAL_ETA,
+                            Timestamp.parseTimestamp("2023-08-02T21:06:00.412009Z")))))
             .build();
     var dropoffWaypointDifferences =
         ImmutableMap.of(
@@ -619,8 +710,11 @@ public class EtaRelativeChangeHandlerTest {
                 Maps.newHashMap(
                     ImmutableMap.of(
                         "relativeEtaPair",
-                        new Pair(
-                            1000000L, Timestamp.parseTimestamp("2023-08-02T21:06:00.412009Z")))))
+                        ImmutableMap.of(
+                            EtaRelativeChangeHandler.ORIGINAL_DURATION_MILLISECONDS,
+                            1000000L,
+                            EtaRelativeChangeHandler.ORIGINAL_ETA,
+                            Timestamp.parseTimestamp("2023-08-02T21:06:00.412009Z")))))
             .build();
 
     var newTrip =
@@ -635,8 +729,11 @@ public class EtaRelativeChangeHandlerTest {
                 Maps.newHashMap(
                     ImmutableMap.of(
                         "relativeEtaPair",
-                        new Pair(
-                            1000000L, Timestamp.parseTimestamp("2023-08-02T21:06:00.412009Z")))))
+                        ImmutableMap.of(
+                            EtaRelativeChangeHandler.ORIGINAL_DURATION_MILLISECONDS,
+                            1000000L,
+                            EtaRelativeChangeHandler.ORIGINAL_ETA,
+                            Timestamp.parseTimestamp("2023-08-02T21:06:00.412009Z")))))
             .build();
 
     TripFleetEvent tripfleetEvent =
@@ -717,16 +814,32 @@ public class EtaRelativeChangeHandlerTest {
             tripEtaChangeOutputEvent),
         etaRelativeChangeHandler.handleEvent(tripfleetEvent, null));
     assertEquals(
-        new Pair(1000000L, Timestamp.parseTimestamp("2023-08-02T21:06:00.412009Z")),
+        ImmutableMap.of(
+            EtaRelativeChangeHandler.ORIGINAL_DURATION_MILLISECONDS,
+            1000000L,
+            EtaRelativeChangeHandler.ORIGINAL_ETA,
+            Timestamp.parseTimestamp("2023-08-02T21:06:00.412009Z")),
         newTrip.getEventMetadata().get("relativeEtaPair"));
     assertEquals(
-        new Pair(1000000L, Timestamp.parseTimestamp("2023-08-02T21:06:00.412009Z")),
+        ImmutableMap.of(
+            EtaRelativeChangeHandler.ORIGINAL_DURATION_MILLISECONDS,
+            1000000L,
+            EtaRelativeChangeHandler.ORIGINAL_ETA,
+            Timestamp.parseTimestamp("2023-08-02T21:06:00.412009Z")),
         newDropoffWaypoint.getEventMetadata().get("relativeEtaPair"));
     assertEquals(
-        new Pair(1000000L, Timestamp.parseTimestamp("2023-08-02T20:57:00.412009Z")),
+        ImmutableMap.of(
+            EtaRelativeChangeHandler.ORIGINAL_DURATION_MILLISECONDS,
+            1000000L,
+            EtaRelativeChangeHandler.ORIGINAL_ETA,
+            Timestamp.parseTimestamp("2023-08-02T20:57:00.412009Z")),
         newIntermediateWaypoint.getEventMetadata().get("relativeEtaPair"));
     assertEquals(
-        new Pair(1000000L, Timestamp.parseTimestamp("2023-08-02T20:56:00.412009Z")),
+        ImmutableMap.of(
+            EtaRelativeChangeHandler.ORIGINAL_DURATION_MILLISECONDS,
+            1000000L,
+            EtaRelativeChangeHandler.ORIGINAL_ETA,
+            Timestamp.parseTimestamp("2023-08-02T20:56:00.412009Z")),
         newPickupWaypoint.getEventMetadata().get("relativeEtaPair"));
   }
 }

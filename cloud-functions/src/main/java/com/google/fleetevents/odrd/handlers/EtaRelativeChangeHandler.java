@@ -2,15 +2,15 @@ package com.google.fleetevents.odrd.handlers;
 
 import com.google.cloud.Timestamp;
 import com.google.cloud.firestore.Transaction;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Maps;
 import com.google.fleetevents.FleetEventHandler;
 import com.google.fleetevents.common.database.FirestoreDatabaseClient;
 import com.google.fleetevents.common.models.Change;
 import com.google.fleetevents.common.models.FleetEvent;
 import com.google.fleetevents.common.models.OutputEvent;
-import com.google.fleetevents.common.models.Pair;
 import com.google.fleetevents.common.util.TimeUtil;
 import com.google.fleetevents.odrd.models.TripFleetEvent;
-import com.google.fleetevents.odrd.models.outputs.EtaAbsoluteChangeOuputEvent;
 import com.google.fleetevents.odrd.models.outputs.EtaRelativeChangeOutputEvent;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +20,8 @@ import java.util.Optional;
 
 public class EtaRelativeChangeHandler implements FleetEventHandler {
   private static final String RELATIVE_ETA_PAIR_KEY = "relativeEtaPair";
+  public static final String ORIGINAL_DURATION_MILLISECONDS = "originalDurationMilliseconds";
+  public static final String ORIGINAL_ETA = "originalEta";
   private static final double DEFAULT_THRESHOLD_PERCENT = 0.1;
   private double thresholdPercent;
 
@@ -78,7 +80,7 @@ public class EtaRelativeChangeHandler implements FleetEventHandler {
 
   @Override
   public boolean verifyOutput(OutputEvent outputEvent) {
-    return outputEvent instanceof EtaAbsoluteChangeOuputEvent;
+    return outputEvent instanceof EtaRelativeChangeOutputEvent;
   }
 
   @SuppressWarnings("unchecked")
@@ -97,9 +99,9 @@ public class EtaRelativeChangeHandler implements FleetEventHandler {
 
     var hasRelativeEtaPair = eventMetadata.containsKey(RELATIVE_ETA_PAIR_KEY);
     if (hasRelativeEtaPair) {
-      var relativeEtaPair = (Pair<Long, Timestamp>) eventMetadata.get(RELATIVE_ETA_PAIR_KEY);
-      var originalDurationMilliseconds = relativeEtaPair.getKey();
-      var originalEta = relativeEtaPair.getValue();
+      var relativeEtaPair = (Map<String, Object>) eventMetadata.get(RELATIVE_ETA_PAIR_KEY);
+      var originalDurationMilliseconds = (Long) relativeEtaPair.get(ORIGINAL_DURATION_MILLISECONDS);
+      var originalEta = (Timestamp) relativeEtaPair.get(ORIGINAL_ETA);
       double etaDelta =
           TimeUtil.timestampDifferenceMillis(newEta.toSqlTimestamp(), originalEta.toSqlTimestamp());
       var percentDurationChange = Math.abs(etaDelta / originalDurationMilliseconds);
@@ -123,7 +125,13 @@ public class EtaRelativeChangeHandler implements FleetEventHandler {
         originalDurationMilliseconds = 1000;
       }
       eventMetadata.put(
-          RELATIVE_ETA_PAIR_KEY, new Pair<>(originalDurationMilliseconds, originalEta));
+          RELATIVE_ETA_PAIR_KEY,
+          Maps.newHashMap(
+              ImmutableMap.of(
+                  ORIGINAL_DURATION_MILLISECONDS,
+                  originalDurationMilliseconds,
+                  ORIGINAL_ETA,
+                  originalEta)));
     }
     return outputEvent;
   }

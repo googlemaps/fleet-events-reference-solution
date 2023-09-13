@@ -95,8 +95,6 @@ public class EtaAbsoluteChangeOuputEvent extends OutputEvent {
         + identifier
         + ", eventTimestamp="
         + eventTimestamp
-        + ", fleetEvent="
-        + fleetEvent
         + ", type="
         + type
         + '}';
