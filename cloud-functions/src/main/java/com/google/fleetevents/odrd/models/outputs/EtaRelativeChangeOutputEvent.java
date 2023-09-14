@@ -96,7 +96,7 @@ public class EtaRelativeChangeOutputEvent extends OutputEvent {
         + ", eventTimestamp="
         + eventTimestamp
         + ", fleetEvent="
-        + null
+        + fleetEvent
         + ", type="
         + type
         + '}';

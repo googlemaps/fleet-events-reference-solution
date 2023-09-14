@@ -302,6 +302,7 @@ public class UpdateVehicleTransaction implements Transaction.Function<List<Outpu
       var tripWaypointId =
           TripWaypointData.generateWaypointId(
               tripId, waypointIndex, tripWaypoint.getTripWaypointType());
+      /* If the old waypoint for this index doesn't exist create a new one. */
       var oldTripWaypointData =
           waypointIndex < oldTripData.getWaypoints().size()
               ? oldTripData.getWaypoints().get((int) waypointIndex)
@@ -327,10 +328,15 @@ public class UpdateVehicleTransaction implements Transaction.Function<List<Outpu
       differences.put("eta", new Change<>(oldTripWaypointData.getEta(), tripWaypoint.getEta()));
       var newTripWaypointData =
           oldTripWaypointData.toBuilder()
+              .setVehicleId(vehicleId)
+              .setTripId(tripId)
+              .setWaypointId(tripWaypointId)
               .setRemainingDistanceMeters(tripWaypoint.getRemainingDistanceMeters())
               .setRemainingDuration(tripWaypoint.getRemainingDuration())
               .setEta(tripWaypoint.getEta())
               .setTripWaypointType(tripWaypoint.getTripWaypointType())
+              .setIsTerminal(
+                  tripWaypoint.getTripWaypointType() == TripWaypointType.DROP_OFF_WAYPOINT_TYPE)
               .build();
       newTripWaypoints.add(newTripWaypointData);
       tripWaypointDifferences.add(differences);
@@ -343,6 +349,7 @@ public class UpdateVehicleTransaction implements Transaction.Function<List<Outpu
         var newTripDataBuilder =
             oldTripData.toBuilder()
                 .setVehicleId(vehicleId)
+                .setTripId(tripId)
                 .setRemainingDistanceMeters(tripWaypoint.getRemainingDistanceMeters())
                 .setRemainingDuration(tripWaypoint.getRemainingDuration())
                 .setEta(tripWaypoint.getEta())

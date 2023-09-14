@@ -60,6 +60,9 @@ public class TripStatusHandler implements FleetEventHandler {
   }
 
   boolean isStatusChangeValid(TripStatus oldTripStatus, TripStatus newTripStatus) {
+    if (oldTripStatus == null) {
+      return newTripStatus != null;
+    }
     switch (oldTripStatus) {
       case NEW, UNKNOWN_TRIP_STATUS, UNRECOGNIZED -> {
         return newTripStatus != TripStatus.UNKNOWN_TRIP_STATUS

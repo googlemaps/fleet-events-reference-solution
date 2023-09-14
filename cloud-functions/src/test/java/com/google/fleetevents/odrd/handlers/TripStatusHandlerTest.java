@@ -61,6 +61,7 @@ public class TripStatusHandlerTest {
   @ParameterizedTest
   @ValueSource(
       strings = {
+        "NEW",
         "ENROUTE_TO_PICKUP",
         "ARRIVED_AT_PICKUP",
         "ENROUTE_TO_INTERMEDIATE_DESTINATION",
@@ -69,7 +70,8 @@ public class TripStatusHandlerTest {
         "COMPLETE"
       })
   public void updateTripTripStatus_respondsReturnsOutputEvent(String tripStatus) {
-    var oldTripStatus = STATES.get(STATES.indexOf(tripStatus) - 1);
+    var oldTripStatusIndex = STATES.indexOf(tripStatus) - 1;
+    var oldTripStatus = oldTripStatusIndex > 0 ? STATES.get(oldTripStatusIndex) : null;
     TripFleetEvent tripFleetEvent =
         TripFleetEvent.builder()
             .setVehicleId("testVehicleId1")
