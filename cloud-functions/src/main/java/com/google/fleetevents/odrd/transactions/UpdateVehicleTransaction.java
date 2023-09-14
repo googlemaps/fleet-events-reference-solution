@@ -335,6 +335,7 @@ public class UpdateVehicleTransaction implements Transaction.Function<List<Outpu
               .setRemainingDuration(tripWaypoint.getRemainingDuration())
               .setEta(tripWaypoint.getEta())
               .setTripWaypointType(tripWaypoint.getTripWaypointType())
+              .setWaypointIndex(waypointIndex)
               .setIsTerminal(
                   tripWaypoint.getTripWaypointType() == TripWaypointType.DROP_OFF_WAYPOINT_TYPE)
               .build();
