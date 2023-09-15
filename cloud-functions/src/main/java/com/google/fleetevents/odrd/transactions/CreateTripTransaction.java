@@ -8,6 +8,7 @@ import com.google.cloud.firestore.Transaction;
 import com.google.fleetevents.FleetEventCreatorBase;
 import com.google.fleetevents.FleetEventHandler;
 import com.google.fleetevents.common.database.FirestoreDatabaseClient;
+import com.google.fleetevents.common.models.Change;
 import com.google.fleetevents.common.models.FleetEvent;
 import com.google.fleetevents.common.models.OutputEvent;
 import com.google.fleetevents.common.util.ProtoParser;
@@ -22,7 +23,9 @@ import google.maps.fleetengine.v1.CreateTripRequest;
 import google.maps.fleetengine.v1.Trip;
 import google.maps.fleetengine.v1.TripType;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class CreateTripTransaction implements Transaction.Function<List<OutputEvent>> {
   private final List<FleetEventHandler> fleetEventHandlers;
@@ -46,10 +49,11 @@ public class CreateTripTransaction implements Transaction.Function<List<OutputEv
     Trip response = ProtoParser.parseLogEntryResponse(logEntry, Trip.getDefaultInstance());
     String vehicleId = response.getVehicleId();
     String tripId = request.getTripId();
-
+    String tripStatus = response.getTripStatus().name();
     newTripDocRef = firestoreDatabaseClient.getTripDocument(tripId);
 
     List<TripWaypointData> waypoints = new ArrayList<>();
+    var tripWaypointDifferences = new ArrayList<Map<String, Change>>();
     var pickupPoint = response.getPickupPoint();
     var dropoffPoint = response.getDropoffPoint();
     var intermediateDestinations = response.getIntermediateDestinationsList();
@@ -62,7 +66,7 @@ public class CreateTripTransaction implements Transaction.Function<List<OutputEv
             tripId,
             vehicleId,
             emptyWaypoint));
-
+    tripWaypointDifferences.add(getWaypointDifferences(vehicleId, tripId, waypoints.get(0)));
     int n = 1;
 
     for (var terminalLocation : intermediateDestinations) {
@@ -74,6 +78,7 @@ public class CreateTripTransaction implements Transaction.Function<List<OutputEv
               tripId,
               vehicleId,
               emptyWaypoint));
+      tripWaypointDifferences.add(getWaypointDifferences(vehicleId, tripId, waypoints.get(n)));
       n += 1;
     }
     waypoints.add(
@@ -84,6 +89,8 @@ public class CreateTripTransaction implements Transaction.Function<List<OutputEv
             tripId,
             vehicleId,
             emptyWaypoint));
+    tripWaypointDifferences.add(
+        getWaypointDifferences(vehicleId, tripId, waypoints.get(waypoints.size() - 1)));
 
     this.newTripData =
         TripData.builder()
@@ -91,17 +98,23 @@ public class CreateTripTransaction implements Transaction.Function<List<OutputEv
             .setTripId(tripId)
             .setWaypoints(waypoints)
             .setIsSharedTrip(response.getTripType().equals(TripType.SHARED))
+            .setTripStatus(tripStatus)
             .setEventTimestamp(
                 Timestamp.ofTimeSecondsAndNanos(
                     logEntry.getTimestamp().getSeconds(), logEntry.getTimestamp().getNanos()))
             .setExpireAt(TimeUtil.offsetFromNow(TimeUtil.ONE_HOUR_IN_SECONDS))
             .build();
+    HashMap<String, Change> tripDifferences = new HashMap<>();
+    tripDifferences.put("tripId", new Change<>(null, tripId));
+    tripDifferences.put("tripStatus", new Change<>(null, tripStatus));
 
     var tripFleetEvent =
         TripFleetEvent.builder()
             .setNewTrip(newTripData)
             .setVehicleId(vehicleId)
             .setTripId(tripId)
+            .setTripDifferences(tripDifferences)
+            .setNewTripWaypoints(waypoints)
             .build();
     tripFleetEvents.add(tripFleetEvent);
   }
@@ -113,5 +126,13 @@ public class CreateTripTransaction implements Transaction.Function<List<OutputEv
             tripFleetEvents, fleetEventHandlers, transaction, firestoreDatabaseClient);
     transaction.set(newTripDocRef, newTripData);
     return outputEvents;
+  }
+
+  HashMap<String, Change> getWaypointDifferences(
+      String vehicleId, String tripId, TripWaypointData waypointData) {
+    var diff = new HashMap<String, Change>();
+    diff.put("tripId", new Change<>(null, tripId));
+    diff.put("waypointId", new Change<>(null, waypointData.getWaypointId()));
+    return diff;
   }
 }

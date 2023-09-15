@@ -48,6 +48,7 @@ public class CreateTripTransactionTest {
             .setVehicleId("")
             .setTripId("testTripId1")
             .setIsSharedTrip(false)
+            .setTripStatus("NEW")
             .setWaypoints(
                 ImmutableList.of(
                     expectedPickupWaypoint, expectedIntermediateWaypoint, expectedDropoffWaypoint))

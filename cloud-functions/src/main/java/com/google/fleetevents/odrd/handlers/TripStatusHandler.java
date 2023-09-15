@@ -60,14 +60,15 @@ public class TripStatusHandler implements FleetEventHandler {
   }
 
   boolean isStatusChangeValid(TripStatus oldTripStatus, TripStatus newTripStatus) {
-    if (oldTripStatus == null) {
-      return newTripStatus != null;
-    }
     switch (oldTripStatus) {
-      case NEW, UNKNOWN_TRIP_STATUS, UNRECOGNIZED -> {
+      case NEW -> {
         return newTripStatus != TripStatus.UNKNOWN_TRIP_STATUS
             && newTripStatus != TripStatus.UNRECOGNIZED
             && newTripStatus != TripStatus.NEW;
+      }
+      case UNKNOWN_TRIP_STATUS, UNRECOGNIZED -> {
+        return newTripStatus != TripStatus.UNKNOWN_TRIP_STATUS
+            && newTripStatus != TripStatus.UNRECOGNIZED;
       }
         /* The next state after enroute to pickup can't be new, unrecognized, unknown or still
          * enroute to pickup. */

@@ -82,6 +82,7 @@ public class UpdateVehicleTransactionTest {
             .setVehicleId("testVehicleId1")
             .setTripId("testTripId1")
             .setWaypointId("testTripId1-pickup")
+            .setWaypointIndex(0L)
             .setRemainingDistanceMeters(6673L)
             .setRemainingDuration(685791L)
             .setEta(Timestamp.parseTimestamp("2023-08-02T21:08:00.412009000Z"))
@@ -93,6 +94,7 @@ public class UpdateVehicleTransactionTest {
             .setTripId("testTripId1")
             .setWaypointId("testTripId1-dropoff")
             .setIsTerminal(true)
+            .setWaypointIndex(1L)
             .setRemainingDistanceMeters(10985L)
             .setRemainingDuration(1148791L)
             .setEta(Timestamp.parseTimestamp("2023-08-02T21:15:43.412009000Z"))
@@ -197,6 +199,7 @@ public class UpdateVehicleTransactionTest {
             .setVehicleId("testVehicleId1")
             .setTripId("testTripId1")
             .setWaypointId("testTripId1-pickup")
+            .setWaypointIndex(0L)
             .setRemainingDistanceMeters(6673L)
             .setRemainingDuration(685791L)
             .setEta(Timestamp.parseTimestamp("2023-08-02T21:08:00.412009000Z"))
@@ -208,6 +211,7 @@ public class UpdateVehicleTransactionTest {
             .setVehicleId("testVehicleId1")
             .setTripId("testTripId1")
             .setWaypointId("testTripId1-1")
+            .setWaypointIndex(1L)
             .setRemainingDistanceMeters(7673L)
             .setRemainingDuration(928791L)
             .setEta(Timestamp.parseTimestamp("2023-08-02T21:12:03.412009000Z"))
@@ -218,6 +222,7 @@ public class UpdateVehicleTransactionTest {
             .setVehicleId("testVehicleId1")
             .setTripId("testTripId1")
             .setWaypointId("testTripId1-dropoff")
+            .setWaypointIndex(2L)
             .setIsTerminal(true)
             .setRemainingDistanceMeters(11985L)
             .setRemainingDuration(1148791L)
@@ -267,6 +272,7 @@ public class UpdateVehicleTransactionTest {
             .setVehicleId("testVehicleId1")
             .setTripId("testTripId1")
             .setWaypointId("testTripId1-pickup")
+            .setWaypointIndex(0L)
             .setTripWaypointType(TripWaypointType.PICKUP_WAYPOINT_TYPE)
             .build();
     var pickupWaypoint2 =
@@ -274,6 +280,7 @@ public class UpdateVehicleTransactionTest {
             .setVehicleId("testVehicleId1")
             .setTripId("testTripId2")
             .setWaypointId("testTripId2-pickup")
+            .setWaypointIndex(0L)
             .setTripWaypointType(TripWaypointType.PICKUP_WAYPOINT_TYPE)
             .build();
     var dropoffWaypoint1 =
@@ -281,6 +288,7 @@ public class UpdateVehicleTransactionTest {
             .setVehicleId("testVehicleId1")
             .setTripId("testTripId1")
             .setWaypointId("testTripId1-dropoff")
+            .setWaypointIndex(1L)
             .setTripWaypointType(TripWaypointType.DROP_OFF_WAYPOINT_TYPE)
             .build();
     var dropoffWaypoint2 =
@@ -288,6 +296,7 @@ public class UpdateVehicleTransactionTest {
             .setVehicleId("testVehicleId1")
             .setTripId("testTripId2")
             .setWaypointId("testTripId2-dropoff")
+            .setWaypointIndex(1L)
             .setTripWaypointType(TripWaypointType.DROP_OFF_WAYPOINT_TYPE)
             .build();
     List<TripWaypointData> waypointsTrip1 = ImmutableList.of(pickupWaypoint1, dropoffWaypoint1);
@@ -340,6 +349,7 @@ public class UpdateVehicleTransactionTest {
             .setVehicleId("testVehicleId1")
             .setTripId("testTripId1")
             .setWaypointId("testTripId1-pickup")
+            .setWaypointIndex(0L)
             .setRemainingDistanceMeters(6673L)
             .setRemainingDuration(685791L)
             .setEta(Timestamp.parseTimestamp("2023-08-02T21:08:00.412009000Z"))
@@ -351,6 +361,7 @@ public class UpdateVehicleTransactionTest {
             .setVehicleId("testVehicleId1")
             .setTripId("testTripId2")
             .setWaypointId("testTripId2-pickup")
+            .setWaypointIndex(0L)
             .setRemainingDistanceMeters(7673L)
             .setRemainingDuration(928791L)
             .setEta(Timestamp.parseTimestamp("2023-08-02T21:12:03.412009000Z"))
@@ -361,6 +372,7 @@ public class UpdateVehicleTransactionTest {
             .setVehicleId("testVehicleId1")
             .setTripId("testTripId1")
             .setWaypointId("testTripId1-dropoff")
+            .setWaypointIndex(1L)
             .setIsTerminal(true)
             .setRemainingDistanceMeters(11985L)
             .setRemainingDuration(1148791L)
@@ -372,6 +384,7 @@ public class UpdateVehicleTransactionTest {
             .setVehicleId("testVehicleId1")
             .setTripId("testTripId2")
             .setWaypointId("testTripId2-dropoff")
+            .setWaypointIndex(1L)
             .setIsTerminal(true)
             .setRemainingDistanceMeters(12985L)
             .setRemainingDuration(1225791L)

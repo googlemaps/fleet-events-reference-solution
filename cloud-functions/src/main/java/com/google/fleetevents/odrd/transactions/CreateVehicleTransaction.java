@@ -7,6 +7,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.fleetevents.FleetEventCreatorBase;
 import com.google.fleetevents.FleetEventHandler;
 import com.google.fleetevents.common.database.FirestoreDatabaseClient;
+import com.google.fleetevents.common.models.Change;
 import com.google.fleetevents.common.models.OutputEvent;
 import com.google.fleetevents.common.util.ProtoParser;
 import com.google.fleetevents.odrd.models.VehicleData;
@@ -15,6 +16,7 @@ import com.google.logging.v2.LogEntry;
 import com.google.protobuf.InvalidProtocolBufferException;
 import google.maps.fleetengine.v1.CreateVehicleRequest;
 import google.maps.fleetengine.v1.Vehicle;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -43,11 +45,13 @@ public class CreateVehicleTransaction implements Transaction.Function<List<Outpu
             response,
             Timestamp.ofTimeSecondsAndNanos(
                 logEntry.getTimestamp().getSeconds(), logEntry.getTimestamp().getNanos()));
-
+    var vehicleDifferences = new HashMap<String, Change>();
+    vehicleDifferences.put("vehicleId", new Change(null, newVehicleData.getVehicleId()));
     this.vehicleFleetEvent =
         VehicleFleetEvent.builder()
             .setVehicleId(newVehicleData.getVehicleId())
             .setNewVehicle(newVehicleData)
+            .setVehicleDifferences(vehicleDifferences)
             .build();
     this.newVehicleDocRef =
         firestoreDatabaseClient.getVehicleDocument(newVehicleData.getVehicleId());
