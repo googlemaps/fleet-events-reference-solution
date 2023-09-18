@@ -24,11 +24,11 @@ import java.util.logging.Logger;
  */
 public final class FleetEventConfig {
   private static final Logger logger = Logger.getLogger(FleetEventConfig.class.getName());
-
   private static final String DEFAULT_DELIVERY_VEHICLE_COLLECTION_NAME = "deliveryVehicles";
   private static final String DEFAULT_TASK_COLLECTION_NAME = "deliveryTasks";
   private static final String DEFAULT_FLEET_ENGINE_ENDPOINT = "fleetengine.googleapis.com";
   private static final String DEFAULT_TOPIC_OUTPUT_ID = "FleetEventsOutputTopic";
+  private static final String DEFAULT_DATABASE_NAME = "fleetevents-db";
   private static final Boolean DEFAULT_MEASURE_OUT_OF_ORDER = false;
 
   public static String getEnvironmentVariable(String variableName) {
@@ -112,6 +112,14 @@ public final class FleetEventConfig {
       fleetEngineEndpoint = DEFAULT_FLEET_ENGINE_ENDPOINT;
     }
     return fleetEngineEndpoint;
+  }
+
+  public static String getDatabaseName() {
+    var databaseId = getEnvironmentVariable("DATABASE_NAME");
+    if (databaseId == null) {
+      return DEFAULT_DATABASE_NAME;
+    }
+    return databaseId;
   }
 
   public static Boolean measureOutOfOrder() {

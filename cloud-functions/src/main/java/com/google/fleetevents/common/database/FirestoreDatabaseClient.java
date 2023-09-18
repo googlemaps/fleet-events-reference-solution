@@ -27,21 +27,17 @@ import com.google.fleetevents.lmfs.config.LMFSFleetEventConfig;
 import com.google.fleetevents.odrd.config.ODRDFleetEventConfig;
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
-import java.util.logging.Logger;
 
 /**
  * Client for firestore with convenience methods for accessing a vehicle or task object through the
  * Firestore connection.
  */
 public class FirestoreDatabaseClient {
-
-  private static final Logger logger = Logger.getLogger(FirestoreDatabaseClient.class.getName());
   private final String DELIVERY_VEHICLE_COLLECTION_NAME;
   private final String DELIVERY_TASK_COLLECTION_NAME;
   private final String VEHICLE_COLLECTION_NAME;
   private final String WATERMARK_COLLECTION_NAME = "watermark";
   private final String TRIP_COLLECTION_NAME;
-
   private final Firestore firestore;
 
   public FirestoreDatabaseClient() throws IOException {
@@ -49,9 +45,10 @@ public class FirestoreDatabaseClient {
     var projectId = FleetEventConfig.getProjectId();
 
     FirestoreOptions firestoreOptions =
-        FirestoreOptions.getDefaultInstance().toBuilder()
+        FirestoreOptions.newBuilder()
             .setCredentials(credentials)
             .setProjectId(projectId)
+            .setDatabaseId(FleetEventConfig.getDatabaseName())
             .build();
     firestore = firestoreOptions.getService();
 
@@ -61,6 +58,7 @@ public class FirestoreDatabaseClient {
     TRIP_COLLECTION_NAME = ODRDFleetEventConfig.getTripCollectionName();
   }
 
+  // this is used to mock firestore
   public FirestoreDatabaseClient(Firestore firestore) {
     this.firestore = firestore;
     DELIVERY_VEHICLE_COLLECTION_NAME = LMFSFleetEventConfig.getDeliveryVehicleCollectionName();
