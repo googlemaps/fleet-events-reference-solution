@@ -28,7 +28,7 @@ public final class FleetEventConfig {
   private static final String DEFAULT_TASK_COLLECTION_NAME = "deliveryTasks";
   private static final String DEFAULT_FLEET_ENGINE_ENDPOINT = "fleetengine.googleapis.com";
   private static final String DEFAULT_TOPIC_OUTPUT_ID = "FleetEventsOutputTopic";
-  private static final String DEFAULT_DATABASE_NAME = "fleetevents-db";
+  private static final String DEFAULT_DATABASE_NAME = "(default)";
   private static final Boolean DEFAULT_MEASURE_OUT_OF_ORDER = false;
 
   public static String getEnvironmentVariable(String variableName) {
