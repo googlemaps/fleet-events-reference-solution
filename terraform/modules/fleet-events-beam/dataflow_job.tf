@@ -117,7 +117,7 @@ resource "google_storage_bucket_iam_member" "bucket_iam_sa" {
 
 resource "google_compute_network" "vpc-network" {
   project                 = data.google_project.project_fleetevents.project_id
-  name                    = "network-fleetevents"
+  name                    = format("network-fleetevents-%s", random_id.jobname_suffix.dec)
   routing_mode            = "REGIONAL"
   auto_create_subnetworks = false
   description             = "The Compute Engine network for launching Compute Engine instances to run your pipeline. "
@@ -136,7 +136,7 @@ resource "google_compute_network" "vpc-network" {
 
 resource "google_compute_subnetwork" "vpc-subnetwork" {
   project                  = data.google_project.project_fleetevents.project_id
-  name                     = format("subnet-fleetevents-%s", var.GCP_REGION)
+  name                     = format("subnet-fleetevents-%s-%s", random_id.jobname_suffix.dec, var.GCP_REGION)
   ip_cidr_range            = "10.2.0.0/16"
   region                   = var.GCP_REGION
   network                  = google_compute_network.vpc-network.id
