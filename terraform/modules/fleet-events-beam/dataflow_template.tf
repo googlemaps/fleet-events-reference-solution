@@ -13,6 +13,12 @@
 # limitations under the License.
 
 
+resource "random_id" "template_suffix" {
+  byte_length = 4
+
+}
+
+
 ## Cloud Storage for flex-template
 
 resource "google_storage_bucket" "bucket_template" {
@@ -147,7 +153,7 @@ resource "terraform_data" "script_build_flex_template" {
 resource "google_artifact_registry_repository" "repo" {
   project       = data.google_project.project_fleetevents.project_id
   location      = var.GCP_REGION
-  repository_id = format("repo-%s", var.TEMPLATE_NAME)
+  repository_id = format("repo-%s-%s", var.TEMPLATE_NAME, random_id.template_suffix.dec)
   description   = format("Repository for FleetEvents flex-template images for template \"%s\"", var.TEMPLATE_NAME)
   format        = "DOCKER"
   labels        = local.labels_common
