@@ -46,6 +46,55 @@ public final class FleetEventsTestHelper {
     return getLogEntry(fileContent);
   }
 
+  public static LogEntry createVehicleLog1() throws IOException {
+    String fileContent =
+        Files.readString(
+            Paths.get("src/test/resources/logs/createVehicleLog_1.json"), Charset.defaultCharset());
+    return getLogEntry(fileContent);
+  }
+
+  public static LogEntry createTripLog1() throws IOException {
+    String fileContent =
+        Files.readString(
+            Paths.get("src/test/resources/logs/createTripLog_1.json"), Charset.defaultCharset());
+    return getLogEntry(fileContent);
+  }
+
+  public static LogEntry updateVehicleLog1() throws IOException {
+    String fileContent =
+        Files.readString(
+            Paths.get("src/test/resources/logs/updateVehicleLog_1.json"), Charset.defaultCharset());
+    return getLogEntry(fileContent);
+  }
+
+  public static LogEntry updateVehicleLog2() throws IOException {
+    String fileContent =
+        Files.readString(
+            Paths.get("src/test/resources/logs/updateVehicleLog_2.json"), Charset.defaultCharset());
+    return getLogEntry(fileContent);
+  }
+
+  public static LogEntry updateVehicleLog3() throws IOException {
+    String fileContent =
+        Files.readString(
+            Paths.get("src/test/resources/logs/updateVehicleLog_3.json"), Charset.defaultCharset());
+    return getLogEntry(fileContent);
+  }
+
+  public static LogEntry updateTripLog1() throws IOException {
+    String fileContent =
+        Files.readString(
+            Paths.get("src/test/resources/logs/updateTripLog_1.json"), Charset.defaultCharset());
+    return getLogEntry(fileContent);
+  }
+
+  public static LogEntry updateTripLog2() throws IOException {
+    String fileContent =
+        Files.readString(
+            Paths.get("src/test/resources/logs/updateTripLog_2.json"), Charset.defaultCharset());
+    return getLogEntry(fileContent);
+  }
+
   public static LogEntry updateDeliveryVehicleLog1() throws IOException {
     String fileContent =
         Files.readString(

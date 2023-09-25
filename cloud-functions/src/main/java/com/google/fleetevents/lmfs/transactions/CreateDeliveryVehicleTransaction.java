@@ -20,14 +20,14 @@ import com.google.cloud.firestore.DocumentReference;
 import com.google.cloud.firestore.GeoPoint;
 import com.google.cloud.firestore.Transaction;
 import com.google.common.collect.ImmutableList;
-import com.google.fleetevents.FleetEventCreator;
+import com.google.fleetevents.FleetEventCreatorBase;
 import com.google.fleetevents.FleetEventHandler;
 import com.google.fleetevents.common.database.FirestoreDatabaseClient;
+import com.google.fleetevents.common.models.OutputEvent;
 import com.google.fleetevents.common.util.ProtoParser;
 import com.google.fleetevents.common.util.TimeUtil;
 import com.google.fleetevents.lmfs.models.DeliveryVehicleData;
 import com.google.fleetevents.lmfs.models.DeliveryVehicleFleetEvent;
-import com.google.fleetevents.lmfs.models.outputs.OutputEvent;
 import com.google.logging.v2.LogEntry;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.type.LatLng;
@@ -50,10 +50,10 @@ public class CreateDeliveryVehicleTransaction implements Transaction.Function<Li
   public CreateDeliveryVehicleTransaction(
       LogEntry logEntry,
       List<FleetEventHandler> fleetEventHandlers,
-      FirestoreDatabaseClient firestoreDatabaseClient)
+      FirestoreDatabaseClient firestoreDatabaseConnection)
       throws InvalidProtocolBufferException {
     this.fleetEventHandlers = fleetEventHandlers;
-    this.firestoreDatabaseClient = firestoreDatabaseClient;
+    this.firestoreDatabaseClient = firestoreDatabaseConnection;
     CreateDeliveryVehicleRequest request =
         ProtoParser.parseLogEntryRequest(
             logEntry, CreateDeliveryVehicleRequest.getDefaultInstance());
@@ -77,13 +77,14 @@ public class CreateDeliveryVehicleTransaction implements Transaction.Function<Li
             .setNewDeliveryVehicle(newDeliveryVehicleData)
             .build();
 
-    newDeliveryVehicleDocRef = firestoreDatabaseClient.getVehicleDocument(deliveryVehicleId);
+    newDeliveryVehicleDocRef =
+        firestoreDatabaseClient.getDeliveryVehicleDocument(deliveryVehicleId);
   }
 
   @Override
   public List<OutputEvent> updateCallback(Transaction transaction) {
     List<OutputEvent> outputEvents =
-        FleetEventCreator.callFleetEventHandlers(
+        FleetEventCreatorBase.callFleetEventHandlers(
             ImmutableList.of(deliveryVehicleFleetEvent),
             fleetEventHandlers,
             transaction,

@@ -5,6 +5,7 @@ import java.util.Objects;
 public class Pair<K, V> {
 
   private final K key;
+
   private final V value;
 
   public Pair(K key, V value) {
@@ -29,6 +30,11 @@ public class Pair<K, V> {
       return false;
     }
     return Objects.equals(key, pair.key) && Objects.equals(value, pair.value);
+  }
+
+  @Override
+  public String toString() {
+    return "Pair{" + "key=" + key + ", value=" + value + '}';
   }
 
   @Override

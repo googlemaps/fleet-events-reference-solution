@@ -1,0 +1,61 @@
+[{
+  "insertId": "7c96ad4425f18cbe7eb22ec8ac9a3d78",
+  "jsonPayload": {
+    "@type": "type.googleapis.com/maps.fleetengine.v1.CreateVehicleLog",
+    "response": {
+      "state": "VEHICLE_STATE_ONLINE",
+      "vehicleType": {
+        "vehicleCategory": "AUTO"
+      },
+      "currentRouteSegmentHandle": "XXXX",
+      "maximumCapacity": 4,
+      "lastLocation": {
+        "location": {
+          "latitude": 38,
+          "longitude": -122
+        },
+        "serverTime": "2023-07-17T22:36:19.408665Z"
+      },
+      "supportedTrips": [
+        "EXCLUSIVE_TRIP"
+      ],
+      "name": "providers/test-123/vehicles/testVehicleId1"
+    },
+    "request": {
+      "vehicleId": "testVehicleId1",
+      "vehicle": {
+        "currentRouteSegmentHandle": "XXXX",
+        "lastLocation": {
+          "location": {
+            "latitude": 38,
+            "longitude": -122
+          }
+        },
+        "name": "providers/test-123/vehicles/testVehicleId1",
+        "vehicleType": {
+          "vehicleCategory": "AUTO"
+        },
+        "maximumCapacity": 4,
+        "state": "VEHICLE_STATE_ONLINE"
+      },
+      "header": {
+        "regionCode": "US",
+        "languageCode": "en"
+      }
+    }
+  },
+  "resource": {
+    "type": "fleetengine.googleapis.com/Fleet",
+    "labels": {
+      "resource_container": "projects/test-123",
+      "location": "global"
+    }
+  },
+  "timestamp": "2023-07-17T22:36:19.500093Z",
+  "labels": {
+    "vehicle_id": "testVehicleId1"
+  },
+  "logName": "projects/test-123/logs/fleetengine.googleapis.com%2Fcreate_vehicle",
+  "receiveTimestamp": "2023-07-17T22:36:20.172726882Z"
+}
+]

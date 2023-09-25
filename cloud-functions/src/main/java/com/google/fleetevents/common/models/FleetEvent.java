@@ -23,6 +23,9 @@ public interface FleetEvent {
 
   enum Type {
     DELIVERY_VEHICLE_FLEET_EVENT,
-    DELIVERY_TASK_FLEET_EVENT
+    DELIVERY_TASK_FLEET_EVENT,
+
+    VEHICLE_FLEET_EVENT,
+    TRIP_FLEET_EVENT,
   }
 }

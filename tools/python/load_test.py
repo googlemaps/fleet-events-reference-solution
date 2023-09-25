@@ -22,7 +22,7 @@ import threading
 Load tests with simulated data.
 """
 
-PLAN = "./data/2_stop_success.json"
+PLAN = "./data/lmfs/2_stop_success.json"
 LOAD_TEST_UUID = UUID
 TASK_OUTCOME_SUBSCRIPTION_NAME = "load_test_" + UUID
 TASK_OUTCOME_OUTPUT_TAG = "LoadTestEvent"

@@ -1,0 +1,103 @@
+[{
+  "insertId": "XXXX",
+  "jsonPayload": {
+    "response": {
+      "currentRouteSegmentEndPoint": {
+        "type": "WAYPOINT_TYPE_PICKUP",
+        "tripId": "testTripId1",
+        "location": {
+          "pointHandle": "XXXX"
+        }
+      },
+      "supportedTrips": [
+        "EXCLUSIVE_TRIP"
+      ],
+      "vehicleType": {
+        "vehicleCategory": "AUTO"
+      },
+      "waypoints": [
+        {
+          "eta": "2023-08-02T21:08:00.412009Z",
+          "tripId": "testTripId1",
+          "type": "WAYPOINT_TYPE_PICKUP",
+          "distanceMeters": 6743,
+          "location": {
+            "pointHandle": "XXXX"
+          }
+        },
+        {
+          "distanceMeters": 4312,
+          "location": {
+            "pointHandle": "XXXX"
+          },
+          "type": "WAYPOINT_TYPE_DROP_OFF",
+          "tripId": "testTripId1",
+          "eta": "2023-08-02T21:15:43.412009Z"
+        }
+      ],
+      "etaToFirstWaypoint": "2023-08-02T21:04:34.283866874Z",
+      "maximumCapacity": 4,
+      "name": "providers/test-123/vehicles/testVehicleId1",
+      "lastLocation": {
+        "rawLocation": {
+          "latitude": 35,
+          "longitude": -97
+        },
+        "heading": 0,
+        "location": {
+          "latitude": 35,
+          "longitude": -97
+        },
+        "serverTime": "2023-08-02T20:56:34.411286Z",
+        "speed": 13.88888888888889
+      },
+      "currentRouteSegmentHandle": "XXXX",
+      "currentTrips": [
+        "testTripId1"
+      ],
+      "state": "VEHICLE_STATE_ONLINE",
+      "remainingDistanceMeters": 6673
+    },
+    "request": {
+      "vehicleId": "testVehicleId1",
+      "header": {
+        "languageCode": "en",
+        "regionCode": "US"
+      },
+      "vehicle": {
+        "lastLocation": {
+          "heading": 0,
+          "rawLocation": {
+            "latitude": 35,
+            "longitude": -97
+          },
+          "speed": 13.88888888888889,
+          "location": {
+            "latitude": 35,
+            "longitude": -97
+          }
+        },
+        "etaToFirstWaypoint": "2023-08-02T21:04:34.255167236Z",
+        "remainingDistanceMeters": 6673,
+        "currentRouteSegmentHandle": "XXXX"
+      },
+      "updateMask": "etaToFirstWaypoint,remainingDistanceMeters,lastLocation"
+    },
+    "@type": "type.googleapis.com/maps.fleetengine.v1.UpdateVehicleLog"
+  },
+  "resource": {
+    "type": "fleetengine.googleapis.com/Fleet",
+    "labels": {
+      "resource_container": "projects/test-123",
+      "location": "global"
+    }
+  },
+  "timestamp": "2023-08-02T20:56:34.621727Z",
+  "labels": {
+    "trip_id": "testTripId1",
+    "vehicle_id": "testVehicleId1"
+  },
+  "logName": "projects/test-123/logs/fleetengine.googleapis.com%2Fupdate_vehicle",
+  "receiveTimestamp": "2023-08-02T20:56:34.823652816Z"
+}
+]

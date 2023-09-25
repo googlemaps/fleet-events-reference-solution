@@ -82,3 +82,14 @@ variable "FLAG_SETUP_BIGQUERY_SUBSCRIPTION" {
   nullable    = false
   default     = false
 }
+
+variable "MOBILITY_SOLUTION" {
+  type        = string
+  description = "Mobility solution of use : either LMFS or ODRD"
+  nullable    = false
+  default     = "LMFS"
+  validation {
+    condition     = contains(["ODRD", "LMFS"], var.MOBILITY_SOLUTION)
+    error_message = "Allowed values are 'LMFS' or 'ODRD'"
+  }
+}

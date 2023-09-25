@@ -44,8 +44,8 @@ public class FleetEventRunner {
   private static final Logger logger = Logger.getLogger(FleetEventRunner.class.getName());
 
   public enum SampleFunction {
-    TASK_OUTCOME,
-    VEHICLE_OFFLINE;
+    TASK_OUTCOME_CHANGE,
+    VEHICLE_NOT_UPDATING;
   }
 
   public interface PubSubToGcsOptions extends StreamingOptions {
@@ -96,10 +96,6 @@ public class FleetEventRunner {
   }
 
   public static void main(String[] args) throws IOException {
-
-    // The maximum number of shards when writing output.
-    int numShards = 1;
-
     PubSubToGcsOptions options =
         PipelineOptionsFactory.fromArgs(args).withValidation().as(PubSubToGcsOptions.class);
     options.setStreaming(true);
@@ -117,14 +113,14 @@ public class FleetEventRunner {
             .setDatabaseId(options.getDatabaseId())
             .build();
     switch (options.getFunctionName()) {
-      case TASK_OUTCOME:
+      case TASK_OUTCOME_CHANGE:
         {
-          processedMessages = new TaskOutcome().run(messages, config);
+          processedMessages = new TaskOutcomeChange(config).run(messages);
           break;
         }
-      case VEHICLE_OFFLINE:
+      case VEHICLE_NOT_UPDATING:
         {
-          processedMessages = VehicleOffline.run(messages, config);
+          processedMessages = new VehicleNotUpdating(config).run(messages);
           break;
         }
       default:
@@ -138,7 +134,6 @@ public class FleetEventRunner {
     }
     processedMessages.apply(
         "Write messages to topic", PubsubIO.writeStrings().to(options.getOutputTopic()));
-
     pipeline.run();
   }
 }

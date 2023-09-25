@@ -19,14 +19,14 @@ package com.google.fleetevents.lmfs.transactions;
 import com.google.cloud.firestore.DocumentReference;
 import com.google.cloud.firestore.Transaction;
 import com.google.common.collect.ImmutableList;
-import com.google.fleetevents.FleetEventCreator;
+import com.google.fleetevents.FleetEventCreatorBase;
 import com.google.fleetevents.FleetEventHandler;
 import com.google.fleetevents.common.database.FirestoreDatabaseClient;
+import com.google.fleetevents.common.models.OutputEvent;
 import com.google.fleetevents.common.util.ProtoParser;
 import com.google.fleetevents.common.util.TimeUtil;
 import com.google.fleetevents.lmfs.models.DeliveryTaskData;
 import com.google.fleetevents.lmfs.models.DeliveryTaskFleetEvent;
-import com.google.fleetevents.lmfs.models.outputs.OutputEvent;
 import com.google.logging.v2.LogEntry;
 import com.google.protobuf.InvalidProtocolBufferException;
 import google.maps.fleetengine.delivery.v1.BatchCreateTasksRequest;
@@ -49,10 +49,10 @@ public class BatchCreateDeliveryTasksTransaction
   public BatchCreateDeliveryTasksTransaction(
       LogEntry logEntry,
       List<FleetEventHandler> fleetEventHandlers,
-      FirestoreDatabaseClient firestoreDatabaseClient)
+      FirestoreDatabaseClient FirestoreDatabaseClient)
       throws InvalidProtocolBufferException {
     this.fleetEventHandlers = fleetEventHandlers;
-    this.firestoreDatabaseClient = firestoreDatabaseClient;
+    this.firestoreDatabaseClient = FirestoreDatabaseClient;
     BatchCreateTasksRequest requests =
         ProtoParser.parseLogEntryRequest(logEntry, BatchCreateTasksRequest.getDefaultInstance());
     BatchCreateTasksResponse responses =
@@ -93,7 +93,7 @@ public class BatchCreateDeliveryTasksTransaction
       var deliveryTaskFleetEvent = deliveryTaskFleetEvents.get(i);
       // Allow fleet event handlers to respond to these events and update state if needed.
       outputEvents.addAll(
-          FleetEventCreator.callFleetEventHandlers(
+          FleetEventCreatorBase.callFleetEventHandlers(
               ImmutableList.of(deliveryTaskFleetEvent),
               fleetEventHandlers,
               transaction,

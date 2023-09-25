@@ -1,5 +1,6 @@
 package com.google.fleetevents.lmfs.models.outputs;
 
+import com.google.fleetevents.common.models.OutputEvent;
 import java.util.Objects;
 
 /** Output event for the task state changes. */

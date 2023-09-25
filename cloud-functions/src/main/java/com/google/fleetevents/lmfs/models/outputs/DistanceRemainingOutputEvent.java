@@ -16,6 +16,7 @@
 
 package com.google.fleetevents.lmfs.models.outputs;
 
+import com.google.fleetevents.common.models.OutputEvent;
 import java.util.Objects;
 
 /** OutputEvent for remaining distance. */

@@ -144,6 +144,7 @@
   </dependencyManagement>
 
 
+
   <dependencies>
 
     <!-- https://mvnrepository.com/artifact/com.google.auto.value/auto-value -->
@@ -197,6 +198,13 @@
       <artifactId>grpc-google-maps-fleetengine-delivery-v1-java</artifactId>
       <groupId>com.google.maps</groupId>
       <version>0.0.1961</version>
+    </dependency>
+
+
+    <dependency>
+      <groupId>com.google.maps</groupId>
+      <artifactId>gapic-google-maps-fleetengine-v1-java</artifactId>
+      <version>0.0.197</version>
     </dependency>
 
     <!-- https://mvnrepository.com/artifact/com.google.api/api-common -->

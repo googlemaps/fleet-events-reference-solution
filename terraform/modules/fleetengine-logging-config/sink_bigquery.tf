@@ -25,7 +25,7 @@ resource "google_bigquery_dataset" "fleetengine-logging-sink-bq" {
   project                         = local.logging_sink_project_id
   dataset_id                      = var.BQ_DATASET
   friendly_name                   = "FleetEngine Logs"
-  description                     = format("Logging(FleetEngine) -> BigQuery (src proj : %s)", local.logging_src_project_id)
+  description                     = format("Logging(FleetEngine) -> BigQuery (src proj : %s, dataset : %s)", local.logging_src_project_id, var.BQ_DATASET)
   location                        = var.GCP_REGION
   labels                          = local.labels_common
   max_time_travel_hours           = "168"
@@ -40,8 +40,8 @@ resource "google_bigquery_dataset" "fleetengine-logging-sink-bq" {
 
 resource "google_logging_project_sink" "fleetengine-logrouter-bigquery" {
   project                = local.logging_src_project_id
-  name                   = format("fleetengine-logrouter-to-bigquery-%s", local.logging_sink_project_number)
-  description            = format("Logging -> BigQuery (dest proj : %s, %s)", local.logging_sink_project_id, local.logging_sink_project_number)
+  name                   = format("fleetengine-logrouter-to-bigquery-%s-%s", local.logging_sink_project_number, var.BQ_DATASET)
+  description            = format("Logging -> BigQuery (dest proj : %s, %s, dataset : %s)", local.logging_sink_project_id, local.logging_sink_project_number,var.BQ_DATASET)
   destination            = format("bigquery.googleapis.com/%s", google_bigquery_dataset.fleetengine-logging-sink-bq[0].id)
   filter                 = local.logging_filter
   unique_writer_identity = true

@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory;
 //   5. The function sees t6, t7, t8, t9. watermark=t10 and t6-9 are out of order.
 //   6. The function sees t11. watermark=t11
 public class UpdateWatermarkTransaction implements Transaction.Function<Long> {
+
   private static final Logger logger =
       LoggerFactory.getLogger(UpdateWatermarkTransaction.class.getName());
   public static final String DOCUMENT_KEY = "value";

@@ -22,7 +22,7 @@ import com.google.api.core.ApiFutures;
 import com.google.api.gax.rpc.ApiException;
 import com.google.cloud.pubsub.v1.Publisher;
 import com.google.common.util.concurrent.MoreExecutors;
-import com.google.fleetevents.lmfs.models.outputs.OutputEvent;
+import com.google.fleetevents.common.models.OutputEvent;
 import com.google.gson.Gson;
 import com.google.protobuf.ByteString;
 import com.google.pubsub.v1.PubsubMessage;

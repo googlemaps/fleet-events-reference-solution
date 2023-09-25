@@ -49,6 +49,7 @@ module "fleet-events-with-existing-project" {
   FUNCTION_NAME                    = var.FUNCTION_NAME
   TOPIC_FLEETEVENTS_OUTPUT         = format("%s-output", lower(var.FUNCTION_NAME))
   FLAG_SETUP_BIGQUERY_SUBSCRIPTION = var.FLAG_SETUP_BIGQUERY_SUBSCRIPTION
+  MOBILITY_SOLUTION                = var.MOBILITY_SOLUTION
   depends_on = [
     google_project.project-fleetevents
   ]

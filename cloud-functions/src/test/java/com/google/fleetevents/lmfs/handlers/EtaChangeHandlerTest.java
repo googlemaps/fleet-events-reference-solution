@@ -16,6 +16,7 @@
 
 package com.google.fleetevents.lmfs.handlers;
 
+import com.google.fleetevents.common.models.OutputEvent;
 import com.google.fleetevents.helpers.FleetEventsTestHelper;
 import com.google.fleetevents.lmfs.models.DeliveryVehicleData;
 import com.google.fleetevents.lmfs.models.DeliveryVehicleFleetEvent;
@@ -23,7 +24,6 @@ import com.google.fleetevents.lmfs.models.TaskInfo;
 import com.google.fleetevents.lmfs.models.VehicleJourneySegment;
 import com.google.fleetevents.lmfs.models.VehicleStop;
 import com.google.fleetevents.lmfs.models.outputs.EtaOutputEvent;
-import com.google.fleetevents.lmfs.models.outputs.OutputEvent;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;

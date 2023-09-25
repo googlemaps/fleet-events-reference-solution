@@ -23,16 +23,16 @@ import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.fleetevents.common.models.Change;
+import com.google.fleetevents.common.models.OutputEvent;
 import com.google.fleetevents.lmfs.models.DeliveryTaskData;
 import com.google.fleetevents.lmfs.models.DeliveryTaskFleetEvent;
-import com.google.fleetevents.lmfs.models.outputs.OutputEvent;
 import com.google.fleetevents.lmfs.models.outputs.TaskStateChangedOutputEvent;
 import java.util.List;
 import org.junit.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-/** Tests for the task outcome fleet event handler. */
+/** Tests for the task state change fleet event handler. */
 public class TaskStateHandlerTest {
 
   @Test

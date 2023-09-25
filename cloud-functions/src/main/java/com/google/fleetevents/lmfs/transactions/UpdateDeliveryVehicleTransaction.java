@@ -17,17 +17,18 @@
 package com.google.fleetevents.lmfs.transactions;
 
 import com.google.cloud.firestore.DocumentReference;
-import com.google.cloud.firestore.GeoPoint;
 import com.google.cloud.firestore.Transaction;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
-import com.google.fleetevents.FleetEventCreator;
+import com.google.fleetevents.FleetEventCreatorBase;
 import com.google.fleetevents.FleetEventHandler;
 import com.google.fleetevents.common.database.FirestoreDatabaseClient;
 import com.google.fleetevents.common.models.Change;
 import com.google.fleetevents.common.models.FleetEvent;
+import com.google.fleetevents.common.models.OutputEvent;
 import com.google.fleetevents.common.models.Pair;
 import com.google.fleetevents.common.models.UpdateAndDifference;
+import com.google.fleetevents.common.util.GeoUtil;
 import com.google.fleetevents.common.util.NameFormatter;
 import com.google.fleetevents.common.util.ProtoParser;
 import com.google.fleetevents.common.util.TimeUtil;
@@ -35,7 +36,6 @@ import com.google.fleetevents.lmfs.models.DeliveryTaskData;
 import com.google.fleetevents.lmfs.models.DeliveryTaskFleetEvent;
 import com.google.fleetevents.lmfs.models.DeliveryVehicleData;
 import com.google.fleetevents.lmfs.models.DeliveryVehicleFleetEvent;
-import com.google.fleetevents.lmfs.models.outputs.OutputEvent;
 import com.google.logging.v2.LogEntry;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.type.LatLng;
@@ -72,17 +72,17 @@ public class UpdateDeliveryVehicleTransaction implements Transaction.Function<Li
   public UpdateDeliveryVehicleTransaction(
       LogEntry logEntry,
       List<FleetEventHandler> fleetEventHandlers,
-      FirestoreDatabaseClient firestoreDatabaseClient)
+      FirestoreDatabaseClient firestoreDataabaseClient)
       throws InvalidProtocolBufferException {
     this.fleetEventHandlers = fleetEventHandlers;
-    this.firestoreDatabaseClient = firestoreDatabaseClient;
+    this.firestoreDatabaseClient = firestoreDataabaseClient;
     this.logEntry = logEntry;
     DeliveryVehicle response =
         ProtoParser.parseLogEntryResponse(logEntry, DeliveryVehicle.getDefaultInstance());
 
     deliveryVehicleId = NameFormatter.getIdFromName(response.getName());
 
-    deliveryVehicleRef = firestoreDatabaseClient.getVehicleDocument(deliveryVehicleId);
+    deliveryVehicleRef = firestoreDatabaseClient.getDeliveryVehicleDocument(deliveryVehicleId);
   }
 
   static UpdateAndDifference<DeliveryVehicleData> getDeliveryVehicleAndDiff(
@@ -111,10 +111,10 @@ public class UpdateDeliveryVehicleTransaction implements Transaction.Function<Li
     if (updatedFields.contains("last_location")
         || !Objects.equals(
             oldDeliveryVehicleData.getLastLocation(),
-            latLngToGeoPoint(deliveryVehicle.getLastLocation().getLocation()))) {
+            GeoUtil.latLngToGeoPoint(deliveryVehicle.getLastLocation().getLocation()))) {
       if (deliveryVehicle.hasLastLocation() && deliveryVehicle.getLastLocation().hasLocation()) {
         LatLng lastLocation = deliveryVehicle.getLastLocation().getLocation();
-        deliveryVehicleBuilder.setLastLocation(latLngToGeoPoint(lastLocation));
+        deliveryVehicleBuilder.setLastLocation(GeoUtil.latLngToGeoPoint(lastLocation));
         vehicleDifferences.put(
             "lastLocation", new Change<>(oldDeliveryVehicleData.getLastLocation(), lastLocation));
       }
@@ -207,13 +207,6 @@ public class UpdateDeliveryVehicleTransaction implements Transaction.Function<Li
       logger.info(String.format("Not currently handling %s updates\n", nonHandledUpdateField));
     }
     return new UpdateAndDifference<>(deliveryVehicleBuilder.build(), vehicleDifferences);
-  }
-
-  private static GeoPoint latLngToGeoPoint(LatLng latLng) {
-    if (latLng == null) {
-      return null;
-    }
-    return new GeoPoint(latLng.getLatitude(), latLng.getLongitude());
   }
 
   @Override
@@ -329,7 +322,7 @@ public class UpdateDeliveryVehicleTransaction implements Transaction.Function<Li
       taskUpdates.add(newDeliveryTask);
     }
     var outputEvents =
-        FleetEventCreator.callFleetEventHandlers(
+        FleetEventCreatorBase.callFleetEventHandlers(
             updateDeliveryFleetEventsBuilder.build(),
             fleetEventHandlers,
             transaction,
