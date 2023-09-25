@@ -190,7 +190,7 @@ resource "google_compute_subnetwork" "vpc-subnetwork" {
 
 resource "google_compute_region_network_firewall_policy" "firewall_policy_dataflow" {
   project     = data.google_project.project_fleetevents.project_id
-  name        = format("fleetevents-firewall-policy-%s", var.GCP_REGION)
+  name        = format("fleetevents-firewall-policy-%s-%s", var.GCP_REGION, random_id.jobname_suffix.dec)
   description = format("Regional network firewall policy for FleetEvents/Dataflow (%s)", var.GCP_REGION)
   region      = var.GCP_REGION
 }

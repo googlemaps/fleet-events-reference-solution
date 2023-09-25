@@ -23,7 +23,7 @@ resource "random_id" "template_suffix" {
 
 resource "google_storage_bucket" "bucket_template" {
   project                     = data.google_project.project_fleetevents.project_id
-  name                        = format("%s-flextemplate-%s", data.google_project.project_fleetevents.project_id, var.TEMPLATE_NAME)
+  name                        = format("%s-flextemplate-%s-%s", data.google_project.project_fleetevents.project_id, var.TEMPLATE_NAME, random_id.template_suffix.dec)
   location                    = var.GCP_REGION
   uniform_bucket_level_access = true
   public_access_prevention    = "enforced"
@@ -111,7 +111,7 @@ resource "terraform_data" "script_build_flex_template" {
   # when any of these values change, the container image will be rebuilt
   # TODO: add more flags to correctly detect when to rebuild an image
   triggers_replace = [
-    "aaat",
+    "aaa",
     fileexists(abspath("../../../../../beam/target/fleetevents-beam-bundled-1.0-SNAPSHOT.jar")),
     #data.local_file.jar.content_md5
   ]
