@@ -2,6 +2,7 @@ PROJECT_FLEETEVENTS  = "<YOUR PROJECT ID>"
 PROJECT_FLEETENGINE  = "<YOUR PROJECT ID>"
 ME                   = "<YOUR EMAIL>"
 GCP_REGION           = "us-central1"
+# check https://firebase.google.com/docs/firestore/locations for valid Firestore regions
 GCP_REGION_FIRESTORE = "nam5"
 PIPELINE_NAME        = "fleetevents-beam"
 
