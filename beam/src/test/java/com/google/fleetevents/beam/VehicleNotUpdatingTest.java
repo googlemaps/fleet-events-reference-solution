@@ -56,13 +56,11 @@ public class VehicleNotUpdatingTest {
   @Test
   public void testMultiLogOneSession() throws IOException {
     LogEntry logEntry1 =
-        SampleLogs.getUpdateDeliveryVehicleLogEntry1()
-            .toBuilder()
+        SampleLogs.getUpdateDeliveryVehicleLogEntry1().toBuilder()
             .setTimestamp(Timestamp.newBuilder().setSeconds(0))
             .build();
     LogEntry logEntry2 =
-        SampleLogs.getUpdateDeliveryVehicleLogEntry1()
-            .toBuilder()
+        SampleLogs.getUpdateDeliveryVehicleLogEntry1().toBuilder()
             .setTimestamp(Timestamp.newBuilder().setSeconds(THRESHOLD))
             .build();
 
@@ -82,13 +80,11 @@ public class VehicleNotUpdatingTest {
   public void testMultiLogTwoSessions() throws IOException {
     Instant startTime = new Instant(0);
     LogEntry logEntry1 =
-        SampleLogs.getUpdateDeliveryVehicleLogEntry1()
-            .toBuilder()
+        SampleLogs.getUpdateDeliveryVehicleLogEntry1().toBuilder()
             .setTimestamp(Timestamp.newBuilder().setSeconds(0))
             .build();
     LogEntry logEntry2 =
-        SampleLogs.getUpdateDeliveryVehicleLogEntry1()
-            .toBuilder()
+        SampleLogs.getUpdateDeliveryVehicleLogEntry1().toBuilder()
             .setTimestamp(Timestamp.newBuilder().setSeconds(THRESHOLD + 1))
             .build();
     TestStream<String> createLogs =
@@ -119,20 +115,17 @@ public class VehicleNotUpdatingTest {
   @Test
   public void testMultiKeyOneSession() throws IOException {
     LogEntry logEntry1 =
-        SampleLogs.getUpdateDeliveryVehicleLogEntry1()
-            .toBuilder()
+        SampleLogs.getUpdateDeliveryVehicleLogEntry1().toBuilder()
             .setTimestamp(Timestamp.newBuilder().setSeconds(0))
             .setInsertId("testStartId")
             .build();
     LogEntry logEntry2 =
-        SampleLogs.getUpdateDeliveryVehicleLogEntry1()
-            .toBuilder()
+        SampleLogs.getUpdateDeliveryVehicleLogEntry1().toBuilder()
             .setTimestamp(Timestamp.newBuilder().setSeconds(THRESHOLD / 2))
             .setInsertId("testEndId")
             .build();
     LogEntry logEntry3 =
-        SampleLogs.getUpdateDeliveryVehicleLogEntry2()
-            .toBuilder()
+        SampleLogs.getUpdateDeliveryVehicleLogEntry2().toBuilder()
             .setTimestamp(Timestamp.newBuilder().setSeconds(0))
             .setInsertId("testOtherId")
             .build();
@@ -162,20 +155,17 @@ public class VehicleNotUpdatingTest {
   @Test
   public void testMultiKeyTwoSession() throws IOException {
     LogEntry logEntry1 =
-        SampleLogs.getUpdateDeliveryVehicleLogEntry1()
-            .toBuilder()
+        SampleLogs.getUpdateDeliveryVehicleLogEntry1().toBuilder()
             .setTimestamp(Timestamp.newBuilder().setSeconds(0))
             .setInsertId("testKey1Window1")
             .build();
     LogEntry logEntry2 =
-        SampleLogs.getUpdateDeliveryVehicleLogEntry1()
-            .toBuilder()
+        SampleLogs.getUpdateDeliveryVehicleLogEntry1().toBuilder()
             .setTimestamp(Timestamp.newBuilder().setSeconds(THRESHOLD + 1))
             .setInsertId("testKey1Window2")
             .build();
     LogEntry logEntry3 =
-        SampleLogs.getUpdateDeliveryVehicleLogEntry2()
-            .toBuilder()
+        SampleLogs.getUpdateDeliveryVehicleLogEntry2().toBuilder()
             .setTimestamp(Timestamp.newBuilder().setSeconds(0))
             .setInsertId("testKey2Window1")
             .build();
