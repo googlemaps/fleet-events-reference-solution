@@ -86,7 +86,7 @@ resource "google_dataflow_flex_template_job" "beam_job" {
 
 resource "google_storage_bucket" "bucket" {
   project                     = data.google_project.project_fleetevents.project_id
-  name                        = format("%s-jobs-%s", data.google_project.project_fleetevents.project_id, var.TEMPLATE_NAME)
+  name                        = format("%s-jobs-%s-%s", data.google_project.project_fleetevents.project_id, var.TEMPLATE_NAME, random_id.template_suffix.dec)
   location                    = var.GCP_REGION
   uniform_bucket_level_access = true
   public_access_prevention    = "enforced"
