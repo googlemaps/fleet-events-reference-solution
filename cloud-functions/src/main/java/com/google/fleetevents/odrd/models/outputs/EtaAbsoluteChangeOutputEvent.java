@@ -4,7 +4,7 @@ import com.google.cloud.Timestamp;
 import com.google.fleetevents.common.models.OutputEvent;
 import java.util.Objects;
 
-public class EtaAbsoluteChangeOuputEvent extends OutputEvent {
+public class EtaAbsoluteChangeOutputEvent extends OutputEvent {
 
   private Timestamp originalEta;
   private Timestamp newEta;
@@ -24,7 +24,7 @@ public class EtaAbsoluteChangeOuputEvent extends OutputEvent {
 
   private String identifier;
 
-  public EtaAbsoluteChangeOuputEvent() {
+  public EtaAbsoluteChangeOutputEvent() {
     type = Type.ETA;
   }
 
@@ -70,7 +70,7 @@ public class EtaAbsoluteChangeOuputEvent extends OutputEvent {
 
   @Override
   public boolean equals(Object object) {
-    if (object instanceof EtaAbsoluteChangeOuputEvent that) {
+    if (object instanceof EtaAbsoluteChangeOutputEvent that) {
       return Objects.equals(this.fleetEvent, that.fleetEvent)
           && Objects.equals(this.newEta, that.newEta)
           && Objects.equals(this.originalEta, that.originalEta)
@@ -84,7 +84,7 @@ public class EtaAbsoluteChangeOuputEvent extends OutputEvent {
 
   @Override
   public String toString() {
-    return "EtaAbsoluteChangeOuputEvent{"
+    return "EtaAbsoluteChangeOutputEvent{"
         + "originalEta="
         + originalEta
         + ", newEta="

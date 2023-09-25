@@ -9,7 +9,7 @@ import com.google.fleetevents.common.models.FleetEvent;
 import com.google.fleetevents.common.models.OutputEvent;
 import com.google.fleetevents.common.util.TimeUtil;
 import com.google.fleetevents.odrd.models.TripFleetEvent;
-import com.google.fleetevents.odrd.models.outputs.EtaAbsoluteChangeOuputEvent;
+import com.google.fleetevents.odrd.models.outputs.EtaAbsoluteChangeOutputEvent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +30,7 @@ public class EtaAbsoluteChangeHandler implements FleetEventHandler {
     var tripFleetEvent = (TripFleetEvent) fleetEvent;
     var outputEvents = new ArrayList<OutputEvent>();
     var eventTimestamp = Objects.requireNonNull(tripFleetEvent.newTrip()).getEventTimestamp();
+    var waypointsChanged = tripFleetEvent.waypointsChanged();
     for (var i = 0; i < Objects.requireNonNull(tripFleetEvent.newTripWaypoints()).size(); i++) {
       var waypointDiff = tripFleetEvent.tripWaypointDifferences().get(i);
       var waypoint = tripFleetEvent.newTripWaypoints().get(i);
@@ -41,7 +42,8 @@ public class EtaAbsoluteChangeHandler implements FleetEventHandler {
               waypoint.getEta(),
               eventTimestamp,
               fleetEvent,
-              false);
+              false,
+              waypointsChanged);
       etaOutputEvent.ifPresent(outputEvents::add);
     }
     var newTrip = tripFleetEvent.newTrip();
@@ -53,7 +55,8 @@ public class EtaAbsoluteChangeHandler implements FleetEventHandler {
             newTrip.getEta(),
             eventTimestamp,
             fleetEvent,
-            true);
+            true,
+            waypointsChanged);
     etaOutputEvent.ifPresent(outputEvents::add);
     return outputEvents;
   }
@@ -74,7 +77,7 @@ public class EtaAbsoluteChangeHandler implements FleetEventHandler {
 
   @Override
   public boolean verifyOutput(OutputEvent outputEvent) {
-    return outputEvent instanceof EtaAbsoluteChangeOuputEvent;
+    return outputEvent instanceof EtaAbsoluteChangeOutputEvent;
   }
 
   public Optional<OutputEvent> tryGetEtaOutputEvent(
@@ -84,9 +87,13 @@ public class EtaAbsoluteChangeHandler implements FleetEventHandler {
       Timestamp newEta,
       Timestamp eventTimestamp,
       FleetEvent fleetEvent,
-      boolean isTripOutputEvent) {
+      boolean isTripOutputEvent,
+      boolean waypointsChanged) {
     Optional<OutputEvent> optionalEtaOutputEvent = Optional.empty();
     if (differences.containsKey("eta")) {
+      if (waypointsChanged) {
+        eventMetadata.remove(ORIGINAL_ETA_KEY);
+      }
       var hasOriginalEta = eventMetadata.containsKey(ORIGINAL_ETA_KEY);
       if (hasOriginalEta) {
         var originalEta = Timestamp.parseTimestamp(eventMetadata.get(ORIGINAL_ETA_KEY).toString());
@@ -94,7 +101,7 @@ public class EtaAbsoluteChangeHandler implements FleetEventHandler {
                 TimeUtil.timestampDifferenceMillis(
                     newEta.toSqlTimestamp(), originalEta.toSqlTimestamp()))
             >= thresholdMilliseconds) {
-          var etaOutputEvent = new EtaAbsoluteChangeOuputEvent();
+          var etaOutputEvent = new EtaAbsoluteChangeOutputEvent();
           etaOutputEvent.setIdentifier(identifier);
           etaOutputEvent.setOriginalEta(originalEta);
           etaOutputEvent.setNewEta(newEta);

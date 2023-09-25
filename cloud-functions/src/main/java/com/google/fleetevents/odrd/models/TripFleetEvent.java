@@ -30,6 +30,8 @@ public abstract class TripFleetEvent implements FleetEvent, Serializable {
   @Nullable
   public abstract List<TripWaypointData> newTripWaypoints();
 
+  public abstract boolean waypointsChanged();
+
   public abstract List<Map<String, Change>> tripWaypointDifferences();
 
   public static Builder builder() {
@@ -37,7 +39,8 @@ public abstract class TripFleetEvent implements FleetEvent, Serializable {
         .setTripDifferences(new HashMap<>())
         .setOldTripWaypoints(new ArrayList<>())
         .setNewTripWaypoints(new ArrayList<>())
-        .setTripWaypointDifferences(new ArrayList<>());
+        .setTripWaypointDifferences(new ArrayList<>())
+        .setWaypointsChanged(false);
   }
 
   public abstract Builder toBuilder();
@@ -63,6 +66,10 @@ public abstract class TripFleetEvent implements FleetEvent, Serializable {
     public abstract Builder setOldTripWaypoints(List<TripWaypointData> oldTripWaypoints);
 
     public abstract Builder setNewTripWaypoints(List<TripWaypointData> newTripWaypoints);
+
+    /* Currently the waypoints changed flag only is set when there is a difference in the size of
+     * the waypoints from old to new, moving waypoints around won't trigger this flag. */
+    public abstract Builder setWaypointsChanged(boolean waypointsChanged);
 
     public abstract Builder setTripWaypointDifferences(
         List<Map<String, Change>> tripWaypointDifferences);

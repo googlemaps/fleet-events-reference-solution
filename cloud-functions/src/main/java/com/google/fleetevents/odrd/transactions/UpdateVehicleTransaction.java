@@ -284,9 +284,10 @@ public class UpdateVehicleTransaction implements Transaction.Function<List<Outpu
             .setOldTrip(oldTripData);
     int numberOfWaypoints = oldTripData.getWaypoints().size();
     /* If the number of waypoints is less than the update size just use the update size for the
-     * number of waypoints. */
+     * number of waypoints and change the waypoints flag to recognize this. */
     if (numberOfWaypoints < updates.size()) {
       numberOfWaypoints = updates.size();
+      tripFleetEventBuilder.setWaypointsChanged(true);
     }
     var newTripWaypoints = new ArrayList<TripWaypointData>();
     var tripWaypointDifferences = new ArrayList<Map<String, Change>>();

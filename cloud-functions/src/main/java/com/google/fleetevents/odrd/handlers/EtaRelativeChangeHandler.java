@@ -34,7 +34,7 @@ public class EtaRelativeChangeHandler implements FleetEventHandler {
     var tripFleetEvent = (TripFleetEvent) fleetEvent;
     var eventTimestamp = Objects.requireNonNull(tripFleetEvent.newTrip()).getEventTimestamp();
     var outputEvents = new ArrayList<OutputEvent>();
-
+    var waypointsChanged = tripFleetEvent.waypointsChanged();
     for (var i = 0; i < tripFleetEvent.newTripWaypoints().size(); i++) {
       var waypointDiff = tripFleetEvent.tripWaypointDifferences().get(i);
       var waypoint = tripFleetEvent.newTripWaypoints().get(i);
@@ -46,7 +46,8 @@ public class EtaRelativeChangeHandler implements FleetEventHandler {
               waypoint.getEta(),
               eventTimestamp,
               fleetEvent,
-              false);
+              false,
+              waypointsChanged);
       etaOutputEvent.ifPresent(outputEvents::add);
     }
     var newTrip = tripFleetEvent.newTrip();
@@ -58,7 +59,8 @@ public class EtaRelativeChangeHandler implements FleetEventHandler {
             newTrip.getEta(),
             eventTimestamp,
             fleetEvent,
-            true);
+            true,
+            waypointsChanged);
     etaOutputEvent.ifPresent(outputEvents::add);
 
     return outputEvents;
@@ -91,12 +93,15 @@ public class EtaRelativeChangeHandler implements FleetEventHandler {
       Timestamp newEta,
       Timestamp eventTimestamp,
       FleetEvent fleetEvent,
-      boolean isTripOutputEvent) {
+      boolean isTripOutputEvent,
+      boolean waypointsChanged) {
     var outputEvent = Optional.<OutputEvent>empty();
     if (!differences.containsKey("eta")) {
       return outputEvent;
     }
-
+    if (waypointsChanged) {
+      eventMetadata.remove(RELATIVE_ETA_PAIR_KEY);
+    }
     var hasRelativeEtaPair = eventMetadata.containsKey(RELATIVE_ETA_PAIR_KEY);
     if (hasRelativeEtaPair) {
       var relativeEtaPair = (Map<String, Object>) eventMetadata.get(RELATIVE_ETA_PAIR_KEY);

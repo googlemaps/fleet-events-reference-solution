@@ -168,6 +168,7 @@ public class UpdateTripTransaction implements Transaction.Function<List<OutputEv
             .setOldTrip(oldTripData)
             .setNewTrip(tripAndDifference.updated)
             .setTripDifferences(tripAndDifference.differences)
+            .setWaypointsChanged(tripAndDifference.differences.containsKey("waypoints"))
             .build();
     fleetEventsBuilder.add(tripFleetEvent);
     var outputEvents =

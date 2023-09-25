@@ -9,12 +9,13 @@ import static org.mockito.Mockito.doReturn;
 import com.google.cloud.Timestamp;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Maps;
 import com.google.fleetevents.common.database.FirestoreDatabaseClient;
 import com.google.fleetevents.common.models.Change;
 import com.google.fleetevents.odrd.models.TripData;
 import com.google.fleetevents.odrd.models.TripFleetEvent;
 import com.google.fleetevents.odrd.models.TripWaypointData;
-import com.google.fleetevents.odrd.models.outputs.EtaAbsoluteChangeOuputEvent;
+import com.google.fleetevents.odrd.models.outputs.EtaAbsoluteChangeOutputEvent;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -314,7 +315,7 @@ public class EtaAbsoluteChangeHandlerTest {
             .setTripWaypointDifferences(
                 ImmutableList.of(pickupWaypointDifferences, dropoffWaypointDifferences))
             .build();
-    var pickupEtaChangeOutputEvent = new EtaAbsoluteChangeOuputEvent();
+    var pickupEtaChangeOutputEvent = new EtaAbsoluteChangeOutputEvent();
     pickupEtaChangeOutputEvent.setIdentifier("testTripId1-pickup");
     pickupEtaChangeOutputEvent.setOriginalEta(
         Timestamp.parseTimestamp("2023-08-02T20:56:00.412009Z"));
@@ -431,7 +432,7 @@ public class EtaAbsoluteChangeHandlerTest {
             .setTripWaypointDifferences(
                 ImmutableList.of(pickupWaypointDifferences, dropoffWaypointDifferences))
             .build();
-    var pickupEtaChangeOutputEvent = new EtaAbsoluteChangeOuputEvent();
+    var pickupEtaChangeOutputEvent = new EtaAbsoluteChangeOutputEvent();
     pickupEtaChangeOutputEvent.setIdentifier("testTripId1-pickup");
     pickupEtaChangeOutputEvent.setOriginalEta(
         Timestamp.parseTimestamp("2023-08-02T20:56:00.412009Z"));
@@ -441,7 +442,7 @@ public class EtaAbsoluteChangeHandlerTest {
         Timestamp.parseTimestamp("2023-08-02T20:50:34.621727000Z"));
     pickupEtaChangeOutputEvent.setFleetEvent(tripfleetEvent);
 
-    var dropoffEtaChangeOutputEvent = new EtaAbsoluteChangeOuputEvent();
+    var dropoffEtaChangeOutputEvent = new EtaAbsoluteChangeOutputEvent();
     dropoffEtaChangeOutputEvent.setIdentifier("testTripId1-dropoff");
     dropoffEtaChangeOutputEvent.setOriginalEta(
         Timestamp.parseTimestamp("2023-08-02T21:06:00.412009Z"));
@@ -451,7 +452,7 @@ public class EtaAbsoluteChangeHandlerTest {
         Timestamp.parseTimestamp("2023-08-02T20:50:34.621727000Z"));
     dropoffEtaChangeOutputEvent.setFleetEvent(tripfleetEvent);
 
-    var tripEtaChangeOutputEvent = new EtaAbsoluteChangeOuputEvent();
+    var tripEtaChangeOutputEvent = new EtaAbsoluteChangeOutputEvent();
     tripEtaChangeOutputEvent.setIdentifier("testTripId1");
     tripEtaChangeOutputEvent.setOriginalEta(
         Timestamp.parseTimestamp("2023-08-02T21:06:00.412009Z"));
@@ -602,7 +603,7 @@ public class EtaAbsoluteChangeHandlerTest {
                     intermediateWaypointDifferences,
                     dropoffWaypointDifferences))
             .build();
-    var pickupEtaChangeOutputEvent = new EtaAbsoluteChangeOuputEvent();
+    var pickupEtaChangeOutputEvent = new EtaAbsoluteChangeOutputEvent();
     pickupEtaChangeOutputEvent.setIdentifier("testTripId1-pickup");
     pickupEtaChangeOutputEvent.setOriginalEta(
         Timestamp.parseTimestamp("2023-08-02T20:56:00.412009Z"));
@@ -612,7 +613,7 @@ public class EtaAbsoluteChangeHandlerTest {
         Timestamp.parseTimestamp("2023-08-02T20:50:34.621727000Z"));
     pickupEtaChangeOutputEvent.setFleetEvent(tripfleetEvent);
 
-    var intermediateEtaChangeOutputEvent = new EtaAbsoluteChangeOuputEvent();
+    var intermediateEtaChangeOutputEvent = new EtaAbsoluteChangeOutputEvent();
     intermediateEtaChangeOutputEvent.setIdentifier("testTripId1-1");
     intermediateEtaChangeOutputEvent.setOriginalEta(
         Timestamp.parseTimestamp("2023-08-02T20:57:00.412009Z"));
@@ -623,7 +624,7 @@ public class EtaAbsoluteChangeHandlerTest {
         Timestamp.parseTimestamp("2023-08-02T20:50:34.621727000Z"));
     intermediateEtaChangeOutputEvent.setFleetEvent(tripfleetEvent);
 
-    var dropoffEtaChangeOutputEvent = new EtaAbsoluteChangeOuputEvent();
+    var dropoffEtaChangeOutputEvent = new EtaAbsoluteChangeOutputEvent();
     dropoffEtaChangeOutputEvent.setIdentifier("testTripId1-dropoff");
     dropoffEtaChangeOutputEvent.setOriginalEta(
         Timestamp.parseTimestamp("2023-08-02T21:06:00.412009Z"));
@@ -633,7 +634,7 @@ public class EtaAbsoluteChangeHandlerTest {
         Timestamp.parseTimestamp("2023-08-02T20:50:34.621727000Z"));
     dropoffEtaChangeOutputEvent.setFleetEvent(tripfleetEvent);
 
-    var tripEtaChangeOutputEvent = new EtaAbsoluteChangeOuputEvent();
+    var tripEtaChangeOutputEvent = new EtaAbsoluteChangeOutputEvent();
     tripEtaChangeOutputEvent.setIdentifier("testTripId1");
     tripEtaChangeOutputEvent.setOriginalEta(
         Timestamp.parseTimestamp("2023-08-02T21:06:00.412009Z"));
@@ -662,6 +663,127 @@ public class EtaAbsoluteChangeHandlerTest {
         newDropoffWaypoint.getEventMetadata().get("originalEta"));
     assertEquals(
         Timestamp.parseTimestamp("2023-08-02T20:56:00.412009Z"),
+        newPickupWaypoint.getEventMetadata().get("originalEta"));
+  }
+
+  @Test
+  public void etaAbsoluteChangeHandler_intermediateWaypointAddedNoUpdatesMetadataEmpty() {
+    Map<String, Change> tripDifferences = new HashMap<>();
+    tripDifferences.put(
+        "eta",
+        new Change(
+            Timestamp.parseTimestamp("2023-08-02T21:06:00.412009Z"),
+            Timestamp.parseTimestamp("2023-08-02T21:12:00.412009Z")));
+
+    var oldPickupWaypoint =
+        TripWaypointData.builder()
+            .setTripId("testTripId1")
+            .setWaypointId("testTripId1-pickup")
+            .setEta(Timestamp.parseTimestamp("2023-08-02T20:57:00.412009Z"))
+            .setEventMetadata(
+                ImmutableMap.of(
+                    "originalEta", Timestamp.parseTimestamp("2023-08-02T20:56:00.412009Z")))
+            .build();
+    var newPickupWaypoint =
+        TripWaypointData.builder()
+            .setTripId("testTripId1")
+            .setWaypointId("testTripId1-pickup")
+            .setEta(Timestamp.parseTimestamp("2023-08-02T21:01:00.412009Z"))
+            .setEventMetadata(new HashMap<>())
+            .build();
+
+    var addedIntermediateWaypoint =
+        TripWaypointData.builder()
+            .setTripId("testTripId1")
+            .setWaypointId("testTripId1-1")
+            .setEta(Timestamp.parseTimestamp("2023-08-02T20:58:00.412009Z"))
+            .setEventMetadata(
+                Maps.newHashMap(
+                    ImmutableMap.of(
+                        "originalEta", Timestamp.parseTimestamp("2023-08-02T21:06:00.412009Z"))))
+            .build();
+
+    var oldDropoffWaypoint =
+        TripWaypointData.builder()
+            .setTripId("testTripId1")
+            .setWaypointId("testTripId1-dropoff")
+            .setEta(Timestamp.parseTimestamp("2023-08-02T21:06:00.412009Z"))
+            .setEventMetadata(
+                ImmutableMap.of(
+                    "originalEta", Timestamp.parseTimestamp("2023-08-02T21:06:00.412009Z")))
+            .build();
+    var newDropoffWaypoint =
+        TripWaypointData.builder()
+            .setTripId("testTripId1")
+            .setWaypointId("testTripId1-dropoff")
+            .setEta(Timestamp.parseTimestamp("2023-08-02T21:12:00.412009Z"))
+            .setEventMetadata(new HashMap<>())
+            .build();
+    var firstPickupPointDifferences =
+        ImmutableMap.of(
+            "eta",
+            new Change(
+                Timestamp.parseTimestamp("2023-08-02T20:57:00.412009Z"),
+                Timestamp.parseTimestamp("2023-08-02T21:01:00.412009Z")));
+    var secondWaypointDifferences =
+        ImmutableMap.of(
+            "eta",
+            new Change(
+                Timestamp.parseTimestamp("2023-08-02T21:06:00.412009Z"),
+                Timestamp.parseTimestamp("2023-08-02T21:10:00.412009Z")));
+    var thirdWaypointDifferences =
+        ImmutableMap.of(
+            "eta", new Change(null, Timestamp.parseTimestamp("2023-08-02T21:12:00.412009000Z")));
+    var oldTrip =
+        TripData.builder()
+            .setTripId("testTripId1")
+            .setEta(Timestamp.parseTimestamp("2023-08-02T21:06:00.412009Z"))
+            .setWaypoints(ImmutableList.of(oldPickupWaypoint, oldDropoffWaypoint))
+            .build();
+
+    var newTrip =
+        TripData.builder()
+            .setTripId("testTripId1")
+            .setEta(Timestamp.parseTimestamp("2023-08-02T21:12:00.412009Z"))
+            .setWaypoints(
+                ImmutableList.of(newPickupWaypoint, addedIntermediateWaypoint, newDropoffWaypoint))
+            .setEventTimestamp(Timestamp.parseTimestamp("2023-08-02T20:50:34.621727000Z"))
+            .setEventMetadata(new HashMap<>())
+            .build();
+
+    TripFleetEvent tripfleetEvent =
+        TripFleetEvent.builder()
+            .setVehicleId("testVehicleId1")
+            .setTripId("testTripId1")
+            .setOldTrip(oldTrip)
+            .setNewTrip(newTrip)
+            .setOldTripWaypoints(ImmutableList.of(oldPickupWaypoint, oldDropoffWaypoint))
+            .setNewTripWaypoints(
+                ImmutableList.of(newPickupWaypoint, addedIntermediateWaypoint, newDropoffWaypoint))
+            .setTripDifferences(tripDifferences)
+            .setTripWaypointDifferences(
+                ImmutableList.of(
+                    firstPickupPointDifferences,
+                    secondWaypointDifferences,
+                    thirdWaypointDifferences))
+            .setWaypointsChanged(true)
+            .build();
+
+    EtaAbsoluteChangeHandler etaAbsoluteChangeHandler = new EtaAbsoluteChangeHandler();
+    assertTrue(etaAbsoluteChangeHandler.respondsTo(tripfleetEvent, null, null));
+
+    assertEquals(ImmutableList.of(), etaAbsoluteChangeHandler.handleEvent(tripfleetEvent, null));
+    assertEquals(
+        Timestamp.parseTimestamp("2023-08-02T21:12:00.412009000Z"),
+        newTrip.getEventMetadata().get("originalEta"));
+    assertEquals(
+        Timestamp.parseTimestamp("2023-08-02T21:12:00.412009000Z"),
+        newDropoffWaypoint.getEventMetadata().get("originalEta"));
+    assertEquals(
+        Timestamp.parseTimestamp("2023-08-02T21:10:00.412009000Z"),
+        addedIntermediateWaypoint.getEventMetadata().get("originalEta"));
+    assertEquals(
+        Timestamp.parseTimestamp("2023-08-02T21:01:00.412009000Z"),
         newPickupWaypoint.getEventMetadata().get("originalEta"));
   }
 }
