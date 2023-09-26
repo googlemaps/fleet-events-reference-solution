@@ -1,5 +1,7 @@
 package com.google.fleetevents.beam.model.output;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.google.fleetevents.beam.util.ProtobufSerializer;
 import google.maps.fleetengine.delivery.v1.DeliveryVehicle;
 import java.io.Serializable;
 
@@ -7,6 +9,8 @@ public class VehicleNotUpdatingOutputEvent extends OutputEvent implements Serial
   private long firstUpdateTime;
   private long lastUpdateTime;
   private int gapDuration;
+
+  @JsonSerialize(using = ProtobufSerializer.class)
   private DeliveryVehicle deliveryVehicle;
 
   public VehicleNotUpdatingOutputEvent() {

@@ -2,8 +2,11 @@ package com.google.fleetevents.beam;
 
 import static org.mockito.Mockito.doReturn;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.fleetevents.beam.client.FirestoreEmulatorDatabaseClient;
 import com.google.fleetevents.beam.config.DataflowJobConfig;
+import com.google.fleetevents.beam.model.output.OutputEvent;
 import com.google.fleetevents.beam.model.output.TaskOutcomeChangeOutputEvent;
 import com.google.fleetevents.beam.util.SampleLogs;
 import google.maps.fleetengine.delivery.v1.Task;
@@ -69,7 +72,7 @@ public class TaskOutcomeChangeTest {
     TaskOutcomeChangeOutputEvent expectedResult = new TaskOutcomeChangeOutputEvent();
     expectedResult.setNewOutcome("TASK_OUTCOME_UNSPECIFIED");
     expectedResult.setTask(createTask);
-    PAssert.that(output).containsInAnyOrder(expectedResult.toString());
+    PAssert.that(output).containsInAnyOrder(pojoToJson(expectedResult));
     pipeline.run();
   }
 
@@ -103,7 +106,7 @@ public class TaskOutcomeChangeTest {
     expectedResult2.setNewOutcome("SUCCEEDED");
     expectedResult2.setTask(updateTask);
     PAssert.that(output1)
-        .containsInAnyOrder(expectedResult1.toString(), expectedResult2.toString());
+        .containsInAnyOrder(pojoToJson(expectedResult1), pojoToJson(expectedResult2));
     pipeline.run();
   }
 
@@ -132,11 +135,22 @@ public class TaskOutcomeChangeTest {
     TaskOutcomeChangeOutputEvent expectedResult1 = new TaskOutcomeChangeOutputEvent();
     expectedResult1.setNewOutcome("SUCCEEDED");
     expectedResult1.setTask(updateTask1);
-    PAssert.that(output1).containsInAnyOrder(expectedResult1.toString());
+    PAssert.that(output1).containsInAnyOrder(pojoToJson(expectedResult1));
     pipeline.run();
   }
 
   private TimestampedValue<Task> timestampedTask(Task task, long d) {
     return TimestampedValue.of(task, new Instant(0).plus(d));
+  }
+
+  public String pojoToJson(OutputEvent outputEvent) {
+    ObjectMapper mapper = new ObjectMapper();
+    String data = null;
+    try {
+      data = mapper.writeValueAsString(outputEvent);
+    } catch (JsonProcessingException e) {
+      throw new RuntimeException(e);
+    }
+    return data;
   }
 }

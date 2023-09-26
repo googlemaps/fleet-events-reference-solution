@@ -1,5 +1,7 @@
 package com.google.fleetevents.beam;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.DocumentReference;
 import com.google.cloud.firestore.Transaction;
@@ -158,9 +160,12 @@ public class TaskOutcomeChange implements Serializable {
   private class ConvertToString extends DoFn<TaskOutcomeChangeOutputEvent, String> {
     @DoFn.ProcessElement
     public void processElement(
-        @Element TaskOutcomeChangeOutputEvent element, OutputReceiver<String> receiver) {
-      logger.log(Level.INFO, String.format("Outputting element %s", element.toString()));
-      receiver.output(element.toString());
+        @Element TaskOutcomeChangeOutputEvent element, OutputReceiver<String> receiver)
+        throws JsonProcessingException {
+      ObjectMapper mapper = new ObjectMapper();
+      String data = mapper.writeValueAsString(element);
+      logger.log(Level.INFO, String.format("Outputting element %s", data));
+      receiver.output(data);
     }
   }
 

@@ -39,7 +39,7 @@ public class FirestoreEmulatorDatabaseClient extends FirestoreDatabaseClient
       this.firestore = FirestoreClient.getFirestore(app);
       return this.firestore;
     } catch (Exception e) {
-      System.out.println(e.getMessage());
+      logger.log(Level.WARNING, e.getMessage());
       e.printStackTrace();
       throw e;
     }

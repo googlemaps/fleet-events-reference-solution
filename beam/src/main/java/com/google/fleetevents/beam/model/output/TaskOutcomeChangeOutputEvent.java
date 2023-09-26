@@ -1,11 +1,15 @@
 package com.google.fleetevents.beam.model.output;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.google.fleetevents.beam.util.ProtobufSerializer;
 import google.maps.fleetengine.delivery.v1.Task;
 import java.io.Serializable;
 
 public class TaskOutcomeChangeOutputEvent extends OutputEvent implements Serializable {
   private String previousOutcome;
   private String newOutcome;
+
+  @JsonSerialize(using = ProtobufSerializer.class)
   private Task task;
 
   public TaskOutcomeChangeOutputEvent() {

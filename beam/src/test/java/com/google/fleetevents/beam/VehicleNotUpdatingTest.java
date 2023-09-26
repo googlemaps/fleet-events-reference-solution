@@ -1,6 +1,9 @@
 package com.google.fleetevents.beam;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.fleetevents.beam.config.DataflowJobConfig;
+import com.google.fleetevents.beam.model.output.OutputEvent;
 import com.google.fleetevents.beam.model.output.VehicleNotUpdatingOutputEvent;
 import com.google.fleetevents.beam.util.SampleLogs;
 import com.google.logging.v2.LogEntry;
@@ -49,7 +52,7 @@ public class VehicleNotUpdatingTest {
     expectedOutput.setFirstUpdateTime(1681502796);
     expectedOutput.setDeliveryVehicle(SampleLogs.getUpdateDeliveryVehicle1());
     expectedOutput.setGapDuration(config.getGapSize());
-    PAssert.that(output).containsInAnyOrder(expectedOutput.toString());
+    PAssert.that(output).containsInAnyOrder(pojoToJson(expectedOutput));
     pipeline.run();
   }
 
@@ -72,7 +75,7 @@ public class VehicleNotUpdatingTest {
     expectedOutput.setFirstUpdateTime(0);
     expectedOutput.setDeliveryVehicle(SampleLogs.getUpdateDeliveryVehicle1());
     expectedOutput.setGapDuration(config.getGapSize());
-    PAssert.that(output).containsInAnyOrder(expectedOutput.toString());
+    PAssert.that(output).containsInAnyOrder(pojoToJson(expectedOutput));
     pipeline.run();
   }
 
@@ -108,7 +111,7 @@ public class VehicleNotUpdatingTest {
     expectedOutput2.setDeliveryVehicle(SampleLogs.getUpdateDeliveryVehicle1());
     expectedOutput2.setGapDuration(config.getGapSize());
     PAssert.that(output)
-        .containsInAnyOrder(Arrays.asList(expectedOutput1.toString(), expectedOutput2.toString()));
+        .containsInAnyOrder(pojoToJson(expectedOutput1), pojoToJson(expectedOutput2));
     pipeline.run();
   }
 
@@ -147,7 +150,8 @@ public class VehicleNotUpdatingTest {
     expectedOutput2.setDeliveryVehicle(SampleLogs.getUpdateDeliveryVehicle2());
     expectedOutput2.setGapDuration(config.getGapSize());
     PAssert.that(output)
-        .containsInAnyOrder(Arrays.asList(expectedOutput1.toString(), expectedOutput2.toString()));
+        .containsInAnyOrder(
+            Arrays.asList(pojoToJson(expectedOutput1), pojoToJson(expectedOutput2)));
 
     pipeline.run();
   }
@@ -200,9 +204,9 @@ public class VehicleNotUpdatingTest {
     PAssert.that(output)
         .containsInAnyOrder(
             Arrays.asList(
-                expectedOutput1.toString(),
-                expectedOutput2.toString(),
-                expectedOutput3.toString()));
+                pojoToJson(expectedOutput1),
+                pojoToJson(expectedOutput2),
+                pojoToJson(expectedOutput3)));
     pipeline.run();
   }
 
@@ -214,5 +218,16 @@ public class VehicleNotUpdatingTest {
   public static String getJson(Message message) throws InvalidProtocolBufferException {
     String json = JsonFormat.printer().print(message);
     return json;
+  }
+
+  public String pojoToJson(OutputEvent outputEvent) {
+    ObjectMapper mapper = new ObjectMapper();
+    String data = null;
+    try {
+      data = mapper.writeValueAsString(outputEvent);
+    } catch (JsonProcessingException e) {
+      throw new RuntimeException(e);
+    }
+    return data;
   }
 }

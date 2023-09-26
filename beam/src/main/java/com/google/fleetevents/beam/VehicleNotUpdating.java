@@ -1,5 +1,7 @@
 package com.google.fleetevents.beam;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.fleetevents.beam.config.DataflowJobConfig;
 import com.google.fleetevents.beam.model.output.VehicleNotUpdatingOutputEvent;
 import com.google.fleetevents.beam.util.ProtoParser;
@@ -177,14 +179,23 @@ public class VehicleNotUpdating implements Serializable {
       extends SimpleFunction<KV<String, GetBoundariesFn.Boundary>, String> {
     @Override
     public String apply(KV<String, GetBoundariesFn.Boundary> input) {
-      System.out.printf("got boundary %s:%s%n", input.getKey(), input.getValue());
+      logger.log(
+          Level.INFO, String.format("got boundary %s:%s%n", input.getKey(), input.getValue()));
       GetBoundariesFn.Boundary boundary = input.getValue();
       VehicleNotUpdatingOutputEvent output = new VehicleNotUpdatingOutputEvent();
       output.setGapDuration(GAP_DURATION);
       output.setFirstUpdateTime(boundary.min);
       output.setLastUpdateTime(boundary.max);
       output.setDeliveryVehicle(boundary.maxVehicle);
-      return output.toString();
+      ObjectMapper mapper = new ObjectMapper();
+      String data = null;
+      try {
+        data = mapper.writeValueAsString(output);
+      } catch (JsonProcessingException e) {
+        throw new RuntimeException(e);
+      }
+      logger.log(Level.INFO, String.format("Outputting element %s", data));
+      return data;
     }
   }
 
