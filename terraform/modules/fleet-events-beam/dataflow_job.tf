@@ -153,41 +153,6 @@ resource "google_compute_subnetwork" "vpc-subnetwork" {
 
 ## setup firewalls that allow worker nodes to talk to each other
 
-# resource "google_compute_firewall" "firewall_rule_ingress" {
-#   project     = data.google_project.project_fleetevents.project_id
-#   name        = "dataflow-worker-firewall-rule-ingress"
-#   network     = google_compute_network.vpc-network.id
-#   description = "Firewall rule for dataflow worker nodes (ingress)"
-#   direction   = "INGRESS"
-#   priority    = 101
-#   allow {
-#     protocol = "tcp"
-#     ports    = ["12345", "12346"]
-#   }
-#   log_config {
-#     metadata = "INCLUDE_ALL_METADATA"
-#   }
-#   source_tags = ["dataflow"]
-# }
-# resource "google_compute_firewall" "firewall_rule_egress" {
-#   project     = data.google_project.project_fleetevents.project_id
-#   name        = "dataflow-worker-firewall-rule-egress"
-#   network     = google_compute_network.vpc-network.id
-#   description = "Firewall rule for dataflow worker nodes (egress)"
-#   direction   = "EGRESS"
-#   priority    = 102
-#   allow {
-#     protocol = "tcp"
-#     ports    = ["12345", "12346"]
-#   }
-#   log_config {
-#     metadata = "INCLUDE_ALL_METADATA"
-#   }
-#   target_tags = ["dataflow"]
-# }
-
-## setup firewalls that allow worker nodes to talk to each other
-
 resource "google_compute_region_network_firewall_policy" "firewall_policy_dataflow" {
   project     = data.google_project.project_fleetevents.project_id
   name        = format("fleetevents-firewall-policy-%s-%s", var.GCP_REGION, random_id.jobname_suffix.dec)

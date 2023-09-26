@@ -35,6 +35,13 @@ variable "GCP_REGION_FIRESTORE" {
   nullable = true
 }
 
+variable "FLEETEVENTS_FUNCTION_NAME" {
+  type = string
+  description = "Fleet Event function that you'd like to run. Refer to beam/README.md for possible values."
+  default = "TASK_OUTCOME_CHANGE"
+  nullable = false
+}
+
 
 variable "PIPELINE_NAME" {
   type        = string

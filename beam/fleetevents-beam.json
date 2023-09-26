@@ -8,7 +8,7 @@
             "helpText": "Choose the sample function to run.",
             "isOptional": false,
             "regexes": [
-                "TASK_OUTCOME|VEHICLE_OFFLINE"
+                "TASK_OUTCOME_CHANGE|VEHICLE_NOT_UPDATING"
             ]
         },
         {
@@ -47,7 +47,7 @@
         {
             "name": "windowSize",
             "label": "Window size",
-            "helpText": "Window size to use to process events, in minutes. This parameter does not apply to VEHICLE_OFFLINE jobs.",
+            "helpText": "Window size to use to process events, in minutes. This parameter does not apply to VEHICLE_NOT_UPDATING jobs.",
             "isOptional": true,
             "regexes": [
                 "^[0-9]+"

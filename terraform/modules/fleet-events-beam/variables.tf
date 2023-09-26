@@ -134,7 +134,7 @@ variable "DATAFLOW_MAX_NUM_WORKERS" {
 variable "FLEETEVENTS_FUNCTION_NAME" {
   type        = string
   description = "sample function to run."
-  default     = "TASK_OUTCOME"
+  default     = "TASK_OUTCOME_CHANGE"
 }
 
 variable "FLEETEVENTS_GAP_SIZE" {
@@ -145,6 +145,6 @@ variable "FLEETEVENTS_GAP_SIZE" {
 
 variable "FLEETEVENTS_WINDOW_SIZE" {
   type        = number
-  description = "Window size to use to process events, in minutes. This parameter does not apply to VEHICLE_OFFLINE jobs."
+  description = "Window size to use to process events, in minutes. This parameter does not apply to VEHICLE_NOT_UPDATING jobs."
   default     = 3
 }

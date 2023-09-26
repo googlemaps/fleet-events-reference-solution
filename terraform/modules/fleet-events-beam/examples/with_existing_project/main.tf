@@ -1,14 +1,15 @@
 locals {
-  PROJECT_FLEETENGINE  = var.PROJECT_FLEETENGINE
-  PROJECT_FLEETEVENTS  = var.PROJECT_FLEETEVENTS
-  GCP_REGION           = var.GCP_REGION
-  GCP_REGION_FIRESTORE = var.GCP_REGION_FIRESTORE
-  PIPELINE_NAME        = var.PIPELINE_NAME
-  DATABASE_NAME        = format("%s-db", var.PIPELINE_NAME)
-  TOPIC_INPUT          = format("%s-input", var.PIPELINE_NAME)
-  TOPIC_OUTPUT         = format("%s-output", var.PIPELINE_NAME)
-  ME                   = var.ME
-  SETUP_PUBSUB_SUB_BQ  = true
+  PROJECT_FLEETENGINE       = var.PROJECT_FLEETENGINE
+  PROJECT_FLEETEVENTS       = var.PROJECT_FLEETEVENTS
+  GCP_REGION                = var.GCP_REGION
+  GCP_REGION_FIRESTORE      = var.GCP_REGION_FIRESTORE
+  PIPELINE_NAME             = var.PIPELINE_NAME
+  DATABASE_NAME             = format("%s-db", var.PIPELINE_NAME)
+  TOPIC_INPUT               = format("%s-input", var.PIPELINE_NAME)
+  TOPIC_OUTPUT              = format("%s-output", var.PIPELINE_NAME)
+  FLEETEVENTS_FUNCTION_NAME = var.FLEETEVENTS_FUNCTION_NAME
+  ME                        = var.ME
+  SETUP_PUBSUB_SUB_BQ       = true
 }
 
 module "logging_config" {
@@ -46,7 +47,7 @@ module "fleetevents-beam" {
   TOPIC_OUTPUT              = local.TOPIC_OUTPUT
   FLAG_SETUP_PUBSUB_SUB_BQ  = local.SETUP_PUBSUB_SUB_BQ
   ME                        = local.ME
-  FLEETEVENTS_FUNCTION_NAME = "TASK_OUTCOME"
+  FLEETEVENTS_FUNCTION_NAME = local.FLEETEVENTS_FUNCTION_NAME
   FLEETEVENTS_GAP_SIZE      = 3
   FLEETEVENTS_WINDOW_SIZE   = 3
   SA_APP_ROLES = [
