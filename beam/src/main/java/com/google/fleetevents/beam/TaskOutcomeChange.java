@@ -21,10 +21,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.beam.sdk.transforms.DoFn;
 import org.apache.beam.sdk.transforms.ParDo;
-import org.apache.beam.sdk.transforms.windowing.FixedWindows;
-import org.apache.beam.sdk.transforms.windowing.Window;
 import org.apache.beam.sdk.values.PCollection;
-import org.joda.time.Duration;
 
 public class TaskOutcomeChange implements Serializable {
   private static final Logger logger = Logger.getLogger(TaskOutcomeChange.class.getName());
@@ -175,8 +172,7 @@ public class TaskOutcomeChange implements Serializable {
     PCollection<String> results =
         tasks
             .apply(ParDo.of(new GetTaskStateChanges(config)))
-            .apply(ParDo.of(new ConvertToString()))
-            .apply(Window.into(FixedWindows.of(Duration.standardMinutes(config.getWindowSize()))));
+            .apply(ParDo.of(new ConvertToString()));
     return results;
   }
 
