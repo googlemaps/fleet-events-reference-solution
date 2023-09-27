@@ -19,28 +19,27 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>fleetevents-beam-functions</artifactId>
+    <artifactId>fleetevents-beam</artifactId>
     <groupId>com.google.fleetevents.beam</groupId>
     <version>1.0-SNAPSHOT</version>
     <url>https://github.com/googlemaps/fleet-events-reference-solution</url>
-    <description>Fleet Events reference solutions - sample functions</description>
+    <description>Fleet Events reference solutions - beam pipeline</description>
 
     <organization>
         <name>Google</name>
     </organization>
 
     <properties>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <beam.version>2.49.0</beam.version>
+        <beam.version>2.50.0</beam.version>
 
         <maven-compiler-plugin.version>3.11.0</maven-compiler-plugin.version>
         <maven-exec-plugin.version>3.1.0</maven-exec-plugin.version>
         <maven-jar-plugin.version>3.3.0</maven-jar-plugin.version>
         <maven-shade-plugin.version>3.5.0</maven-shade-plugin.version>
-        <slf4j.version>2.0.7</slf4j.version>
+        <slf4j.version>2.0.9</slf4j.version>
+        <firestore-bom.version>3.14.1</firestore-bom.version>
     </properties>
 
     <distributionManagement>
@@ -92,8 +91,7 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>${maven-compiler-plugin.version}</version>
                 <configuration>
-                    <source>11</source>
-                    <target>11</target>
+                    <release>11</release>
                 </configuration>
             </plugin>
 
@@ -160,7 +158,18 @@
             </plugins>
         </pluginManagement>
     </build>
-
+    <dependencyManagement>
+        <dependencies>
+            <!-- https://mvnrepository.com/artifact/com.google.cloud/google-cloud-firestore-bom -->
+            <dependency>
+                <groupId>com.google.cloud</groupId>
+                <artifactId>google-cloud-firestore-bom</artifactId>
+                <version>${firestore-bom.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
     <dependencies>
         <dependency>
             <groupId>org.apache.beam</groupId>
@@ -191,6 +200,7 @@
             <artifactId>beam-sdks-java-io-google-cloud-platform</artifactId>
             <version>${beam.version}</version>
         </dependency>
+
         <dependency>
             <groupId>com.google.protobuf</groupId>
             <artifactId>protobuf-java</artifactId>
@@ -200,11 +210,6 @@
             <groupId>com.google.protobuf</groupId>
             <artifactId>protobuf-java-util</artifactId>
             <version>3.23.2</version>
-        </dependency>
-        <dependency>
-            <groupId>com.google.firebase</groupId>
-            <artifactId>firebase-admin</artifactId>
-            <version>9.1.1</version>
         </dependency>
         <!-- slf4j API frontend binding with JUL backend -->
         <dependency>
@@ -221,12 +226,12 @@
         <dependency>
             <groupId>com.google.api.grpc</groupId>
             <artifactId>proto-google-cloud-logging-v2</artifactId>
-            <version>0.104.1</version>
+            <version>0.104.8</version>
         </dependency>
         <dependency>
             <artifactId>grpc-google-maps-fleetengine-delivery-v1-java</artifactId>
             <groupId>com.google.maps</groupId>
-            <version>0.0.1961</version>
+            <version>0.0.2357</version>
         </dependency>
         <!-- testing -->
         <dependency>

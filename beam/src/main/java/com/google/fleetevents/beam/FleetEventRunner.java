@@ -62,6 +62,12 @@ public class FleetEventRunner {
 
     void setDatastoreProjectId(String value);
 
+    @Description("Choose the database.")
+    @Required
+    String getDatabaseId();
+
+    void setDatabaseId(String value);
+
     @Description("The Cloud Pub/Sub topic to read from.")
     @Required
     String getInputTopic();
@@ -104,6 +110,7 @@ public class FleetEventRunner {
             .setWindowSize(options.getWindowSize())
             .setGapSize(options.getGapSize())
             .setDatastoreProjectId(options.getDatastoreProjectId())
+            .setDatabaseId(options.getDatabaseId())
             .build();
     switch (options.getFunctionName()) {
       case TASK_OUTCOME_CHANGE:
@@ -127,6 +134,6 @@ public class FleetEventRunner {
     }
     processedMessages.apply(
         "Write messages to topic", PubsubIO.writeStrings().to(options.getOutputTopic()));
-    pipeline.run().waitUntilFinish();
+    pipeline.run();
   }
 }

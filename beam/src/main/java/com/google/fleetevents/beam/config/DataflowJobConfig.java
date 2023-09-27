@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 public class DataflowJobConfig implements Serializable {
   private String datastoreProjectId;
+  private String databaseId;
   private Integer windowSize;
   private Integer gapSize;
 
@@ -11,6 +12,10 @@ public class DataflowJobConfig implements Serializable {
 
   public String getDatastoreProjectId() {
     return datastoreProjectId;
+  }
+
+  public String getDatabaseId() {
+    return databaseId;
   }
 
   public Integer getWindowSize() {
@@ -23,6 +28,7 @@ public class DataflowJobConfig implements Serializable {
 
   public static final class Builder {
     private String datastoreProjectId;
+    private String databaseId;
     private Integer windowSize;
     private Integer gapSize;
 
@@ -34,6 +40,11 @@ public class DataflowJobConfig implements Serializable {
 
     public Builder setDatastoreProjectId(String datastoreProjectId) {
       this.datastoreProjectId = datastoreProjectId;
+      return this;
+    }
+
+    public Builder setDatabaseId(String databaseId) {
+      this.databaseId = databaseId;
       return this;
     }
 
@@ -52,6 +63,7 @@ public class DataflowJobConfig implements Serializable {
       dataflowJobConfig.windowSize = this.windowSize;
       dataflowJobConfig.gapSize = this.gapSize;
       dataflowJobConfig.datastoreProjectId = this.datastoreProjectId;
+      dataflowJobConfig.databaseId = this.databaseId;
       return dataflowJobConfig;
     }
   }

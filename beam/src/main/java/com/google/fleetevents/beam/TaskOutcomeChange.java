@@ -94,6 +94,7 @@ public class TaskOutcomeChange implements Serializable {
     public void setup() throws IOException {
       firestoreClient.initFirestore(
           config.getDatastoreProjectId(),
+          config.getDatabaseId(),
           TaskOutcomeChange.class.getName() + "_" + UUID.randomUUID());
     }
 

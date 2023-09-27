@@ -5,11 +5,10 @@ import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.firestore.DocumentReference;
 import com.google.cloud.firestore.DocumentSnapshot;
 import com.google.cloud.firestore.Firestore;
+import com.google.cloud.firestore.FirestoreOptions;
 import com.google.cloud.firestore.Transaction;
 import com.google.cloud.firestore.WriteResult;
-import com.google.firebase.FirebaseApp;
-import com.google.firebase.FirebaseOptions;
-import com.google.firebase.cloud.FirestoreClient;
+import com.google.common.base.Preconditions;
 import com.google.fleetevents.beam.model.TaskMetadata;
 import java.io.IOException;
 import java.io.Serializable;
@@ -18,7 +17,6 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.apache.beam.vendor.guava.v26_0_jre.com.google.common.base.Preconditions;
 
 /**
  * Client for firestore with convenience methods for accessing a vehicle or task object through the
@@ -32,16 +30,21 @@ public class FirestoreDatabaseClient implements Serializable {
 
   public FirestoreDatabaseClient() throws IOException {}
 
-  public Firestore initFirestore(String projectId, String appName) throws IOException {
+  public Firestore initFirestore(String projectId, String databaseId, String appName)
+      throws IOException {
 
     try {
       if (this.firestore != null) return firestore;
       GoogleCredentials credentials = GoogleCredentials.getApplicationDefault();
-      FirebaseOptions options =
-          new FirebaseOptions.Builder().setCredentials(credentials).setProjectId(projectId).build();
+      FirestoreOptions firestoreOptions =
+          FirestoreOptions.newBuilder()
+              .setCredentials(credentials)
+              .setProjectId(projectId)
+              .setDatabaseId(databaseId)
+              .build();
+      firestore = firestoreOptions.getService();
       logger.log(Level.INFO, "firestore initialized");
-      FirebaseApp app = FirebaseApp.initializeApp(options, appName);
-      this.firestore = FirestoreClient.getFirestore(app);
+
       return firestore;
     } catch (Exception e) {
       logger.log(Level.WARNING, e.getMessage());
