@@ -1,6 +1,6 @@
 ## **Documents Index**
 
-* [Fleet Events Reference Solution](./README.md) (landing page)
+`* [Fleet Events Reference Solution](./README.md) (landing page)
     * [Getting started - Dataflow ](./beam/README.md)(set up Fleet Events with the Dataflow processor)
     * [Getting started - Cloud Functions](./cloud-functions/README.md) (set up Fleet Events with the Cloud Functions processor)
         * [ODRD Overview](./cloud-functions/src/main/java/com/google/fleetevents/odrd/README.md) (describes components of the Cloud Functions processor)
