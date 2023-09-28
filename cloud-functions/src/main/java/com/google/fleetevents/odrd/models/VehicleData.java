@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+/** Class to represent minimal information about a vehicle. */
 public class VehicleData implements Serializable {
   private String vehicleId;
   private String name;

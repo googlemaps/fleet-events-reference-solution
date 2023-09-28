@@ -13,6 +13,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
+/**
+ * Fleet Events Handler for alerting when a vehicle is a defined threshold distance in meters away
+ * from a trip or waypoint.
+ */
 public class DistanceRemainingHandler implements FleetEventHandler {
 
   private static final long DEFAULT_THRESHOLD_METERS = 1000L;

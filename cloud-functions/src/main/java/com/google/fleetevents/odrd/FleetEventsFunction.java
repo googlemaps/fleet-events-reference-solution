@@ -26,8 +26,8 @@ import com.google.fleetevents.odrd.handlers.TripStatusHandler;
 import java.io.IOException;
 
 /**
- * Default fleet events function implementation. Modify for custom logic. Register Fleet Event
- * handlers here. Entrypoint class for Cloud Functions.
+ * Default fleet events function implementation for ODRD. Modify for custom logic. Register Fleet
+ * Event handlers here. Entrypoint class for Cloud Functions.
  */
 public class FleetEventsFunction extends FleetEventsFunctionBase {
 

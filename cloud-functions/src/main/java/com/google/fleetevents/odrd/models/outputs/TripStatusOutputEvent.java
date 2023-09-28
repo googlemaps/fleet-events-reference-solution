@@ -4,6 +4,7 @@ import com.google.cloud.Timestamp;
 import com.google.fleetevents.common.models.OutputEvent;
 import java.util.Objects;
 
+/** OutputEvent for trip status changes. */
 public class TripStatusOutputEvent extends OutputEvent {
   private String tripId;
   private String oldTripStatus;

@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+/** Class to represent minimal information for a trip waypoint. */
 public class TripWaypointData implements Serializable {
   private String vehicleId;
   private String tripId;

@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.annotation.Nullable;
 
+/** Class to represent internal state changes for a vehicle. */
 @AutoValue
 public abstract class VehicleFleetEvent implements FleetEvent, Serializable {
   public abstract String vehicleId();

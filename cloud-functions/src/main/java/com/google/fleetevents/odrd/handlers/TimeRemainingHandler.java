@@ -13,6 +13,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
+/**
+ * Fleet Events Handler for alerting when a vehicle is a defined threshold time in minutes away from
+ * a trip or waypoint.
+ */
 public class TimeRemainingHandler implements FleetEventHandler {
 
   private static final long DEFAULT_THRESHOLD_MILISECONDS = 5 * 60 * 1000L;

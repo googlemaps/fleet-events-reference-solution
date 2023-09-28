@@ -1,0 +1,437 @@
+[
+  {
+  "insertId": "7c96ad4425f18cbe7eb22ec8ac9a3d78",
+  "jsonPayload": {
+    "@type": "type.googleapis.com/maps.fleetengine.v1.CreateVehicleLog",
+    "response": {
+      "state": "VEHICLE_STATE_ONLINE",
+      "vehicleType": {
+        "vehicleCategory": "AUTO"
+      },
+      "currentRouteSegmentHandle": "XXXX",
+      "maximumCapacity": 4,
+      "lastLocation": {
+        "location": {
+          "latitude": 38,
+          "longitude": -122
+        },
+        "serverTime": "2023-07-17T22:36:19.408665Z"
+      },
+      "supportedTrips": [
+        "SHARED_TRIP"
+      ],
+      "name": "providers/test-123/vehicles/testVehicleIdCherry"
+    },
+    "request": {
+      "vehicleId": "testVehicleIdCherry",
+      "vehicle": {
+        "currentRouteSegmentHandle": "XXXX",
+        "lastLocation": {
+          "location": {
+            "latitude": 38,
+            "longitude": -122
+          }
+        },
+        "name": "providers/test-123/vehicles/testVehicleIdCherry",
+        "vehicleType": {
+          "vehicleCategory": "AUTO"
+        },
+        "maximumCapacity": 4,
+        "state": "VEHICLE_STATE_ONLINE"
+      },
+      "header": {
+        "regionCode": "US",
+        "languageCode": "en"
+      }
+    }
+  },
+  "resource": {
+    "type": "fleetengine.googleapis.com/Fleet",
+    "labels": {
+      "resource_container": "projects/test-123",
+      "location": "global"
+    }
+  },
+  "timestamp": "2023-07-17T22:36:19.500093Z",
+  "labels": {
+    "vehicle_id": "testVehicleIdCherry"
+  },
+  "logName": "projects/test-123/logs/fleetengine.googleapis.com%2Fcreate_vehicle",
+  "receiveTimestamp": "2023-07-17T22:36:20.172726882Z"
+},
+  {
+    "insertId": "e20637b0f668adcc5f9c5e81b73a0c02",
+    "jsonPayload": {
+      "@type": "type.googleapis.com/maps.fleetengine.v1.CreateTripLog",
+      "response": {
+        "tripType": "SHARED_TRIP",
+        "pickupPoint": {
+          "pointHandle": "XXXX"
+
+        },
+        "numberOfPassengers": 1,
+        "name": "providers/test-123/trips/testTripIdCherry1",
+        "status": "TRIP_STATUS_NEW",
+        "dropoffPoint": {
+          "pointHandle": "XXXX"
+
+        },
+        "currentRouteSegmentHandle": "XXXX"
+
+      },
+      "request": {
+        "tripId": "testTripIdCherry1",
+        "header": {
+          "regionCode": "US",
+          "languageCode": "en"
+
+        },
+        "trip": {
+          "pickupPoint": {
+            "pointHandle": "XXXX",
+            "terminalPointId": {
+            }
+
+          },
+          "dropoffPoint": {
+            "pointHandle": "XXXX",
+            "terminalPointId": {
+            }
+
+          },
+          "currentRouteSegmentHandle": "XXXX",
+          "name": "providers/test-123/trips/testTripIdCherry1",
+          "status": "TRIP_STATUS_NEW",
+          "numberOfPassengers": 1,
+          "tripType": "SHARED_TRIP"
+
+        }
+
+      }
+
+    },
+    "resource": {
+      "type": "fleetengine.googleapis.com/Fleet",
+      "labels": {
+        "location": "global",
+        "resource_container": "projects/test-123"
+
+      }
+
+    },
+    "timestamp": "2023-07-17T23:31:22.355367Z",
+    "labels": {
+      "trip_id": "testTripIdCherry1"
+
+    },
+    "logName": "projects/test-123/logs/fleetengine.googleapis.com%2Fcreate_trip",
+    "receiveTimestamp": "2023-07-17T23:31:22.532701919Z"
+  },
+  {
+      "insertId": "e20637b0f668adcc5f9c5e81b73a0c02",
+      "jsonPayload": {
+        "@type": "type.googleapis.com/maps.fleetengine.v1.CreateTripLog",
+        "response": {
+          "tripType": "SHARED_TRIP",
+          "pickupPoint": {
+            "pointHandle": "XXXX"
+
+          },
+          "numberOfPassengers": 1,
+          "name": "providers/test-123/trips/testTripIdCherry2",
+          "status": "TRIP_STATUS_NEW",
+          "dropoffPoint": {
+            "pointHandle": "XXXX"
+
+          },
+          "currentRouteSegmentHandle": "XXXX"
+
+        },
+        "request": {
+          "tripId": "testTripIdCherry2",
+          "header": {
+            "regionCode": "US",
+            "languageCode": "en"
+
+          },
+          "trip": {
+            "pickupPoint": {
+              "pointHandle": "XXXX",
+              "terminalPointId": {
+              }
+
+            },
+            "dropoffPoint": {
+              "pointHandle": "XXXX",
+              "terminalPointId": {
+              }
+
+            },
+            "currentRouteSegmentHandle": "XXXX",
+            "name": "providers/test-123/trips/testTripIdCherry2",
+            "status": "TRIP_STATUS_NEW",
+            "numberOfPassengers": 1,
+            "tripType": "SHARED_TRIP"
+
+          }
+
+        }
+
+      },
+      "resource": {
+        "type": "fleetengine.googleapis.com/Fleet",
+        "labels": {
+          "location": "global",
+          "resource_container": "projects/test-123"
+
+        }
+
+      },
+      "timestamp": "2023-07-17T23:31:22.355367Z",
+      "labels": {
+        "trip_id": "testTripIdCherry2"
+
+      },
+      "logName": "projects/test-123/logs/fleetengine.googleapis.com%2Fcreate_trip",
+      "receiveTimestamp": "2023-07-17T23:31:22.532701919Z"
+    },
+  {
+    "insertId": "XXXX",
+    "jsonPayload": {
+      "response": {
+        "currentRouteSegmentEndPoint": {
+          "type": "WAYPOINT_TYPE_PICKUP",
+          "tripId": "testTripIdCherry1",
+          "location": {
+            "pointHandle": "XXXX"
+          }
+        },
+        "supportedTrips": [
+          "SHARED_TRIP"
+        ],
+        "vehicleType": {
+          "vehicleCategory": "AUTO"
+        },
+        "waypoints": [
+          {
+            "eta": "2023-08-02T21:08:00.412009Z",
+            "tripId": "testTripIdCherry1",
+            "type": "WAYPOINT_TYPE_PICKUP",
+            "distanceMeters": 1100,
+            "location": {
+              "pointHandle": "XXXX"
+            }
+          },
+          {
+            "eta": "2023-08-02T21:08:00.412009Z",
+            "tripId": "testTripIdCherry2",
+            "type": "WAYPOINT_TYPE_PICKUP",
+            "distanceMeters": 50,
+            "location": {
+              "pointHandle": "XXXX"
+            }
+          },
+          {
+            "eta": "2023-08-02T21:08:00.412009Z",
+            "tripId": "testTripIdCherry2",
+            "type": "WAYPOINT_TYPE_DROP_OFF",
+            "distanceMeters": 10,
+            "location": {
+              "pointHandle": "XXXX"
+            }
+          },
+          {
+            "distanceMeters": 200,
+            "location": {
+              "pointHandle": "XXXX"
+            },
+            "type": "WAYPOINT_TYPE_DROP_OFF",
+            "tripId": "testTripIdCherry1",
+            "eta": "2023-08-02T21:15:43.412009Z"
+          }
+        ],
+        "etaToFirstWaypoint": "2023-08-02T21:04:34.283866874Z",
+        "maximumCapacity": 4,
+        "name": "providers/test-123/vehicles/testVehicleIdCherry",
+        "lastLocation": {
+          "rawLocation": {
+            "latitude": 35,
+            "longitude": -97
+          },
+          "heading": 0,
+          "location": {
+            "latitude": 35,
+            "longitude": -97
+          },
+          "serverTime": "2023-08-02T20:56:34.411286Z",
+          "speed": 13.88888888888889
+        },
+        "currentRouteSegmentHandle": "XXXX",
+        "currentTrips": [
+          "testTripIdCherry1"
+        ],
+        "state": "VEHICLE_STATE_ONLINE",
+        "remainingDistanceMeters": 1100
+      },
+      "request": {
+        "vehicleId": "testVehicleIdCherry",
+        "header": {
+          "languageCode": "en",
+          "regionCode": "US"
+        },
+        "vehicle": {
+          "lastLocation": {
+            "heading": 0,
+            "rawLocation": {
+              "latitude": 35,
+              "longitude": -97
+            },
+            "speed": 13.88888888888889,
+            "location": {
+              "latitude": 35,
+              "longitude": -97
+            }
+          },
+          "etaToFirstWaypoint": "2023-08-02T21:04:34.255167236Z",
+          "remainingDistanceMeters": 6673,
+          "currentRouteSegmentHandle": "XXXX"
+        },
+        "updateMask": "etaToFirstWaypoint,remainingDistanceMeters,lastLocation"
+      },
+      "@type": "type.googleapis.com/maps.fleetengine.v1.UpdateVehicleLog"
+    },
+    "resource": {
+      "type": "fleetengine.googleapis.com/Fleet",
+      "labels": {
+        "resource_container": "projects/test-123",
+        "location": "global"
+      }
+    },
+    "timestamp": "2023-08-02T20:56:34.621727Z",
+    "labels": {
+      "trip_id": "testTripIdCherry1",
+      "vehicle_id": "testVehicleIdCherry"
+    },
+    "logName": "projects/test-123/logs/fleetengine.googleapis.com%2Fupdate_vehicle",
+    "receiveTimestamp": "2023-08-02T20:56:34.823652816Z"
+  },
+  {
+    "insertId": "XXXX",
+    "jsonPayload": {
+      "response": {
+        "currentRouteSegmentEndPoint": {
+          "type": "WAYPOINT_TYPE_PICKUP",
+          "tripId": "testTripIdCherry1",
+          "location": {
+            "pointHandle": "XXXX"
+          }
+        },
+        "supportedTrips": [
+          "SHARED_TRIP"
+        ],
+        "vehicleType": {
+          "vehicleCategory": "AUTO"
+        },
+        "waypoints": [
+          {
+            "eta": "2023-08-02T21:08:00.412009Z",
+            "tripId": "testTripIdCherry1",
+            "type": "WAYPOINT_TYPE_PICKUP",
+            "distanceMeters": 900,
+            "location": {
+              "pointHandle": "XXXX"
+            }
+          },
+          {
+            "eta": "2023-08-02T21:08:00.412009Z",
+            "tripId": "testTripIdCherry2",
+            "type": "WAYPOINT_TYPE_PICKUP",
+            "distanceMeters": 50,
+            "location": {
+              "pointHandle": "XXXX"
+            }
+          },
+          {
+            "eta": "2023-08-02T21:08:00.412009Z",
+            "tripId": "testTripIdCherry2",
+            "type": "WAYPOINT_TYPE_DROP_OFF",
+            "distanceMeters": 10,
+            "location": {
+              "pointHandle": "XXXX"
+            }
+          },
+          {
+            "distanceMeters": 200,
+            "location": {
+              "pointHandle": "XXXX"
+            },
+            "type": "WAYPOINT_TYPE_DROP_OFF",
+            "tripId": "testTripIdCherry1",
+            "eta": "2023-08-02T21:15:43.412009Z"
+          }
+        ],
+        "etaToFirstWaypoint": "2023-08-02T21:04:34.283866874Z",
+        "maximumCapacity": 4,
+        "name": "providers/test-123/vehicles/testVehicleIdCherry",
+        "lastLocation": {
+          "rawLocation": {
+            "latitude": 35,
+            "longitude": -97
+          },
+          "heading": 0,
+          "location": {
+            "latitude": 35,
+            "longitude": -97
+          },
+          "serverTime": "2023-08-02T20:56:34.411286Z",
+          "speed": 13.88888888888889
+        },
+        "currentRouteSegmentHandle": "XXXX",
+        "currentTrips": [
+          "testTripIdCherry1"
+        ],
+        "state": "VEHICLE_STATE_ONLINE",
+        "remainingDistanceMeters": 900
+      },
+      "request": {
+        "vehicleId": "testVehicleIdCherry",
+        "header": {
+          "languageCode": "en",
+          "regionCode": "US"
+        },
+        "vehicle": {
+          "lastLocation": {
+            "heading": 0,
+            "rawLocation": {
+              "latitude": 35,
+              "longitude": -97
+            },
+            "speed": 13.88888888888889,
+            "location": {
+              "latitude": 35,
+              "longitude": -97
+            }
+          },
+          "etaToFirstWaypoint": "2023-08-02T21:04:34.255167236Z",
+          "remainingDistanceMeters": 6673,
+          "currentRouteSegmentHandle": "XXXX"
+        },
+        "updateMask": "etaToFirstWaypoint,remainingDistanceMeters,lastLocation"
+      },
+      "@type": "type.googleapis.com/maps.fleetengine.v1.UpdateVehicleLog"
+    },
+    "resource": {
+      "type": "fleetengine.googleapis.com/Fleet",
+      "labels": {
+        "resource_container": "projects/test-123",
+        "location": "global"
+      }
+    },
+    "timestamp": "2023-08-02T20:56:34.621727Z",
+    "labels": {
+      "trip_id": "testTripIdCherry1",
+      "vehicle_id": "testVehicleIdCherry"
+    },
+    "logName": "projects/test-123/logs/fleetengine.googleapis.com%2Fupdate_vehicle",
+    "receiveTimestamp": "2023-08-02T20:56:34.823652816Z"
+  }]

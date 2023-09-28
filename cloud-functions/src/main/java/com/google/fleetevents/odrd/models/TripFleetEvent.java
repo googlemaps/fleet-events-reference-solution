@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import javax.annotation.Nullable;
 
+/** Class to represent internal state changes to a trip. */
 @AutoValue
 public abstract class TripFleetEvent implements FleetEvent, Serializable {
   public abstract String tripId();

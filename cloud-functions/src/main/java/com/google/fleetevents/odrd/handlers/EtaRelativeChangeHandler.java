@@ -18,6 +18,10 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
+/**
+ * Fleet Events Handler for alerting when the eta for a trip or waypoint has a defined percentage
+ * change in the duration from its original eta.
+ */
 public class EtaRelativeChangeHandler implements FleetEventHandler {
   private static final String RELATIVE_ETA_PAIR_KEY = "relativeEtaPair";
   public static final String ORIGINAL_DURATION_MILLISECONDS = "originalDurationMilliseconds";

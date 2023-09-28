@@ -35,7 +35,7 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Logger;
 
-/** Default implementation of the fleet event creator class. Modify for custom logic. */
+/** Default implementation of the fleet event creator class for ODRD. Modify for custom logic. */
 public class FleetEventCreator extends FleetEventCreatorBase {
 
   private static FirestoreDatabaseClient db;
