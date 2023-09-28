@@ -20,7 +20,7 @@ import com.google.cloud.Timestamp;
 import com.google.fleetevents.common.models.OutputEvent;
 import java.util.Objects;
 
-/** OutputEvent for remaining distance. */
+/** OutputEvent for remaining distance for a trip/waypoint. */
 public class DistanceRemainingOutputEvent extends OutputEvent {
 
   private Long oldDistanceRemainingMeters;

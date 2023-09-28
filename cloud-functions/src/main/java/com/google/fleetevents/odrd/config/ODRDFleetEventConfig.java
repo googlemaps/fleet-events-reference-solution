@@ -4,6 +4,7 @@ import static com.google.fleetevents.common.config.FleetEventConfig.getEnvironme
 
 import java.util.logging.Logger;
 
+/** Configuration class for the ODRD reference solution. */
 public class ODRDFleetEventConfig {
   private static final Logger logger = Logger.getLogger(ODRDFleetEventConfig.class.getName());
 

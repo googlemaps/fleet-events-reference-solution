@@ -8,9 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-/*
- * Class to represent the minimal information needed about a trip to create alerts.
- * */
+/** Class to represent the minimal information needed about a trip to create alerts. */
 public class TripData implements Serializable {
 
   private String tripId;

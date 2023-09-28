@@ -23,6 +23,7 @@ import java.util.List;
  * Class for creating vehicles in Firestore based on create vehicle logs from Fleet Engine API
  * calls.
  */
+/** Transaction class to create a vehicle entity in Firestore. */
 public class CreateVehicleTransaction implements Transaction.Function<List<OutputEvent>> {
   private final List<FleetEventHandler> fleetEventHandlers;
   private final FirestoreDatabaseClient firestoreDatabaseClient;

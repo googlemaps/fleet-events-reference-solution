@@ -13,6 +13,10 @@ import google.maps.fleetengine.v1.TripStatus;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * Fleet Events Handler to create an alert whenever a trip status changes from one defined state to
+ * another.
+ */
 public class TripStatusHandler implements FleetEventHandler {
 
   @Override

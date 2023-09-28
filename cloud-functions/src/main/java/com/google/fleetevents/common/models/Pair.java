@@ -2,6 +2,12 @@ package com.google.fleetevents.common.models;
 
 import java.util.Objects;
 
+/**
+ * Pair class for serializing in Firestore.
+ *
+ * @param <K> First value
+ * @param <V> Second value
+ */
 public class Pair<K, V> {
 
   private final K key;

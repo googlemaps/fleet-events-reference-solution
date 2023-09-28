@@ -4,6 +4,10 @@ import com.google.cloud.Timestamp;
 import com.google.fleetevents.common.models.OutputEvent;
 import java.util.Objects;
 
+/**
+ * OutputEvent for relative eta change handler for a trip/waypoint. When waypoints in a trip are
+ * detected as changed, metadata for the eta is reset.
+ */
 public class EtaRelativeChangeOutputEvent extends OutputEvent {
 
   private Timestamp originalEta;

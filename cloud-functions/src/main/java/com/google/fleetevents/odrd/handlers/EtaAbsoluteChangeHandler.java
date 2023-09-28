@@ -16,6 +16,10 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
+/**
+ * Fleet Events Handler for alerting when the eta for a trip or waypoint has a defined threshold in
+ * minutes change to its original eta.
+ */
 public class EtaAbsoluteChangeHandler implements FleetEventHandler {
   private static final String ORIGINAL_ETA_KEY = "originalEta";
   private static final long DEFAULT_THRESHOLD_MILISECONDS = 5 * 60 * 1000;

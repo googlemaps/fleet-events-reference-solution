@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/** Transaction class to create a trip entity in Firestore. */
 public class CreateTripTransaction implements Transaction.Function<List<OutputEvent>> {
   private final List<FleetEventHandler> fleetEventHandlers;
   private final DocumentReference newTripDocRef;

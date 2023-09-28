@@ -15,6 +15,10 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
 
+/**
+ * FleetEventHandler that alerts when a task's state has changed. Note that if the state change is
+ * an invalid value, the handler will log the state change as an warning instead of alerting.
+ */
 public class TaskStateHandler implements FleetEventHandler {
 
   private static final Logger logger = Logger.getLogger(TaskStateHandler.class.getName());

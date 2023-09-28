@@ -2,6 +2,7 @@ package com.google.fleetevents.lmfs.models;
 
 import java.util.Objects;
 
+/** Class to represent latitude and longitude coordinates. */
 public class LatLng {
   private Double latitude;
 
