@@ -135,6 +135,13 @@ variable "FLEETEVENTS_FUNCTION_NAME" {
   type        = string
   description = "sample function to run."
   default     = "TASK_OUTCOME_CHANGE"
+  validation {
+    condition = contains([
+      "TASK_OUTCOME_CHANGE",
+      "VEHICLE_NOT_UPDATING"
+    ], var.FLEETEVENTS_FUNCTION_NAME)
+    error_message = "choose one of the valid functions"
+  }
 }
 
 variable "FLEETEVENTS_GAP_SIZE" {
