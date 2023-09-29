@@ -18,7 +18,7 @@ output "network" {
     subnetwork = google_compute_subnetwork.vpc-subnetwork
     # ingress    = google_compute_firewall.firewall_rule_ingress
     # egress     = google_compute_firewall.firewall_rule_egress
-  
+
   }
 }
 output "pipeline" {

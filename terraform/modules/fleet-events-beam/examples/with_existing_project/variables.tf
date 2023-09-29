@@ -31,15 +31,14 @@ variable "GCP_REGION" {
 variable "GCP_REGION_FIRESTORE" {
   type        = string
   description = "Refer to https://cloud.google.com/firestore/docs/locations to choose GCP Region for Firestore. If not set, will use value of GCP_REGION."
-  #default     = "nam5"
-  nullable = true
+  default     = "nam5"
+  nullable    = true
 }
-
 variable "FLEETEVENTS_FUNCTION_NAME" {
-  type = string
+  type        = string
   description = "Fleet Event function that you'd like to run. Refer to beam/README.md for possible values."
-  default = "TASK_OUTCOME_CHANGE"
-  nullable = false
+  default     = "TASK_OUTCOME_CHANGE"
+  nullable    = false
 }
 
 
