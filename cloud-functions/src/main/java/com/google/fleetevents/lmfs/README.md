@@ -5,7 +5,7 @@ a Cloud Function that you can use to get alerts on state changes to Delivery
 Vehicles and Tasks in the Last Mile Fleet Solution (LMFS) product.
 
 <figure id = "image-1">
-  <img src = "../../../../../resources/img/Fleet%20Events%20Overview.jpg"
+  <img src = "../../../../../resources/img/Fleet%20Events%20Overview%20LMFS.jpg"
   width = "100%"
   alt = "Flow chart detailing how Fleet Events processes incoming cloud logs.">
   <figcaption><b>Figure 1.</b> Flow chart of Fleet Events.</figcaption>
