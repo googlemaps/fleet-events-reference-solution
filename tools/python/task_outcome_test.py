@@ -19,7 +19,7 @@ from main import *
 Tests the TaskOutcome handler with simulated data.
 """
 
-PLAN = "./data/task_outcome_change.json"
+PLAN = "./data/lmfs/task_outcome_change.json"
 TASK_OUTCOME_SUBSCRIPTION_NAME = "task_outcome_test_" + UUID
 TASK_OUTCOME_OUTPUT_TAG = "TaskOutcomeOutputEvent"
 

@@ -33,14 +33,12 @@ variable "TOPIC_FLEETENGINE_LOG" {
   description = "Pub/Sub Topic to which Fleet Engine logs are published following Cloud Logging setup."
   nullable    = false
 }
-
 variable "GCP_REGION" {
   type        = string
   description = "Default GCP region for Cloud resources"
   nullable    = false
   default     = "us-central1"
 }
-
 variable "GCP_REGION_FUNCTIONS" {
   type        = string
   description = "Refer to https://cloud.google.com/functions/docs/locations to choose GCP Region for Function deployment. If not set, the value of GCP_REGION will be applied."
@@ -81,4 +79,14 @@ variable "TOPIC_FLEETEVENTS_OUTPUT" {
   description = "An \"Existing\" Pub/Sub Topic to which the deployed function will be publishing events."
   nullable    = false
   default     = "fleetevents-fn-output"
+}
+variable "MOBILITY_SOLUTION" {
+  type        = string
+  description = "Mobility solution of use : either LMFS or ODRD"
+  nullable    = false
+  default     = "LMFS"
+  validation {
+    condition     = contains(["ODRD", "LMFS"], var.MOBILITY_SOLUTION)
+    error_message = "Allowed values are 'LMFS' or 'ODRD'"
+  }
 }

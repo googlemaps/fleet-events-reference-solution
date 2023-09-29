@@ -51,9 +51,10 @@ resource "google_pubsub_topic_iam_member" "fleetengine-logging-sink-topic-publis
 ### default subscription for topic so that data since creation of the topic can be captured.
 resource "google_pubsub_subscription" "fleetengine-logging-subscription-default" {
   project = local.logging_sink_project_id
-  name    = "fleetengine-logging-subscription-default"
-  topic   = google_pubsub_topic.fleetengine-logging-sink-pubsub[0].name
-  labels  = local.labels_common
+  #name    = "fleetengine-logging-subscription-default"
+  name   = format("%s-subscription-default", google_pubsub_topic.fleetengine-logging-sink-pubsub[0].name)
+  topic  = google_pubsub_topic.fleetengine-logging-sink-pubsub[0].name
+  labels = local.labels_common
 
   # 20 minutes
   message_retention_duration = "1200s"
@@ -88,9 +89,10 @@ resource "google_project_service" "services_bqsub_prereq_bigquery" {
 resource "google_pubsub_subscription" "fleetengine-logging-subscription-bigquery" {
 
   project = local.logging_sink_project_id
-  name    = "fleetengine-logging-subscription-bigquery"
-  topic   = google_pubsub_topic.fleetengine-logging-sink-pubsub[0].name
-  labels  = local.labels_common
+  #name    = "fleetengine-logging-subscription-bigquery"
+  name   = format("%s-subscription-bigquery", google_pubsub_topic.fleetengine-logging-sink-pubsub[0].name)
+  topic  = google_pubsub_topic.fleetengine-logging-sink-pubsub[0].name
+  labels = local.labels_common
   bigquery_config {
     table = format(
       "%s:%s.%s",
@@ -119,12 +121,14 @@ resource "google_project_iam_member" "bq_data_editor" {
 }
 
 resource "google_bigquery_dataset" "fleetengine-logging-sink-pubsub-bq" {
-  project               = local.logging_sink_project_id
-  dataset_id            = format("%s_pubsub", var.BQ_DATASET)
-  description           = format("BigQuery subscription to Fleet Engine log stream into Pub/Sub")
-  max_time_travel_hours = "168"
-  count                 = var.FLAG_SETUP_LOGGING_PUBSUB && var.FLAG_SETUP_LOGGING_PUBSUB_SUB_BQ ? 1 : 0
-  labels                = local.labels_common
+  project                    = local.logging_sink_project_id
+  dataset_id                 = format("%s_pubsub", replace(var.PUBSUB_TOPIC_NAME, "-", "_"))
+  description                = format("BigQuery subscription to Fleet Engine log stream into Pub/Sub")
+  max_time_travel_hours      = "168"
+  count                      = var.FLAG_SETUP_LOGGING_PUBSUB && var.FLAG_SETUP_LOGGING_PUBSUB_SUB_BQ ? 1 : 0
+  labels                     = local.labels_common
+  location                   = var.GCP_REGION
+  delete_contents_on_destroy = true
 }
 
 resource "google_bigquery_table" "fleetengine-logging-sink-pubsub-bq-table" {
@@ -174,7 +178,7 @@ EOF
 
 resource "google_logging_project_sink" "fleetengine-logrouter-pubsub" {
   project                = local.logging_src_project_id
-  name                   = format("fleetengine-logrouter-to-pubsub-%s", local.logging_sink_project_number)
+  name                   = format("fleetengine-logrouter-to-pubsub-%s-%s", local.logging_sink_project_number, var.PUBSUB_TOPIC_NAME)
   description            = format("Logging -> Pub/Sub (dest proj : %s, %s)", local.logging_sink_project_id, local.logging_sink_project_number)
   destination            = format("pubsub.googleapis.com/%s", google_pubsub_topic.fleetengine-logging-sink-pubsub[0].id)
   filter                 = local.logging_filter

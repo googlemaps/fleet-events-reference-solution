@@ -18,6 +18,7 @@ package com.google.fleetevents.util;
 
 import static org.junit.Assert.assertEquals;
 
+import com.google.fleetevents.common.util.NameFormatter;
 import org.junit.Test;
 
 /** Tests for name formatter. */

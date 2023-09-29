@@ -16,8 +16,8 @@
 
 package com.google.fleetevents;
 
+import com.google.fleetevents.common.models.pubsub.PubSubBody;
 import com.google.fleetevents.helpers.FleetEventsTestHelper;
-import com.google.fleetevents.models.pubsub.PubSubBody;
 import com.google.gson.Gson;
 import com.google.protobuf.util.JsonFormat;
 import io.cloudevents.CloudEvent;

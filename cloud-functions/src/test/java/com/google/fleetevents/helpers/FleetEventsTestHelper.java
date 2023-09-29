@@ -17,8 +17,8 @@
 package com.google.fleetevents.helpers;
 
 import com.google.cloud.firestore.GeoPoint;
-import com.google.fleetevents.models.DeliveryVehicleData;
-import com.google.fleetevents.util.ProtoParser;
+import com.google.fleetevents.common.util.ProtoParser;
+import com.google.fleetevents.lmfs.models.DeliveryVehicleData;
 import com.google.logging.v2.LogEntry;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.util.JsonFormat;
@@ -43,6 +43,55 @@ public final class FleetEventsTestHelper {
         Files.readString(
             Paths.get("src/test/resources/logs/createDeliveryVehicleLog_1.json"),
             Charset.defaultCharset());
+    return getLogEntry(fileContent);
+  }
+
+  public static LogEntry createVehicleLog1() throws IOException {
+    String fileContent =
+        Files.readString(
+            Paths.get("src/test/resources/logs/createVehicleLog_1.json"), Charset.defaultCharset());
+    return getLogEntry(fileContent);
+  }
+
+  public static LogEntry createTripLog1() throws IOException {
+    String fileContent =
+        Files.readString(
+            Paths.get("src/test/resources/logs/createTripLog_1.json"), Charset.defaultCharset());
+    return getLogEntry(fileContent);
+  }
+
+  public static LogEntry updateVehicleLog1() throws IOException {
+    String fileContent =
+        Files.readString(
+            Paths.get("src/test/resources/logs/updateVehicleLog_1.json"), Charset.defaultCharset());
+    return getLogEntry(fileContent);
+  }
+
+  public static LogEntry updateVehicleLog2() throws IOException {
+    String fileContent =
+        Files.readString(
+            Paths.get("src/test/resources/logs/updateVehicleLog_2.json"), Charset.defaultCharset());
+    return getLogEntry(fileContent);
+  }
+
+  public static LogEntry updateVehicleLog3() throws IOException {
+    String fileContent =
+        Files.readString(
+            Paths.get("src/test/resources/logs/updateVehicleLog_3.json"), Charset.defaultCharset());
+    return getLogEntry(fileContent);
+  }
+
+  public static LogEntry updateTripLog1() throws IOException {
+    String fileContent =
+        Files.readString(
+            Paths.get("src/test/resources/logs/updateTripLog_1.json"), Charset.defaultCharset());
+    return getLogEntry(fileContent);
+  }
+
+  public static LogEntry updateTripLog2() throws IOException {
+    String fileContent =
+        Files.readString(
+            Paths.get("src/test/resources/logs/updateTripLog_2.json"), Charset.defaultCharset());
     return getLogEntry(fileContent);
   }
 

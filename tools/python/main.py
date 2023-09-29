@@ -126,4 +126,4 @@ if __name__ == '__main__':
           .format(project_id=args.project_id, topic_id=args.topic_id))
     f = open(args.plan)
     data = json.load(f)
-    publish_messages(args.project_id, args.topic_id, tag=PUBLISHER_SUBSCRIPTION_NAME, fleet_logs=data, sleep_time=0)
+    publish_messages(args.project_id, args.topic_id, tag=PUBLISHER_SUBSCRIPTION_NAME, fleet_logs=data, sleep_time=2)

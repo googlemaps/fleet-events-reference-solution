@@ -1,0 +1,57 @@
+{
+    "name": "FleetEvents",
+    "description": "An Apache Beam streaming pipeline for Fleet Events",
+    "parameters": [
+        {
+            "name": "functionName",
+            "label": "Function Name",
+            "helpText": "Choose the sample function to run.",
+            "isOptional": false,
+            "regexes": [
+                "TASK_OUTCOME_CHANGE|VEHICLE_NOT_UPDATING"
+            ]
+        },
+        {
+            "name": "datastoreProjectId",
+            "label": "Firestore Project",
+            "helpText": "Choose the gcp project with firestore.",
+            "isOptional": false
+        },
+        {
+            "name": "databaseId",
+            "label": "Firestore Database",
+            "helpText": "Choose the database.",
+            "isOptional": false
+        },
+        {
+            "name": "inputTopic",
+            "label": "Input Pub/Sub Topic",
+            "helpText": "The Cloud Pub/Sub topic to read from.",
+            "isOptional": false
+        },
+        {
+            "name": "outputTopic",
+            "label": "Output Pub/Sub Topic",
+            "helpText": "Path of the output Pub/Sub topic.",
+            "isOptional": false
+        },
+        {
+            "name": "gapSize",
+            "label": "Gap size",
+            "helpText": "How long to wait (in minutes) before considering a Vehicle to be offline.",
+            "isOptional": true,
+            "regexes": [
+                "^[0-9]+"
+            ]
+        },
+        {
+            "name": "windowSize",
+            "label": "Window size",
+            "helpText": "Window size to use to process events, in minutes. This parameter does not apply to VEHICLE_NOT_UPDATING jobs.",
+            "isOptional": true,
+            "regexes": [
+                "^[0-9]+"
+            ]
+        }
+    ]
+}

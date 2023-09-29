@@ -1,0 +1,229 @@
+[{
+  "insertId": "e20637b0f668adcc5f9c5e81b73a0c02",
+  "jsonPayload": {
+    "@type": "type.googleapis.com/maps.fleetengine.v1.CreateTripLog",
+    "response": {
+      "tripType": "EXCLUSIVE_TRIP",
+      "pickupPoint": {
+        "pointHandle": "XXXX"
+
+      },
+      "intermediateDestinations": [
+        {
+          "pointHandle": "XXXX",
+          "terminalPointId": {
+          }
+        }
+      ],
+      "numberOfPassengers": 1,
+      "name": "providers/test-123/trips/testTripId1red",
+      "status": "TRIP_STATUS_NEW",
+      "dropoffPoint": {
+        "pointHandle": "XXXX"
+
+      },
+      "currentRouteSegmentHandle": "XXXX"
+
+    },
+    "request": {
+      "tripId": "testTripId1red",
+      "header": {
+        "regionCode": "US",
+        "languageCode": "en"
+
+      },
+      "trip": {
+        "pickupPoint": {
+          "pointHandle": "XXXX",
+          "terminalPointId": {
+          }
+
+        },
+        "intermediateDestinations": [
+          {
+            "pointHandle": "XXXX",
+            "terminalPointId": {
+            }
+          }
+        ],
+        "dropoffPoint": {
+          "pointHandle": "XXXX",
+          "terminalPointId": {
+          }
+
+        },
+        "currentRouteSegmentHandle": "XXXX",
+        "name": "providers/test-123/trips/testTripId1red",
+        "status": "TRIP_STATUS_NEW",
+        "numberOfPassengers": 1,
+        "tripType": "EXCLUSIVE_TRIP"
+
+      }
+    }
+  },
+  "resource": {
+    "type": "fleetengine.googleapis.com/Fleet",
+    "labels": {
+      "location": "global",
+      "resource_container": "projects/test-123"
+
+    }
+
+  },
+  "timestamp": "2023-07-01T23:31:22.355367Z",
+  "labels": {
+    "trip_id": "testTripId1red"
+
+  },
+  "logName": "projects/test-123/logs/fleetengine.googleapis.com%2Fcreate_trip",
+  "receiveTimestamp": "2023-07-01T23:31:22.532701919Z"
+},
+  {
+  "insertId": "XXXX",
+  "jsonPayload": {
+    "@type": "type.googleapis.com/maps.fleetengine.v1.UpdateTripLog",
+    "request": {
+      "tripId": "testTripId1red",
+      "updateMask": "vehicleId",
+      "trip": {
+        "currentRouteSegmentHandle": "XXXX",
+        "vehicleId": "testVehicleId1"
+      },
+      "header": {
+        "regionCode": "US",
+        "languageCode": "en"
+      }
+    },
+    "response": {
+      "tripType": "EXCLUSIVE_TRIP",
+      "name": "providers/test-123/trips/testTripId1red",
+      "lastLocation": {
+        "serverTime": "2023-07-02T21:00:13.924958Z",
+        "rawLocation": {
+          "latitude": 35.48063763396009,
+          "longitude": -97.51493318436255
+        },
+        "speed": 13.88888888888889,
+        "location": {
+          "latitude": 35,
+          "longitude": -97
+        },
+        "heading": 0
+      },
+      "vehicleId": "testVehicleId1",
+      "remainingTimeToFirstWaypoint": "418.958886s",
+      "currentRouteSegmentHandle": "XXXX",
+      "numberOfPassengers": 1,
+      "etaToFirstWaypoint": "2023-07-02T21:07:15.281274Z",
+      "currentRouteSegmentEndPoint": {
+        "tripId": "testTripId1red",
+        "type": "WAYPOINT_TYPE_PICKUP",
+        "location": {
+          "pointHandle": "XXXX"
+        }
+      },
+      "pickupPoint": {
+        "pointHandle": "AdSiwAwD0ko4HMvu8g/ulnX5PwzQhvUqJG564tiJaNO9UD0dlTEVthmVJhZcOVLlsg67CPJf+EOJsf1bmiRH5E8iRi7btOC82I1OyofKvYiMJJzW"
+      },
+      "currentRouteSegmentTraffic": {
+        "speedReadingInterval": []
+      },
+      "dropoffTime": "2023-07-02T21:20:51.281274Z",
+      "status": "TRIP_STATUS_ENROUTE_TO_PICKUP",
+      "pickupTime": "2023-07-02T21:07:15.281274Z",
+      "remainingDistanceMeters": 3213,
+      "dropoffPoint": {
+        "pointHandle": "XXXX"
+      }
+    }
+  },
+  "resource": {
+    "type": "fleetengine.googleapis.com/Fleet",
+    "labels": {
+      "resource_container": "projects/test-123",
+      "location": "global"
+    }
+  },
+  "timestamp": "2023-07-02T21:00:16.691814Z",
+  "labels": {
+    "vehicle_id": "testVehicleId1",
+    "trip_id": "testTripId1red"
+  },
+  "logName": "projects/test-123/logs/fleetengine.googleapis.com%2Fupdate_trip",
+  "receiveTimestamp": "2023-07-02T21:00:17.046728352Z"
+},
+{
+  "insertId": "XXXX",
+  "jsonPayload": {
+    "@type": "type.googleapis.com/maps.fleetengine.v1.UpdateTripLog",
+    "request": {
+      "tripId": "testTripId1red",
+      "updateMask": "vehicleId",
+      "trip": {
+        "currentRouteSegmentHandle": "XXXX",
+        "vehicleId": "testVehicleId1"
+      },
+      "header": {
+        "regionCode": "US",
+        "languageCode": "en"
+      }
+    },
+    "response": {
+      "tripType": "EXCLUSIVE_TRIP",
+      "name": "providers/test-123/trips/testTripId1red",
+      "lastLocation": {
+        "serverTime": "2023-07-03T21:00:13.924958Z",
+        "rawLocation": {
+          "latitude": 35.48063763396009,
+          "longitude": -97.51493318436255
+        },
+        "speed": 13.88888888888889,
+        "location": {
+          "latitude": 35,
+          "longitude": -97
+        },
+        "heading": 0
+      },
+      "vehicleId": "testVehicleId1",
+      "remainingTimeToFirstWaypoint": "418.958886s",
+      "currentRouteSegmentHandle": "XXXX",
+      "numberOfPassengers": 1,
+      "etaToFirstWaypoint": "2023-07-03T21:07:15.281274Z",
+      "currentRouteSegmentEndPoint": {
+        "tripId": "testTripId1red",
+        "type": "WAYPOINT_TYPE_PICKUP",
+        "location": {
+          "pointHandle": "XXXX"
+        }
+      },
+      "pickupPoint": {
+        "pointHandle": "AdSiwAwD0ko4HMvu8g/ulnX5PwzQhvUqJG564tiJaNO9UD0dlTEVthmVJhZcOVLlsg67CPJf+EOJsf1bmiRH5E8iRi7btOC82I1OyofKvYiMJJzW"
+      },
+      "currentRouteSegmentTraffic": {
+        "speedReadingInterval": []
+      },
+      "dropoffTime": "2023-07-03T21:20:51.281274Z",
+      "status": "TRIP_STATUS_CANCELED",
+      "pickupTime": "2023-07-03T21:07:15.281274Z",
+      "remainingDistanceMeters": 3213,
+      "dropoffPoint": {
+        "pointHandle": "XXXX"
+      }
+    }
+  },
+  "resource": {
+    "type": "fleetengine.googleapis.com/Fleet",
+    "labels": {
+      "resource_container": "projects/test-123",
+      "location": "global"
+    }
+  },
+  "timestamp": "2023-07-03T21:00:16.691814Z",
+  "labels": {
+    "vehicle_id": "testVehicleId1",
+    "trip_id": "testTripId1red"
+  },
+  "logName": "projects/test-123/logs/fleetengine.googleapis.com%2Fupdate_trip",
+  "receiveTimestamp": "2023-07-03T21:00:17.046728352Z"
+}
+]

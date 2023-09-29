@@ -19,6 +19,7 @@ package com.google.fleetevents.util;
 import static org.junit.Assert.assertEquals;
 
 import com.google.fleetevents.CloudEventTestData;
+import com.google.fleetevents.common.util.ProtoParser;
 import com.google.logging.v2.LogEntry;
 import com.google.protobuf.Int32Value;
 import google.maps.fleetengine.delivery.v1.DeliveryVehicle;

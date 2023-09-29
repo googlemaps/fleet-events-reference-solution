@@ -25,7 +25,7 @@ variable "PROJECT_LOGGINGSYNC" {
 }
 variable "RETENTION" {
   type        = number
-  description = "Data retention period in days"
+  description = "Data retention period in days. Note that retention <= 30 days is required for storage of Maps data"
   default     = 30
   nullable    = false
 }

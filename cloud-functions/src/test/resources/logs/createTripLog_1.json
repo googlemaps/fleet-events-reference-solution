@@ -1,0 +1,82 @@
+{
+  "insertId": "e20637b0f668adcc5f9c5e81b73a0c02",
+  "jsonPayload": {
+    "@type": "type.googleapis.com/maps.fleetengine.v1.CreateTripLog",
+    "response": {
+      "tripType": "EXCLUSIVE_TRIP",
+      "pickupPoint": {
+        "pointHandle": "XXXX"
+
+      },
+      "intermediateDestinations": [
+        {
+          "pointHandle": "XXXX",
+          "terminalPointId": {
+          }
+        }
+      ],
+      "numberOfPassengers": 1,
+      "name": "providers/test-123/trips/testTripId1",
+      "status": "TRIP_STATUS_NEW",
+      "dropoffPoint": {
+        "pointHandle": "XXXX"
+
+      },
+      "currentRouteSegmentHandle": "XXXX"
+
+    },
+    "request": {
+      "tripId": "testTripId1",
+      "header": {
+        "regionCode": "US",
+        "languageCode": "en"
+
+      },
+      "trip": {
+        "pickupPoint": {
+          "pointHandle": "XXXX",
+          "terminalPointId": {
+          }
+
+        },
+        "intermediateDestinations": [
+          {
+            "pointHandle": "XXXX",
+            "terminalPointId": {
+            }
+          }
+        ],
+        "dropoffPoint": {
+          "pointHandle": "XXXX",
+          "terminalPointId": {
+          }
+
+        },
+        "currentRouteSegmentHandle": "XXXX",
+        "name": "providers/test-123/trips/testTripId1",
+        "status": "TRIP_STATUS_NEW",
+        "numberOfPassengers": 1,
+        "tripType": "EXCLUSIVE_TRIP"
+
+      }
+
+    }
+
+  },
+  "resource": {
+    "type": "fleetengine.googleapis.com/Fleet",
+    "labels": {
+      "location": "global",
+      "resource_container": "projects/test-123"
+
+    }
+
+  },
+  "timestamp": "2023-07-17T23:31:22.355367Z",
+  "labels": {
+    "trip_id": "testTripId1"
+
+  },
+  "logName": "projects/test-123/logs/fleetengine.googleapis.com%2Fcreate_trip",
+  "receiveTimestamp": "2023-07-17T23:31:22.532701919Z"
+}
