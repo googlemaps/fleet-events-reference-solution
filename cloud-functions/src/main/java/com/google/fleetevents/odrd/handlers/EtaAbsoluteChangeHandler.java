@@ -26,6 +26,7 @@ import com.google.fleetevents.common.models.OutputEvent;
 import com.google.fleetevents.common.util.TimeUtil;
 import com.google.fleetevents.odrd.models.TripFleetEvent;
 import com.google.fleetevents.odrd.models.outputs.EtaAbsoluteChangeOutputEvent;
+import com.google.fleetevents.odrd.models.outputs.EtaAssignedOutputEvent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -132,8 +133,15 @@ public class EtaAbsoluteChangeHandler implements FleetEventHandler {
           optionalEtaOutputEvent = Optional.of(etaOutputEvent);
         }
       } else {
-        var originalEta = differences.get("eta").newValue;
+        var originalEta = (Timestamp) differences.get("eta").newValue;
         eventMetadata.put(ORIGINAL_ETA_KEY, originalEta);
+        var assignedEtaOutputEvent = new EtaAssignedOutputEvent();
+        assignedEtaOutputEvent.setIdentifier(identifier);
+        assignedEtaOutputEvent.setAssignedEta(originalEta);
+        assignedEtaOutputEvent.setIsTripOutputEvent(isTripOutputEvent);
+        assignedEtaOutputEvent.setEventTimestamp(eventTimestamp);
+        assignedEtaOutputEvent.setFleetEvent(fleetEvent);
+        optionalEtaOutputEvent = Optional.of(assignedEtaOutputEvent);
       }
     }
     return optionalEtaOutputEvent;
