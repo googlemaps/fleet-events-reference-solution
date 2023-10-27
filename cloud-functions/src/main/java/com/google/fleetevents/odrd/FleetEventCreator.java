@@ -21,15 +21,20 @@ import com.google.common.collect.ImmutableList;
 import com.google.fleetengine.auth.token.factory.signer.SignerInitializationException;
 import com.google.fleetevents.FleetEventCreatorBase;
 import com.google.fleetevents.FleetEventHandler;
+import com.google.fleetevents.common.config.FleetEventConfig;
 import com.google.fleetevents.common.database.FirestoreDatabaseClient;
 import com.google.fleetevents.common.models.OutputEvent;
 import com.google.fleetevents.common.util.FleetEngineClient;
+import com.google.fleetevents.common.util.ProtoParser;
+import com.google.fleetevents.lmfs.transactions.UpdateWatermarkTransaction;
 import com.google.fleetevents.odrd.transactions.CreateTripTransaction;
 import com.google.fleetevents.odrd.transactions.CreateVehicleTransaction;
 import com.google.fleetevents.odrd.transactions.UpdateTripTransaction;
 import com.google.fleetevents.odrd.transactions.UpdateVehicleTransaction;
 import com.google.logging.v2.LogEntry;
 import com.google.protobuf.InvalidProtocolBufferException;
+import google.maps.fleetengine.v1.Trip;
+import google.maps.fleetengine.v1.Vehicle;
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -70,6 +75,12 @@ public class FleetEventCreator extends FleetEventCreatorBase {
       case CREATE_VEHICLE_LOG_NAME:
         {
           logger.info("Create Vehicle Log processing");
+          if (FleetEventConfig.measureOutOfOrder()) {
+            Vehicle vehicle =
+                ProtoParser.parseLogEntryResponse(logEntry, Vehicle.getDefaultInstance());
+            db.runTransaction(
+                new UpdateWatermarkTransaction(vehicle.getName(), logEntry, getDatabase()));
+          }
           ApiFuture<List<OutputEvent>> createVehicleResult =
               db.runTransaction(
                   new CreateVehicleTransaction(logEntry, fleetEventHandlers, getDatabase()));
@@ -79,6 +90,12 @@ public class FleetEventCreator extends FleetEventCreatorBase {
       case UPDATE_VEHICLE_LOG_NAME:
         {
           logger.info("Update Vehicle Log processing");
+          if (FleetEventConfig.measureOutOfOrder()) {
+            Vehicle vehicle =
+                ProtoParser.parseLogEntryResponse(logEntry, Vehicle.getDefaultInstance());
+            db.runTransaction(
+                new UpdateWatermarkTransaction(vehicle.getName(), logEntry, getDatabase()));
+          }
           ApiFuture<List<OutputEvent>> updateVehicleResult =
               db.runTransaction(
                   new UpdateVehicleTransaction(logEntry, fleetEventHandlers, getDatabase()));
@@ -88,6 +105,11 @@ public class FleetEventCreator extends FleetEventCreatorBase {
       case CREATE_TRIP_LOG_NAME:
         {
           logger.info("Create Trip Log processing");
+          if (FleetEventConfig.measureOutOfOrder()) {
+            Trip trip = ProtoParser.parseLogEntryResponse(logEntry, Trip.getDefaultInstance());
+            db.runTransaction(
+                new UpdateWatermarkTransaction(trip.getName(), logEntry, getDatabase()));
+          }
           ApiFuture<List<OutputEvent>> createTripResult =
               db.runTransaction(
                   new CreateTripTransaction(logEntry, fleetEventHandlers, getDatabase()));
@@ -97,6 +119,11 @@ public class FleetEventCreator extends FleetEventCreatorBase {
       case UPDATE_TRIP_LOG_NAME:
         {
           logger.info("Update Trip Log processing");
+          if (FleetEventConfig.measureOutOfOrder()) {
+            Trip trip = ProtoParser.parseLogEntryResponse(logEntry, Trip.getDefaultInstance());
+            db.runTransaction(
+                new UpdateWatermarkTransaction(trip.getName(), logEntry, getDatabase()));
+          }
           ApiFuture<List<OutputEvent>> updateTripResult =
               db.runTransaction(
                   new UpdateTripTransaction(logEntry, fleetEventHandlers, getDatabase()));

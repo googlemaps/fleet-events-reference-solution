@@ -42,12 +42,10 @@ import com.google.fleetevents.odrd.transactions.CreateTripTransaction;
 import com.google.fleetevents.odrd.transactions.UpdateTripTransaction;
 import com.google.logging.v2.LogEntry;
 import com.google.protobuf.InvalidProtocolBufferException;
-import google.maps.fleetengine.delivery.v1.CreateDeliveryVehicleRequest;
-import google.maps.fleetengine.delivery.v1.CreateTaskRequest;
 import google.maps.fleetengine.delivery.v1.DeliveryVehicle;
 import google.maps.fleetengine.delivery.v1.Task;
-import google.maps.fleetengine.delivery.v1.UpdateDeliveryVehicleRequest;
-import google.maps.fleetengine.delivery.v1.UpdateTaskRequest;
+import google.maps.fleetengine.v1.Trip;
+import google.maps.fleetengine.v1.Vehicle;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -135,9 +133,7 @@ public abstract class FleetEventCreatorBase {
           logger.info("Create Delivery Vehicle Log processing");
           if (FleetEventConfig.measureOutOfOrder()) {
             DeliveryVehicle deliveryVehicle =
-                ProtoParser.parseLogEntryRequest(
-                        logEntry, CreateDeliveryVehicleRequest.getDefaultInstance())
-                    .getDeliveryVehicle();
+                ProtoParser.parseLogEntryResponse(logEntry, DeliveryVehicle.getDefaultInstance());
             db.runTransaction(
                 new UpdateWatermarkTransaction(deliveryVehicle.getName(), logEntry, getDatabase()));
           }
@@ -154,9 +150,7 @@ public abstract class FleetEventCreatorBase {
           logger.info("Update Delivery Vehicle Log processing");
           if (FleetEventConfig.measureOutOfOrder()) {
             DeliveryVehicle deliveryVehicle =
-                ProtoParser.parseLogEntryRequest(
-                        logEntry, UpdateDeliveryVehicleRequest.getDefaultInstance())
-                    .getDeliveryVehicle();
+                ProtoParser.parseLogEntryResponse(logEntry, DeliveryVehicle.getDefaultInstance());
             db.runTransaction(
                 new UpdateWatermarkTransaction(deliveryVehicle.getName(), logEntry, getDatabase()));
           }
@@ -171,9 +165,7 @@ public abstract class FleetEventCreatorBase {
         {
           logger.info("Create Task Log processing");
           if (FleetEventConfig.measureOutOfOrder()) {
-            Task task =
-                ProtoParser.parseLogEntryRequest(logEntry, CreateTaskRequest.getDefaultInstance())
-                    .getTask();
+            Task task = ProtoParser.parseLogEntryResponse(logEntry, Task.getDefaultInstance());
             db.runTransaction(
                 new UpdateWatermarkTransaction(task.getName(), logEntry, getDatabase()));
           }
@@ -199,9 +191,7 @@ public abstract class FleetEventCreatorBase {
         {
           logger.info("Update Task Log processing");
           if (FleetEventConfig.measureOutOfOrder()) {
-            Task task =
-                ProtoParser.parseLogEntryRequest(logEntry, UpdateTaskRequest.getDefaultInstance())
-                    .getTask();
+            Task task = ProtoParser.parseLogEntryResponse(logEntry, Task.getDefaultInstance());
             db.runTransaction(
                 new UpdateWatermarkTransaction(task.getName(), logEntry, getDatabase()));
           }
@@ -214,6 +204,12 @@ public abstract class FleetEventCreatorBase {
       case CREATE_VEHICLE_LOG_NAME:
         {
           logger.info("Create Vehicle Log processing");
+          if (FleetEventConfig.measureOutOfOrder()) {
+            Vehicle vehicle =
+                ProtoParser.parseLogEntryResponse(logEntry, Vehicle.getDefaultInstance());
+            db.runTransaction(
+                new UpdateWatermarkTransaction(vehicle.getName(), logEntry, getDatabase()));
+          }
           ApiFuture<List<OutputEvent>> createVehicleResult =
               db.runTransaction(
                   new UpdateDeliveryTaskTransaction(logEntry, fleetEventHandlers, getDatabase()));
@@ -223,6 +219,12 @@ public abstract class FleetEventCreatorBase {
       case UPDATE_VEHICLE_LOG_NAME:
         {
           logger.info("Update Vehicle Log processing");
+          if (FleetEventConfig.measureOutOfOrder()) {
+            Vehicle vehicle =
+                ProtoParser.parseLogEntryResponse(logEntry, Vehicle.getDefaultInstance());
+            db.runTransaction(
+                new UpdateWatermarkTransaction(vehicle.getName(), logEntry, getDatabase()));
+          }
           ApiFuture<List<OutputEvent>> updateVehicleResult =
               db.runTransaction(
                   new UpdateDeliveryTaskTransaction(logEntry, fleetEventHandlers, getDatabase()));
@@ -232,6 +234,11 @@ public abstract class FleetEventCreatorBase {
       case CREATE_TRIP_LOG_NAME:
         {
           logger.info("Create Trip Log processing");
+          if (FleetEventConfig.measureOutOfOrder()) {
+            Trip trip = ProtoParser.parseLogEntryResponse(logEntry, Trip.getDefaultInstance());
+            db.runTransaction(
+                new UpdateWatermarkTransaction(trip.getName(), logEntry, getDatabase()));
+          }
           ApiFuture<List<OutputEvent>> createTripResult =
               db.runTransaction(
                   new CreateTripTransaction(logEntry, fleetEventHandlers, getDatabase()));
@@ -241,6 +248,11 @@ public abstract class FleetEventCreatorBase {
       case UPDATE_TRIP_LOG_NAME:
         {
           logger.info("Update Trip Log processing");
+          if (FleetEventConfig.measureOutOfOrder()) {
+            Trip trip = ProtoParser.parseLogEntryResponse(logEntry, Trip.getDefaultInstance());
+            db.runTransaction(
+                new UpdateWatermarkTransaction(trip.getName(), logEntry, getDatabase()));
+          }
           ApiFuture<List<OutputEvent>> updateTripResult =
               db.runTransaction(
                   new UpdateTripTransaction(logEntry, fleetEventHandlers, getDatabase()));
