@@ -16,6 +16,7 @@ import com.google.fleetevents.odrd.models.TripData;
 import com.google.fleetevents.odrd.models.TripFleetEvent;
 import com.google.fleetevents.odrd.models.TripWaypointData;
 import com.google.fleetevents.odrd.models.outputs.EtaAbsoluteChangeOutputEvent;
+import com.google.fleetevents.odrd.models.outputs.EtaAssignedOutputEvent;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -41,7 +42,7 @@ public class EtaAbsoluteChangeHandlerTest {
   }
 
   @Test
-  public void etaAbsoluteChangeHandler_noPreviousEtaNoResponse() {
+  public void etaAbsoluteChangeHandler_noPreviousEtaAssignedEtaOutputResponse() {
     Map<String, Change> tripDifferences = new HashMap<>();
     tripDifferences.put(
         "eta", new Change(null, Timestamp.parseTimestamp("2023-08-02T21:06:00.412009Z")));
@@ -103,9 +104,20 @@ public class EtaAbsoluteChangeHandlerTest {
             .setTripWaypointDifferences(
                 ImmutableList.of(pickupWaypointDifferences, dropoffWaypointDifferences))
             .build();
+    var assignedEtaOutputEvent = new EtaAssignedOutputEvent();
+    assignedEtaOutputEvent.setIdentifier("testTripId1-pickup");
+    assignedEtaOutputEvent.setAssignedEta(
+        Timestamp.parseTimestamp("2023-08-02T20:56:00.412009000Z"));
+    assignedEtaOutputEvent.setIsTripOutputEvent(true);
+    assignedEtaOutputEvent.setEventTimestamp(
+        Timestamp.parseTimestamp("2023-08-02T20:50:34.621727000Z"));
+    assignedEtaOutputEvent.setFleetEvent(tripfleetEvent);
+
     EtaAbsoluteChangeHandler etaAbsoluteChangeHandler = new EtaAbsoluteChangeHandler();
     assertTrue(etaAbsoluteChangeHandler.respondsTo(tripfleetEvent, null, null));
-    assertEquals(new ArrayList<>(), etaAbsoluteChangeHandler.handleEvent(tripfleetEvent, null));
+    assertEquals(
+        ImmutableList.of(assignedEtaOutputEvent),
+        etaAbsoluteChangeHandler.handleEvent(tripfleetEvent, null));
     assertEquals(
         Timestamp.parseTimestamp("2023-08-02T21:06:00.412009Z"),
         newTrip.getEventMetadata().get("originalEta"));
@@ -770,9 +782,49 @@ public class EtaAbsoluteChangeHandlerTest {
             .build();
 
     EtaAbsoluteChangeHandler etaAbsoluteChangeHandler = new EtaAbsoluteChangeHandler();
+
+    var pickupEtaAssignedOutputEvent = new EtaAssignedOutputEvent();
+    pickupEtaAssignedOutputEvent.setIdentifier("testTripId1-pickup");
+    pickupEtaAssignedOutputEvent.setAssignedEta(
+        Timestamp.parseTimestamp("2023-08-02T21:01:00.412009000Z"));
+    pickupEtaAssignedOutputEvent.setEventTimestamp(
+        Timestamp.parseTimestamp("2023-08-02T20:50:34.621727000Z"));
+    pickupEtaAssignedOutputEvent.setFleetEvent(tripfleetEvent);
+
+    var intermediateEtaAssignedOutputEvent = new EtaAssignedOutputEvent();
+    intermediateEtaAssignedOutputEvent.setIdentifier("testTripId1-1");
+    intermediateEtaAssignedOutputEvent.setAssignedEta(
+        Timestamp.parseTimestamp("2023-08-02T21:10:00.412009000Z"));
+    intermediateEtaAssignedOutputEvent.setEventTimestamp(
+        Timestamp.parseTimestamp("2023-08-02T20:50:34.621727000Z"));
+    intermediateEtaAssignedOutputEvent.setFleetEvent(tripfleetEvent);
+
+    var dropoffEtaAssignedOutputEvent = new EtaAssignedOutputEvent();
+    dropoffEtaAssignedOutputEvent.setIdentifier("testTripId1-dropoff");
+    dropoffEtaAssignedOutputEvent.setAssignedEta(
+        Timestamp.parseTimestamp("2023-08-02T21:12:00.412009Z"));
+    dropoffEtaAssignedOutputEvent.setEventTimestamp(
+        Timestamp.parseTimestamp("2023-08-02T20:50:34.621727000Z"));
+    dropoffEtaAssignedOutputEvent.setFleetEvent(tripfleetEvent);
+
+    var tripEtaAssignedOutputEvent = new EtaAssignedOutputEvent();
+    tripEtaAssignedOutputEvent.setIdentifier("testTripId1");
+    tripEtaAssignedOutputEvent.setAssignedEta(
+        Timestamp.parseTimestamp("2023-08-02T21:12:00.412009Z"));
+    tripEtaAssignedOutputEvent.setEventTimestamp(
+        Timestamp.parseTimestamp("2023-08-02T20:50:34.621727000Z"));
+    tripEtaAssignedOutputEvent.setIsTripOutputEvent(true);
+    tripEtaAssignedOutputEvent.setFleetEvent(tripfleetEvent);
+
     assertTrue(etaAbsoluteChangeHandler.respondsTo(tripfleetEvent, null, null));
 
-    assertEquals(ImmutableList.of(), etaAbsoluteChangeHandler.handleEvent(tripfleetEvent, null));
+    assertEquals(
+        ImmutableList.of(
+            pickupEtaAssignedOutputEvent,
+            intermediateEtaAssignedOutputEvent,
+            dropoffEtaAssignedOutputEvent,
+            tripEtaAssignedOutputEvent),
+        etaAbsoluteChangeHandler.handleEvent(tripfleetEvent, null));
     assertEquals(
         Timestamp.parseTimestamp("2023-08-02T21:12:00.412009000Z"),
         newTrip.getEventMetadata().get("originalEta"));

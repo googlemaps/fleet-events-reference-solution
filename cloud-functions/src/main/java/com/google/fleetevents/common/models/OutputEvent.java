@@ -59,6 +59,7 @@ public class OutputEvent {
   public enum Type {
     TASK_OUTCOME_CHANGED,
     ETA,
+    ETA_ASSIGNED,
     RELATIVE_ETA,
     DISTANCE_REMAINING,
     TIME_REMAINING,

@@ -26,6 +26,7 @@ import com.google.fleetevents.lmfs.models.DeliveryVehicleData;
 import com.google.fleetevents.lmfs.models.DeliveryVehicleFleetEvent;
 import com.google.fleetevents.lmfs.models.TaskInfo;
 import com.google.fleetevents.lmfs.models.VehicleJourneySegment;
+import com.google.fleetevents.lmfs.models.outputs.EtaAssignedOutputEvent;
 import com.google.fleetevents.lmfs.models.outputs.EtaOutputEvent;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -75,28 +76,20 @@ public class EtaChangeHandler implements FleetEventHandler {
         String taskId = taskInfo.getTaskId();
         cumulativeDuration = cumulativeDuration + taskInfo.getTaskDuration();
         Long originalEta = getOriginalEta(oldDeliveryVehicle, taskId);
-        // do not allow original ETAs of 0
+        // If we see the eta was null before then we can say we were just assigned a new ETA
+        // output an event to tell that an eta was just assigned.
         if (originalEta == null && cumulativeDuration != 0) {
           originalEta = newDeliveryVehicle.getEventTimestamp() + cumulativeDuration;
           setOriginalEta(newDeliveryVehicle, taskId, originalEta);
           setOriginalDuration(newDeliveryVehicle, taskId, cumulativeDuration);
-          EtaOutputEvent etaOutputEvent =
-              new EtaOutputEvent.Builder()
-                  .setType(OutputEvent.Type.ETA)
-                  .setOriginalEta(originalEta)
-                  .setNewEta(originalEta)
-                  .setOriginalDuration(cumulativeDuration)
-                  .setDelta(0L)
-                  .setRelativeDelta(0.0F)
+          var etaAssignedOutputEvent =
+              new EtaAssignedOutputEvent.Builder()
+                  .setAssignedEta(originalEta)
+                  .setAssignedDuration(cumulativeDuration)
                   .setTaskId(taskId)
                   .setFleetEvent(fleetEvent)
                   .build();
-          outputEvents.add(etaOutputEvent);
-          EtaOutputEvent relativeEtaOutputEvent =
-              new EtaOutputEvent.Builder(etaOutputEvent)
-                  .setType(OutputEvent.Type.RELATIVE_ETA)
-                  .build();
-          outputEvents.add(relativeEtaOutputEvent);
+          outputEvents.add(etaAssignedOutputEvent);
         } else if (originalEta != null) {
           Long originalDuration = getOriginalDuration(oldDeliveryVehicle, taskId);
           Long newEta = newDeliveryVehicle.getEventTimestamp() + cumulativeDuration;

@@ -23,6 +23,7 @@ import com.google.fleetevents.lmfs.models.DeliveryVehicleFleetEvent;
 import com.google.fleetevents.lmfs.models.TaskInfo;
 import com.google.fleetevents.lmfs.models.VehicleJourneySegment;
 import com.google.fleetevents.lmfs.models.VehicleStop;
+import com.google.fleetevents.lmfs.models.outputs.EtaAssignedOutputEvent;
 import com.google.fleetevents.lmfs.models.outputs.EtaOutputEvent;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -78,23 +79,10 @@ public class EtaChangeHandlerTest {
     List<OutputEvent> outputs = this.handler.handleEvent(deliveryVehicleFleetEvent, null);
     List<OutputEvent> expecteds = new ArrayList();
     expecteds.add(
-        (new EtaOutputEvent.Builder())
-            .setOriginalEta(ORIGINAL_ETA_THRESHOLD_MILLIS * 1234)
-            .setType(EtaOutputEvent.Type.ETA)
-            .setNewEta(ORIGINAL_ETA_THRESHOLD_MILLIS * 1234)
-            .setOriginalDuration(ORIGINAL_ETA_THRESHOLD_MILLIS * 1234)
-            .setRelativeDelta(0.0F)
-            .setDelta(0L)
-            .setTaskId("taskId1")
-            .build());
-    expecteds.add(
-        (new EtaOutputEvent.Builder())
-            .setOriginalEta(ORIGINAL_ETA_THRESHOLD_MILLIS * 1234)
-            .setType(EtaOutputEvent.Type.RELATIVE_ETA)
-            .setNewEta(ORIGINAL_ETA_THRESHOLD_MILLIS * 1234)
-            .setOriginalDuration(ORIGINAL_ETA_THRESHOLD_MILLIS * 1234)
-            .setRelativeDelta(0.0F)
-            .setDelta(0L)
+        (new EtaAssignedOutputEvent.Builder())
+            .setAssignedEta(ORIGINAL_ETA_THRESHOLD_MILLIS * 1234)
+            .setAssignedEta(ORIGINAL_ETA_THRESHOLD_MILLIS * 1234)
+            .setAssignedDuration(ORIGINAL_ETA_THRESHOLD_MILLIS * 1234)
             .setTaskId("taskId1")
             .build());
     Assert.assertEquals(expecteds, outputs);
@@ -120,25 +108,12 @@ public class EtaChangeHandlerTest {
     List<OutputEvent> outputs = this.handler.handleEvent(deliveryVehicleFleetEvent, null);
     List<OutputEvent> expecteds = new ArrayList();
     expecteds.add(
-        (new EtaOutputEvent.Builder())
-            .setOriginalEta(ORIGINAL_ETA_THRESHOLD_MILLIS * 1234 + 1L)
-            .setType(EtaOutputEvent.Type.ETA)
-            .setNewEta(ORIGINAL_ETA_THRESHOLD_MILLIS * 1234 + 1L)
-            .setOriginalDuration(ORIGINAL_ETA_THRESHOLD_MILLIS * 1234)
-            .setRelativeDelta(0.0F)
-            .setDelta(0L)
+        (new EtaAssignedOutputEvent.Builder())
+            .setAssignedEta(ORIGINAL_ETA_THRESHOLD_MILLIS * 1234 + 1L)
+            .setAssignedDuration(ORIGINAL_ETA_THRESHOLD_MILLIS * 1234)
             .setTaskId("taskId1")
             .build());
-    expecteds.add(
-        (new EtaOutputEvent.Builder())
-            .setOriginalEta(ORIGINAL_ETA_THRESHOLD_MILLIS * 1234 + 1L)
-            .setType(EtaOutputEvent.Type.RELATIVE_ETA)
-            .setNewEta(ORIGINAL_ETA_THRESHOLD_MILLIS * 1234 + 1L)
-            .setOriginalDuration(ORIGINAL_ETA_THRESHOLD_MILLIS * 1234)
-            .setRelativeDelta(0.0F)
-            .setDelta(0L)
-            .setTaskId("taskId1")
-            .build());
+
     Assert.assertEquals(expecteds, outputs);
   }
 
