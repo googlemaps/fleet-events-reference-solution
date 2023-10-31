@@ -21,16 +21,21 @@ import com.google.common.collect.ImmutableList;
 import com.google.fleetengine.auth.token.factory.signer.SignerInitializationException;
 import com.google.fleetevents.FleetEventCreatorBase;
 import com.google.fleetevents.FleetEventHandler;
+import com.google.fleetevents.common.config.FleetEventConfig;
 import com.google.fleetevents.common.database.FirestoreDatabaseClient;
 import com.google.fleetevents.common.models.OutputEvent;
 import com.google.fleetevents.common.util.FleetEngineClient;
+import com.google.fleetevents.common.util.ProtoParser;
 import com.google.fleetevents.lmfs.transactions.BatchCreateDeliveryTasksTransaction;
 import com.google.fleetevents.lmfs.transactions.CreateDeliveryTaskTransaction;
 import com.google.fleetevents.lmfs.transactions.CreateDeliveryVehicleTransaction;
 import com.google.fleetevents.lmfs.transactions.UpdateDeliveryTaskTransaction;
 import com.google.fleetevents.lmfs.transactions.UpdateDeliveryVehicleTransaction;
+import com.google.fleetevents.lmfs.transactions.UpdateWatermarkTransaction;
 import com.google.logging.v2.LogEntry;
 import com.google.protobuf.InvalidProtocolBufferException;
+import google.maps.fleetengine.delivery.v1.DeliveryVehicle;
+import google.maps.fleetengine.delivery.v1.Task;
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -42,7 +47,6 @@ public class FleetEventCreator extends FleetEventCreatorBase {
   private static FleetEngineClient fleetEngineClient;
   private static final Logger logger =
       Logger.getLogger(com.google.fleetevents.lmfs.FleetEventCreator.class.getName());
-
   private static final String CREATE_DELIVERY_VEHICLE_LOG_NAME = "create_delivery_vehicle";
   private static final String UPDATE_DELIVERY_VEHICLE_LOG_NAME = "update_delivery_vehicle";
   private static final String UPDATE_TASK_LOG_NAME = "update_task";
@@ -70,6 +74,12 @@ public class FleetEventCreator extends FleetEventCreatorBase {
       case CREATE_DELIVERY_VEHICLE_LOG_NAME:
         {
           logger.info("Create Delivery Vehicle Log processing");
+          if (FleetEventConfig.measureOutOfOrder()) {
+            DeliveryVehicle vehicle =
+                ProtoParser.parseLogEntryResponse(logEntry, DeliveryVehicle.getDefaultInstance());
+            db.runTransaction(
+                new UpdateWatermarkTransaction(vehicle.getName(), logEntry, getDatabase()));
+          }
           ApiFuture<List<OutputEvent>> createDeliveryVehicleResult =
               db.runTransaction(
                   new CreateDeliveryVehicleTransaction(
@@ -81,6 +91,12 @@ public class FleetEventCreator extends FleetEventCreatorBase {
       case UPDATE_DELIVERY_VEHICLE_LOG_NAME:
         {
           logger.info("Update Delivery Vehicle Log processing");
+          if (FleetEventConfig.measureOutOfOrder()) {
+            DeliveryVehicle vehicle =
+                ProtoParser.parseLogEntryResponse(logEntry, DeliveryVehicle.getDefaultInstance());
+            db.runTransaction(
+                new UpdateWatermarkTransaction(vehicle.getName(), logEntry, getDatabase()));
+          }
           ApiFuture<List<OutputEvent>> updateDeliveryVehicleResult =
               db.runTransaction(
                   new UpdateDeliveryVehicleTransaction(
@@ -91,6 +107,11 @@ public class FleetEventCreator extends FleetEventCreatorBase {
       case CREATE_TASK_LOG_NAME:
         {
           logger.info("Create Task Log processing");
+          if (FleetEventConfig.measureOutOfOrder()) {
+            Task task = ProtoParser.parseLogEntryResponse(logEntry, Task.getDefaultInstance());
+            db.runTransaction(
+                new UpdateWatermarkTransaction(task.getName(), logEntry, getDatabase()));
+          }
           ApiFuture<List<OutputEvent>> createDeliveryTaskResult =
               db.runTransaction(
                   new CreateDeliveryTaskTransaction(logEntry, fleetEventHandlers, getDatabase()));
@@ -112,6 +133,11 @@ public class FleetEventCreator extends FleetEventCreatorBase {
       case UPDATE_TASK_LOG_NAME:
         {
           logger.info("Update Task Log processing");
+          if (FleetEventConfig.measureOutOfOrder()) {
+            Task task = ProtoParser.parseLogEntryResponse(logEntry, Task.getDefaultInstance());
+            db.runTransaction(
+                new UpdateWatermarkTransaction(task.getName(), logEntry, getDatabase()));
+          }
           ApiFuture<List<OutputEvent>> updateDeliveryTaskResult =
               db.runTransaction(
                   new UpdateDeliveryTaskTransaction(logEntry, fleetEventHandlers, getDatabase()));
