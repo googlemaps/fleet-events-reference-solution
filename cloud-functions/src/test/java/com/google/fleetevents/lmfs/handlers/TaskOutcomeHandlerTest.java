@@ -16,9 +16,9 @@
 
 package com.google.fleetevents.lmfs.handlers;
 
-import static google.maps.fleetengine.delivery.v1.Task.TaskOutcome.FAILED;
-import static google.maps.fleetengine.delivery.v1.Task.TaskOutcome.SUCCEEDED;
-import static google.maps.fleetengine.delivery.v1.Task.TaskOutcome.TASK_OUTCOME_UNSPECIFIED;
+import static com.google.maps.fleetengine.delivery.v1.Task.TaskOutcome.FAILED;
+import static com.google.maps.fleetengine.delivery.v1.Task.TaskOutcome.SUCCEEDED;
+import static com.google.maps.fleetengine.delivery.v1.Task.TaskOutcome.TASK_OUTCOME_UNSPECIFIED;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
@@ -31,7 +31,7 @@ import com.google.fleetevents.common.models.Pair;
 import com.google.fleetevents.lmfs.models.DeliveryTaskData;
 import com.google.fleetevents.lmfs.models.DeliveryTaskFleetEvent;
 import com.google.fleetevents.lmfs.models.outputs.TaskOutcomeOutputEvent;
-import google.maps.fleetengine.delivery.v1.Task.TaskOutcome;
+import com.google.maps.fleetengine.delivery.v1.Task.TaskOutcome;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;

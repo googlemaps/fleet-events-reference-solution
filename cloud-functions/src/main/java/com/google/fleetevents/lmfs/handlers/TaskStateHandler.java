@@ -9,7 +9,7 @@ import com.google.fleetevents.common.models.OutputEvent;
 import com.google.fleetevents.common.models.Pair;
 import com.google.fleetevents.lmfs.models.DeliveryTaskFleetEvent;
 import com.google.fleetevents.lmfs.models.outputs.TaskStateChangedOutputEvent;
-import google.maps.fleetengine.delivery.v1.Task.State;
+import com.google.maps.fleetengine.delivery.v1.Task.State;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;

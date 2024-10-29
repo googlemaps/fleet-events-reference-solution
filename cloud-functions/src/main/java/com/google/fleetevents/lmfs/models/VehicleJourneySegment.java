@@ -40,12 +40,12 @@ public class VehicleJourneySegment implements Serializable {
   }
 
   public static VehicleJourneySegment fromVehicleJourneySegmentProto(
-      google.maps.fleetengine.delivery.v1.VehicleJourneySegment vjs) {
+      com.google.maps.fleetengine.delivery.v1.VehicleJourneySegment vjs) {
     var latLng = vjs.getStop().getPlannedLocation().getPoint();
     return com.google.fleetevents.lmfs.models.VehicleJourneySegment.builder()
         .setTaskIds(
             vjs.getStop().getTasksList().stream()
-                .map(google.maps.fleetengine.delivery.v1.VehicleStop.TaskInfo::getTaskId)
+                .map(com.google.maps.fleetengine.delivery.v1.VehicleStop.TaskInfo::getTaskId)
                 .collect(Collectors.toList()))
         .setDistance(vjs.getDrivingDistanceMeters().getValue())
         .setDuration(TimeUtil.protobufToLong(vjs.getDrivingDuration()))

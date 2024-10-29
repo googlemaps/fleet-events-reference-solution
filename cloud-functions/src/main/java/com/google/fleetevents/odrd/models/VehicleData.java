@@ -20,7 +20,7 @@ import com.google.cloud.Timestamp;
 import com.google.cloud.firestore.GeoPoint;
 import com.google.fleetevents.common.util.NameFormatter;
 import com.google.fleetevents.common.util.TimeUtil;
-import google.maps.fleetengine.v1.Vehicle;
+import com.google.maps.fleetengine.v1.Vehicle;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;

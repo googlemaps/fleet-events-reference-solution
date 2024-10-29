@@ -1,13 +1,13 @@
 package com.google.fleetevents.beam.util;
 
 import com.google.logging.v2.LogEntry;
+import com.google.maps.fleetengine.delivery.v1.DeliveryVehicle;
+import com.google.maps.fleetengine.delivery.v1.Task;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.Message;
 import com.google.protobuf.Struct;
 import com.google.protobuf.Value;
 import com.google.protobuf.util.JsonFormat;
-import google.maps.fleetengine.delivery.v1.DeliveryVehicle;
-import google.maps.fleetengine.delivery.v1.Task;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;

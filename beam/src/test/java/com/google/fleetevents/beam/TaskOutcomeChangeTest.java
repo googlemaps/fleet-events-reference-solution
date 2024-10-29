@@ -25,7 +25,7 @@ import com.google.fleetevents.beam.config.DataflowJobConfig;
 import com.google.fleetevents.beam.model.output.OutputEvent;
 import com.google.fleetevents.beam.model.output.TaskOutcomeChangeOutputEvent;
 import com.google.fleetevents.beam.util.SampleLogs;
-import google.maps.fleetengine.delivery.v1.Task;
+import com.google.maps.fleetengine.delivery.v1.Task;
 import java.io.IOException;
 import java.util.Arrays;
 import org.apache.beam.sdk.extensions.protobuf.ProtoCoder;

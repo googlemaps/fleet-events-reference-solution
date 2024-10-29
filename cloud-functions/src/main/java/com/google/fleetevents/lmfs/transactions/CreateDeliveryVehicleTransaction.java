@@ -29,10 +29,10 @@ import com.google.fleetevents.common.util.TimeUtil;
 import com.google.fleetevents.lmfs.models.DeliveryVehicleData;
 import com.google.fleetevents.lmfs.models.DeliveryVehicleFleetEvent;
 import com.google.logging.v2.LogEntry;
+import com.google.maps.fleetengine.delivery.v1.CreateDeliveryVehicleRequest;
+import com.google.maps.fleetengine.delivery.v1.DeliveryVehicle;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.type.LatLng;
-import google.maps.fleetengine.delivery.v1.CreateDeliveryVehicleRequest;
-import google.maps.fleetengine.delivery.v1.DeliveryVehicle;
 import java.util.List;
 
 /**
