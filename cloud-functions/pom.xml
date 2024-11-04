@@ -158,12 +158,14 @@
     <dependency>
       <groupId>com.google.cloud</groupId>
       <artifactId>google-cloud-pubsub</artifactId>
+      <version>1.128.0</version>
     </dependency>
 
     <!-- https://mvnrepository.com/artifact/com.google.cloud/google-cloud-functions -->
     <dependency>
       <groupId>com.google.cloud</groupId>
       <artifactId>google-cloud-functions</artifactId>
+      <version>2.38.0</version>
     </dependency>
 
     <!-- https://mvnrepository.com/artifact/com.google.cloud.functions/functions-framework-api -->
@@ -184,7 +186,7 @@
     <dependency>
       <groupId>com.google.cloud</groupId>
       <artifactId>google-cloud-logging</artifactId>
-      <version>3.15.1</version>
+      <version>3.17.0</version>
     </dependency>
 
     <!-- https://mvnrepository.com/artifact/com.google.maps/fleetengine-auth -->
@@ -218,6 +220,7 @@
     <dependency>
       <groupId>com.google.cloud</groupId>
       <artifactId>google-cloud-firestore</artifactId>
+      <version>3.15.0</version>
     </dependency>
 
     <!-- https://mvnrepository.com/artifact/io.cloudevents/cloudevents-core -->
@@ -266,6 +269,7 @@
       <version>5.2.0</version>
       <scope>test</scope>
     </dependency>
+
 
   </dependencies>
 
