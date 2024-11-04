@@ -25,7 +25,7 @@ import com.google.fleetevents.common.models.FleetEvent;
 import com.google.fleetevents.common.models.OutputEvent;
 import com.google.fleetevents.odrd.models.TripFleetEvent;
 import com.google.fleetevents.odrd.models.outputs.TripStatusOutputEvent;
-import google.maps.fleetengine.v1.TripStatus;
+import com.google.maps.fleetengine.v1.TripStatus;
 import java.util.List;
 import java.util.Objects;
 

@@ -18,7 +18,7 @@ package com.google.fleetevents.beam.model.output;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.fleetevents.beam.util.ProtobufSerializer;
-import google.maps.fleetengine.delivery.v1.DeliveryVehicle;
+import com.google.maps.fleetengine.delivery.v1.DeliveryVehicle;
 import java.io.Serializable;
 
 public class VehicleNotUpdatingOutputEvent extends OutputEvent implements Serializable {

@@ -29,9 +29,9 @@ import com.google.fleetevents.lmfs.models.DeliveryTaskData;
 import com.google.fleetevents.lmfs.models.DeliveryTaskFleetEvent;
 import com.google.fleetevents.lmfs.models.DeliveryVehicleData;
 import com.google.logging.v2.LogEntry;
+import com.google.maps.fleetengine.delivery.v1.CreateTaskRequest;
+import com.google.maps.fleetengine.delivery.v1.Task;
 import com.google.protobuf.InvalidProtocolBufferException;
-import google.maps.fleetengine.delivery.v1.CreateTaskRequest;
-import google.maps.fleetengine.delivery.v1.Task;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 

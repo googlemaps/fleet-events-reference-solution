@@ -204,12 +204,12 @@
         <dependency>
             <groupId>com.google.protobuf</groupId>
             <artifactId>protobuf-java</artifactId>
-            <version>3.23.2</version>
+            <version>3.25.0</version>
         </dependency>
         <dependency>
             <groupId>com.google.protobuf</groupId>
             <artifactId>protobuf-java-util</artifactId>
-            <version>3.23.2</version>
+            <version>3.25.0</version>
         </dependency>
         <!-- slf4j API frontend binding with JUL backend -->
         <dependency>
@@ -231,7 +231,7 @@
         <dependency>
             <artifactId>grpc-google-maps-fleetengine-delivery-v1-java</artifactId>
             <groupId>com.google.maps</groupId>
-            <version>0.0.2357</version>
+            <version>1.0.0</version>
         </dependency>
         <!-- testing -->
         <dependency>

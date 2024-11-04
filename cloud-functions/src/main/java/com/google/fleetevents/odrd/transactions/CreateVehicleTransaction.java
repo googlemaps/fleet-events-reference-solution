@@ -29,9 +29,9 @@ import com.google.fleetevents.common.util.ProtoParser;
 import com.google.fleetevents.odrd.models.VehicleData;
 import com.google.fleetevents.odrd.models.VehicleFleetEvent;
 import com.google.logging.v2.LogEntry;
+import com.google.maps.fleetengine.v1.CreateVehicleRequest;
+import com.google.maps.fleetengine.v1.Vehicle;
 import com.google.protobuf.InvalidProtocolBufferException;
-import google.maps.fleetengine.v1.CreateVehicleRequest;
-import google.maps.fleetengine.v1.Vehicle;
 import java.util.HashMap;
 import java.util.List;
 

@@ -41,11 +41,11 @@ import com.google.fleetevents.lmfs.transactions.UpdateWatermarkTransaction;
 import com.google.fleetevents.odrd.transactions.CreateTripTransaction;
 import com.google.fleetevents.odrd.transactions.UpdateTripTransaction;
 import com.google.logging.v2.LogEntry;
+import com.google.maps.fleetengine.delivery.v1.DeliveryVehicle;
+import com.google.maps.fleetengine.delivery.v1.Task;
+import com.google.maps.fleetengine.v1.Trip;
+import com.google.maps.fleetengine.v1.Vehicle;
 import com.google.protobuf.InvalidProtocolBufferException;
-import google.maps.fleetengine.delivery.v1.DeliveryVehicle;
-import google.maps.fleetengine.delivery.v1.Task;
-import google.maps.fleetengine.v1.Trip;
-import google.maps.fleetengine.v1.Vehicle;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -314,7 +314,7 @@ public abstract class FleetEventCreatorBase {
         // Match each stop with a fleet stop, if available, and enrich with planned_location.
         for (VehicleJourneySegment rvjs :
             deliveryVehicleFleetEvent.newDeliveryVehicle().getRemainingVehicleJourneySegments()) {
-          Optional<google.maps.fleetengine.delivery.v1.VehicleStop> matchedStop =
+          Optional<com.google.maps.fleetengine.delivery.v1.VehicleStop> matchedStop =
               deliveryVehicle.getRemainingVehicleJourneySegmentsList().stream()
                   .map(x -> x.getStop())
                   .filter(stop -> isMatchingStop(rvjs.getVehicleStop(), stop))
@@ -336,7 +336,7 @@ public abstract class FleetEventCreatorBase {
 
   // Returns true if any taskid from stop matches one from fleetStop
   private boolean isMatchingStop(
-      VehicleStop stop, google.maps.fleetengine.delivery.v1.VehicleStop fleetStop) {
+      VehicleStop stop, com.google.maps.fleetengine.delivery.v1.VehicleStop fleetStop) {
     for (TaskInfo info : stop.getTaskInfos()) {
       List<String> matches =
           fleetStop.getTasksList().stream()

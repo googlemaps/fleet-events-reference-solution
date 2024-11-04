@@ -20,10 +20,10 @@ import com.google.cloud.firestore.GeoPoint;
 import com.google.fleetevents.common.util.ProtoParser;
 import com.google.fleetevents.lmfs.models.DeliveryVehicleData;
 import com.google.logging.v2.LogEntry;
+import com.google.maps.fleetengine.delivery.v1.CreateDeliveryVehicleRequest;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.util.JsonFormat;
 import com.google.type.LatLng;
-import google.maps.fleetengine.delivery.v1.CreateDeliveryVehicleRequest;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
@@ -153,9 +153,9 @@ public final class FleetEventsTestHelper {
     CreateDeliveryVehicleRequest request =
         ProtoParser.parseLogEntryRequest(
             logEntry, CreateDeliveryVehicleRequest.getDefaultInstance());
-    google.maps.fleetengine.delivery.v1.DeliveryVehicle response =
+    com.google.maps.fleetengine.delivery.v1.DeliveryVehicle response =
         ProtoParser.parseLogEntryResponse(
-            logEntry, google.maps.fleetengine.delivery.v1.DeliveryVehicle.getDefaultInstance());
+            logEntry, com.google.maps.fleetengine.delivery.v1.DeliveryVehicle.getDefaultInstance());
     String deliveryVehicleId = request.getDeliveryVehicleId();
     String name = response.getName();
     LatLng lastLocation = response.getLastLocation().getLocation();
