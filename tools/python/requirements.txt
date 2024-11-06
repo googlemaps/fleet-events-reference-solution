@@ -12,7 +12,7 @@ grpc-google-iam-v1==0.12.6
 grpcio==1.54.0
 grpcio-status==1.54.0
 httplib2==0.22.0
-idna==3.4
+idna==3.7
 proto-plus==1.22.2
 protobuf==4.22.3
 pyasn1==0.4.8
