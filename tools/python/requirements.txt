@@ -27,4 +27,4 @@ slack-cleaner2==3.2.0
 slack-sdk==3.19.5
 slacker==0.14.0
 uritemplate==4.1.1
-urllib3==1.26.13
+urllib3==1.26.19
