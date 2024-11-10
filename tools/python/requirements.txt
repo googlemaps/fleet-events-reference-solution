@@ -9,7 +9,7 @@ google-auth-httplib2==0.1.0
 google-cloud-pubsub==2.16.0
 googleapis-common-protos==1.59.0
 grpc-google-iam-v1==0.12.6
-grpcio==1.54.0
+grpcio==1.54.3
 grpcio-status==1.54.0
 httplib2==0.22.0
 idna==3.4
